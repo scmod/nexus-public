@@ -74,10 +74,10 @@
     </dependency>
 
     <!-- NEXUS-2490 -->
-    <dependency>
-      <groupId>org.sonatype.nexus.plugins</groupId>
-      <artifactId>nexus-lvo-plugin</artifactId>
-    </dependency>
+<!--     <dependency> -->
+<!--       <groupId>org.sonatype.nexus.plugins</groupId> -->
+<!--       <artifactId>nexus-lvo-plugin</artifactId> -->
+<!--     </dependency> -->
 
     <!-- NEXUS-2810 references this -->
     <dependency>
@@ -136,17 +136,17 @@
       <scope>test</scope>
     </dependency>
 
-    <dependency>
-      <groupId>org.sonatype.nexus.plugins</groupId>
-      <artifactId>nexus-p2-repository-plugin</artifactId>
-      <scope>test</scope>
-    </dependency>
+<!--     <dependency> -->
+<!--       <groupId>org.sonatype.nexus.plugins</groupId> -->
+<!--       <artifactId>nexus-p2-repository-plugin</artifactId> -->
+<!--       <scope>test</scope> -->
+<!--     </dependency> -->
 
-    <dependency>
-      <groupId>org.sonatype.nexus.plugins</groupId>
-      <artifactId>nexus-capabilities-client</artifactId>
-      <scope>test</scope>
-    </dependency>
+<!--     <dependency> -->
+<!--       <groupId>org.sonatype.nexus.plugins</groupId> -->
+<!--       <artifactId>nexus-capabilities-client</artifactId> -->
+<!--       <scope>test</scope> -->
+<!--     </dependency> -->
 
     <!-- nexus3860/* (cargo) tests -->
     <dependency>
