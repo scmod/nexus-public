@@ -82,46 +82,46 @@
 
       <!-- capabilities -->
 
-<!--       <dependency> -->
-<!--         <groupId>org.sonatype.nexus.plugins</groupId> -->
-<!--         <artifactId>nexus-capabilities-model</artifactId> -->
-<!--         <version>2.13.0-01</version> -->
-<!--       </dependency> -->
+      <dependency>
+        <groupId>org.sonatype.nexus.plugins</groupId>
+        <artifactId>nexus-capabilities-model</artifactId>
+        <version>2.13.0-01</version>
+      </dependency>
 
-<!--       <dependency> -->
-<!--         <groupId>org.sonatype.nexus.plugins</groupId> -->
-<!--         <artifactId>nexus-capabilities-client</artifactId> -->
-<!--         <version>2.13.0-01</version> -->
-<!--       </dependency> -->
+      <dependency>
+        <groupId>org.sonatype.nexus.plugins</groupId>
+        <artifactId>nexus-capabilities-client</artifactId>
+        <version>2.13.0-01</version>
+      </dependency>
 
-<!--       <dependency> -->
-<!--         <groupId>org.sonatype.nexus.plugins</groupId> -->
-<!--         <artifactId>nexus-capabilities-plugin</artifactId> -->
-<!--         <type>nexus-plugin</type> -->
-<!--         <version>2.13.0-01</version> -->
-<!--       </dependency> -->
+      <dependency>
+        <groupId>org.sonatype.nexus.plugins</groupId>
+        <artifactId>nexus-capabilities-plugin</artifactId>
+        <type>nexus-plugin</type>
+        <version>2.13.0-01</version>
+      </dependency>
 
-<!--       <dependency> -->
-<!--         <groupId>org.sonatype.nexus.plugins</groupId> -->
-<!--         <artifactId>nexus-capabilities-plugin</artifactId> -->
-<!--         <type>jar</type> -->
-<!--         <version>2.13.0-01</version> -->
-<!--       </dependency> -->
+      <dependency>
+        <groupId>org.sonatype.nexus.plugins</groupId>
+        <artifactId>nexus-capabilities-plugin</artifactId>
+        <type>jar</type>
+        <version>2.13.0-01</version>
+      </dependency>
 
-<!--       <dependency> -->
-<!--         <groupId>org.sonatype.nexus.plugins</groupId> -->
-<!--         <artifactId>nexus-capabilities-plugin</artifactId> -->
-<!--         <version>${nexus.version}</version> -->
-<!--         <classifier>bundle</classifier> -->
-<!--         <type>zip</type> -->
-<!--       </dependency> -->
+      <dependency>
+        <groupId>org.sonatype.nexus.plugins</groupId>
+        <artifactId>nexus-capabilities-plugin</artifactId>
+        <version>${nexus.version}</version>
+        <classifier>bundle</classifier>
+        <type>zip</type>
+      </dependency>
 
-<!--       <dependency> -->
-<!--         <groupId>org.sonatype.nexus.plugins</groupId> -->
-<!--         <artifactId>nexus-capabilities-testsuite-helper</artifactId> -->
-<!--         <type>nexus-plugin</type> -->
-<!--         <version>2.13.0-01</version> -->
-<!--       </dependency> -->
+      <dependency>
+        <groupId>org.sonatype.nexus.plugins</groupId>
+        <artifactId>nexus-capabilities-testsuite-helper</artifactId>
+        <type>nexus-plugin</type>
+        <version>2.13.0-01</version>
+      </dependency>
 
 <!--       <dependency> -->
 <!--         <groupId>org.sonatype.nexus.plugins</groupId> -->
