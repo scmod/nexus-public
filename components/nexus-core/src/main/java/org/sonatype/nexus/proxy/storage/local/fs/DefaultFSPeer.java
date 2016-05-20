@@ -29,6 +29,9 @@ import java.util.List;
 import javax.inject.Named;
 import javax.inject.Singleton;
 
+import org.eclipse.jgit.api.Git;
+import org.eclipse.jgit.api.errors.GitAPIException;
+import org.eclipse.jgit.internal.storage.file.FileRepository;
 import org.sonatype.nexus.proxy.ItemNotFoundException;
 import org.sonatype.nexus.proxy.LocalStorageEOFException;
 import org.sonatype.nexus.proxy.LocalStorageException;
@@ -210,6 +213,13 @@ public class DefaultFSPeer
             "Got exception during storing on path \"%s\" (while moving to final destination)",
             item.getRepositoryItemUid().toString()), e);
       }
+      try (org.eclipse.jgit.lib.Repository r = new FileRepository(target);
+				Git git = new Git(r)) {
+			git.add().addFilepattern(target.getAbsolutePath()).call();
+			git.commit().setMessage("git add " + target.getName() + "successed").call();
+		} catch (GitAPIException | IOException e) {
+			log.error("git add {} failed", target.getName());
+		}
       finally {
         uidLock.unlock();
       }

@@ -389,6 +389,10 @@ public interface Repository
    */
   void setSearchable(boolean val);
 
+  boolean isGitlabbbbb();
+  
+  void setGitlabbbbb(boolean gitlabbbbb);
+  
   // ==================================================
   // Maintenance
 
@@ -416,7 +420,7 @@ public interface Repository
    * @since 2.1
    */
   boolean expireCaches(ResourceStoreRequest request, WalkerFilter filter);
-
+  
   /**
    * Purges the NFC caches from path and below. This methods delegates to
    * {@link #expireNotFoundCaches(ResourceStoreRequest, WalkerFilter)} method using {@code null} for filter.

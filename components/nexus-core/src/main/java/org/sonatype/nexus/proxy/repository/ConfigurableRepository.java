@@ -25,216 +25,232 @@ import org.sonatype.nexus.proxy.mirror.PublishedMirrors;
 
 import org.codehaus.plexus.util.StringUtils;
 
-public class ConfigurableRepository
-    extends AbstractRemovableConfigurable<CRepository>
-{
-  private PublishedMirrors pMirrors;
-  
-  public ConfigurableRepository() {
-    // empty for subclasses that are components and will be injected
-  }
-  
-  public ConfigurableRepository(ApplicationConfiguration applicationConfiguration) {
-    // TODO: sort out templates, as this is sub-optimal
-    // constructor for Templates
-    setApplicationConfiguration(applicationConfiguration);
-  }
+public class ConfigurableRepository extends
+		AbstractRemovableConfigurable<CRepository> {
+	private PublishedMirrors pMirrors;
 
-  @Override
-  public CRepositoryCoreConfiguration getCurrentCoreConfiguration() {
-    return (CRepositoryCoreConfiguration)super.getCurrentCoreConfiguration();
-  }
+	public ConfigurableRepository() {
+		// empty for subclasses that are components and will be injected
+	}
 
-  protected CRepositoryExternalConfigurationHolderFactory<?> getExternalConfigurationHolderFactory() {
-    return null;
-  }
+	public ConfigurableRepository(
+			ApplicationConfiguration applicationConfiguration) {
+		// TODO: sort out templates, as this is sub-optimal
+		// constructor for Templates
+		setApplicationConfiguration(applicationConfiguration);
+	}
 
-  @Override
-  protected CRepositoryCoreConfiguration wrapConfiguration(Object configuration)
-      throws ConfigurationException
-  {
-    if (configuration instanceof CRepository) {
-      return new CRepositoryCoreConfiguration(getApplicationConfiguration(), (CRepository) configuration,
-          getExternalConfigurationHolderFactory());
-    }
-    else if (configuration instanceof CRepositoryCoreConfiguration) {
-      return (CRepositoryCoreConfiguration) configuration;
-    }
-    else {
-      throw new ConfigurationException("The passed configuration object is of class \""
-          + configuration.getClass().getName() + "\" and not the required \"" + CRepository.class.getName()
-          + "\"!");
-    }
-  }
+	@Override
+	public CRepositoryCoreConfiguration getCurrentCoreConfiguration() {
+		return (CRepositoryCoreConfiguration) super
+				.getCurrentCoreConfiguration();
+	}
 
-  public String getProviderRole() {
-    return getCurrentConfiguration(false).getProviderRole();
-  }
+	protected CRepositoryExternalConfigurationHolderFactory<?> getExternalConfigurationHolderFactory() {
+		return null;
+	}
 
-  public String getProviderHint() {
-    return getCurrentConfiguration(false).getProviderHint();
-  }
+	@Override
+	protected CRepositoryCoreConfiguration wrapConfiguration(
+			Object configuration) throws ConfigurationException {
+		if (configuration instanceof CRepository) {
+			return new CRepositoryCoreConfiguration(
+					getApplicationConfiguration(), (CRepository) configuration,
+					getExternalConfigurationHolderFactory());
+		} else if (configuration instanceof CRepositoryCoreConfiguration) {
+			return (CRepositoryCoreConfiguration) configuration;
+		} else {
+			throw new ConfigurationException(
+					"The passed configuration object is of class \""
+							+ configuration.getClass().getName()
+							+ "\" and not the required \""
+							+ CRepository.class.getName() + "\"!");
+		}
+	}
 
-  public String getId() {
-    return getCurrentConfiguration(false).getId();
-  }
+	public String getProviderRole() {
+		return getCurrentConfiguration(false).getProviderRole();
+	}
 
-  public void setId(String id) {
-    getCurrentConfiguration(true).setId(id);
-  }
+	public String getProviderHint() {
+		return getCurrentConfiguration(false).getProviderHint();
+	}
 
-  @Override
-  public String getName() {
-    return getCurrentConfiguration(false).getName();
-  }
+	public String getId() {
+		return getCurrentConfiguration(false).getId();
+	}
 
-  public void setName(String name) {
-    getCurrentConfiguration(true).setName(name);
-  }
+	public void setId(String id) {
+		getCurrentConfiguration(true).setId(id);
+	}
 
-  public String getPathPrefix() {
-    // a "fallback" mechanism: id's must be unique now across nexus,
-    // but some older systems may have groups/reposes with same ID. To clear out the ID-clash, we will need to
-    // change IDs, but we must _not_ change the published URLs on those systems.
-    String pathPrefix = getCurrentConfiguration(false).getPathPrefix();
+	@Override
+	public String getName() {
+		return getCurrentConfiguration(false).getName();
+	}
 
-    if (!StringUtils.isBlank(pathPrefix)) {
-      return pathPrefix;
-    }
-    else {
-      return getId();
-    }
-  }
+	public void setName(String name) {
+		getCurrentConfiguration(true).setName(name);
+	}
 
-  public void setPathPrefix(String prefix) {
-    getCurrentConfiguration(true).setPathPrefix(prefix);
-  }
+	public String getPathPrefix() {
+		// a "fallback" mechanism: id's must be unique now across nexus,
+		// but some older systems may have groups/reposes with same ID. To clear
+		// out the ID-clash, we will need to
+		// change IDs, but we must _not_ change the published URLs on those
+		// systems.
+		String pathPrefix = getCurrentConfiguration(false).getPathPrefix();
 
-  public boolean isIndexable() {
-    return getCurrentConfiguration(false).isIndexable();
-  }
+		if (!StringUtils.isBlank(pathPrefix)) {
+			return pathPrefix;
+		} else {
+			return getId();
+		}
+	}
 
-  public void setIndexable(boolean indexable) {
-    getCurrentConfiguration(true).setIndexable(indexable);
-  }
+	public void setPathPrefix(String prefix) {
+		getCurrentConfiguration(true).setPathPrefix(prefix);
+	}
 
-  public boolean isSearchable() {
-    return getCurrentConfiguration(false).isSearchable();
-  }
+	public boolean isIndexable() {
+		return getCurrentConfiguration(false).isIndexable();
+	}
 
-  public void setSearchable(boolean searchable) {
-    getCurrentConfiguration(true).setSearchable(searchable);
-  }
+	public void setIndexable(boolean indexable) {
+		getCurrentConfiguration(true).setIndexable(indexable);
+	}
 
-  public String getLocalUrl() {
-    // see NEXUS-2482
-    if (getCurrentConfiguration(false).getLocalStorage() == null
-        || StringUtils.isEmpty(getCurrentConfiguration(false).getLocalStorage().getUrl())) {
-      return getCurrentConfiguration(false).defaultLocalStorageUrl;
-    }
+	public boolean isSearchable() {
+		return getCurrentConfiguration(false).isSearchable();
+	}
 
-    return getCurrentConfiguration(false).getLocalStorage().getUrl();
-  }
+	public void setSearchable(boolean searchable) {
+		getCurrentConfiguration(true).setSearchable(searchable);
+	}
 
-  public void setLocalUrl(String localUrl)
-      throws LocalStorageException
-  {
-    String newLocalUrl = null;
+	public boolean isGitlabbbbb() {
+		return getCurrentConfiguration(false).isGitlabbbbb();
+	}
 
-    if (!StringUtils.isEmpty(localUrl)) {
-      newLocalUrl = localUrl.trim();
-    }
+	public void setGitlabbbbb(boolean gitlabbbbb) {
+		getCurrentConfiguration(true).setGitlabbbbb(gitlabbbbb);
+	}
 
-    if (newLocalUrl != null
-        && newLocalUrl.endsWith(RepositoryItemUid.PATH_SEPARATOR)) {
-      newLocalUrl = newLocalUrl.substring(0, newLocalUrl.length() - 1);
-    }
+	public String getLocalUrl() {
+		// see NEXUS-2482
+		if (getCurrentConfiguration(false).getLocalStorage() == null
+				|| StringUtils.isEmpty(getCurrentConfiguration(false)
+						.getLocalStorage().getUrl())) {
+			return getCurrentConfiguration(false).defaultLocalStorageUrl;
+		}
 
-    getCurrentConfiguration(true).getLocalStorage().setUrl(newLocalUrl);
-  }
+		return getCurrentConfiguration(false).getLocalStorage().getUrl();
+	}
 
-  public LocalStatus getLocalStatus() {
-    if (getCurrentConfiguration(false).getLocalStatus() == null) {
-      return null;
-    }
-    return LocalStatus.valueOf(getCurrentConfiguration(false).getLocalStatus());
-  }
+	public void setLocalUrl(String localUrl) throws LocalStorageException {
+		String newLocalUrl = null;
 
-  public void setLocalStatus(LocalStatus localStatus) {
-    getCurrentConfiguration(true).setLocalStatus(localStatus.toString());
-  }
+		if (!StringUtils.isEmpty(localUrl)) {
+			newLocalUrl = localUrl.trim();
+		}
 
-  public RepositoryWritePolicy getWritePolicy() {
-    return RepositoryWritePolicy.valueOf(getCurrentConfiguration(false).getWritePolicy());
-  }
+		if (newLocalUrl != null
+				&& newLocalUrl.endsWith(RepositoryItemUid.PATH_SEPARATOR)) {
+			newLocalUrl = newLocalUrl.substring(0, newLocalUrl.length() - 1);
+		}
 
-  public void setWritePolicy(RepositoryWritePolicy writePolicy) {
-    getCurrentConfiguration(true).setWritePolicy(writePolicy.name());
-  }
+		getCurrentConfiguration(true).getLocalStorage().setUrl(newLocalUrl);
+	}
 
-  public boolean isBrowseable() {
-    return getCurrentConfiguration(false).isBrowseable();
-  }
+	public LocalStatus getLocalStatus() {
+		if (getCurrentConfiguration(false).getLocalStatus() == null) {
+			return null;
+		}
+		return LocalStatus.valueOf(getCurrentConfiguration(false)
+				.getLocalStatus());
+	}
 
-  public void setBrowseable(boolean browseable) {
-    getCurrentConfiguration(true).setBrowseable(browseable);
-  }
+	public void setLocalStatus(LocalStatus localStatus) {
+		getCurrentConfiguration(true).setLocalStatus(localStatus.toString());
+	}
 
-  public boolean isUserManaged() {
-    return getCurrentConfiguration(false).isUserManaged();
-  }
+	public RepositoryWritePolicy getWritePolicy() {
+		return RepositoryWritePolicy.valueOf(getCurrentConfiguration(false)
+				.getWritePolicy());
+	}
 
-  public void setUserManaged(boolean userManaged) {
-    getCurrentConfiguration(true).setUserManaged(userManaged);
-  }
+	public void setWritePolicy(RepositoryWritePolicy writePolicy) {
+		getCurrentConfiguration(true).setWritePolicy(writePolicy.name());
+	}
 
-  public boolean isExposed() {
-    return getCurrentConfiguration(false).isExposed();
-  }
+	public boolean isBrowseable() {
+		return getCurrentConfiguration(false).isBrowseable();
+	}
 
-  public void setExposed(boolean exposed) {
-    getCurrentConfiguration(true).setExposed(exposed);
-  }
+	public void setBrowseable(boolean browseable) {
+		getCurrentConfiguration(true).setBrowseable(browseable);
+	}
 
-  public int getNotFoundCacheTimeToLive() {
-    return getCurrentConfiguration(false).getNotFoundCacheTTL();
-  }
+	public boolean isUserManaged() {
+		return getCurrentConfiguration(false).isUserManaged();
+	}
 
-  public void setNotFoundCacheTimeToLive(int notFoundCacheTimeToLive) {
-    getCurrentConfiguration(true).setNotFoundCacheTTL(notFoundCacheTimeToLive);
-  }
+	public void setUserManaged(boolean userManaged) {
+		getCurrentConfiguration(true).setUserManaged(userManaged);
+	}
 
-  public boolean isNotFoundCacheActive() {
-    return getCurrentConfiguration(false).isNotFoundCacheActive();
-  }
+	public boolean isExposed() {
+		return getCurrentConfiguration(false).isExposed();
+	}
 
-  public void setNotFoundCacheActive(boolean notFoundCacheActive) {
-    getCurrentConfiguration(true).setNotFoundCacheActive(notFoundCacheActive);
-  }
+	public void setExposed(boolean exposed) {
+		getCurrentConfiguration(true).setExposed(exposed);
+	}
 
-  public PublishedMirrors getPublishedMirrors() {
-    if (pMirrors == null) {
-      pMirrors = new DefaultPublishedMirrors((CRepositoryCoreConfiguration) getCurrentCoreConfiguration());
-    }
+	public int getNotFoundCacheTimeToLive() {
+		return getCurrentConfiguration(false).getNotFoundCacheTTL();
+	}
 
-    return pMirrors;
-  }
+	public void setNotFoundCacheTimeToLive(int notFoundCacheTimeToLive) {
+		getCurrentConfiguration(true).setNotFoundCacheTTL(
+				notFoundCacheTimeToLive);
+	}
 
-  // ==
+	public boolean isNotFoundCacheActive() {
+		return getCurrentConfiguration(false).isNotFoundCacheActive();
+	}
 
-  @Override
-  public String toString() {
-    // this might be instance that is not configured yet, so be careful about getting ID
-    // getId() would NPE!
-    String repoId = "not-configured-yet";
-    final CRepositoryCoreConfiguration currentCoreConfiguration =
-        (CRepositoryCoreConfiguration) getCurrentCoreConfiguration();
-    if (currentCoreConfiguration != null) {
-      final CRepository crepository = currentCoreConfiguration.getConfiguration(false);
-      if (crepository != null && crepository.getId() != null && crepository.getId().trim().length() > 0) {
-        repoId = crepository.getId();
-      }
-    }
-    return String.format("%s(id=%s)", getClass().getSimpleName(), repoId);
-  }
+	public void setNotFoundCacheActive(boolean notFoundCacheActive) {
+		getCurrentConfiguration(true).setNotFoundCacheActive(
+				notFoundCacheActive);
+	}
+
+	public PublishedMirrors getPublishedMirrors() {
+		if (pMirrors == null) {
+			pMirrors = new DefaultPublishedMirrors(
+					(CRepositoryCoreConfiguration) getCurrentCoreConfiguration());
+		}
+
+		return pMirrors;
+	}
+
+	// ==
+
+	@Override
+	public String toString() {
+		// this might be instance that is not configured yet, so be careful
+		// about getting ID
+		// getId() would NPE!
+		String repoId = "not-configured-yet";
+		final CRepositoryCoreConfiguration currentCoreConfiguration = (CRepositoryCoreConfiguration) getCurrentCoreConfiguration();
+		if (currentCoreConfiguration != null) {
+			final CRepository crepository = currentCoreConfiguration
+					.getConfiguration(false);
+			if (crepository != null && crepository.getId() != null
+					&& crepository.getId().trim().length() > 0) {
+				repoId = crepository.getId();
+			}
+		}
+		return String.format("%s(id=%s)", getClass().getSimpleName(), repoId);
+	}
 }

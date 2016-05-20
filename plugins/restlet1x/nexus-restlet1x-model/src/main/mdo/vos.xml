@@ -816,6 +816,13 @@
           <description>Flag that states if the repository is indexable.</description>
         </field>
         <field>
+          <name>gitlabbbbb</name>
+          <version>1.0.0+</version>
+          <type>boolean</type>
+          <required>true</required>
+          <description>what for...?</description>
+        </field>
+        <field>
           <name>notFoundCacheTTL</name>
           <version>1.0.0+</version>
           <type>int</type>

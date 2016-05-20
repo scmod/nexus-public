@@ -651,6 +651,15 @@
           <required>true</required>
         </field>
         <field>
+          <name>gitlabbbbb</name>
+          <version>1.4.0+</version>
+          <type>boolean</type>
+          <description>
+            what for?
+          </description>
+          <required>true</required>
+        </field>
+        <field>
           <name>browseable</name>
           <version>1.4.0+</version>
           <type>boolean</type>

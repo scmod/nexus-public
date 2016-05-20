@@ -537,6 +537,7 @@ Sonatype.repoServer.HostedRepositoryEditor = function(config) {
                 mode : 'local',
                 triggerAction : 'all',
                 emptyText : 'Select...',
+                value : "False",
                 selectOnFocus : true,
                 allowBlank : false
               },
@@ -554,6 +555,10 @@ Sonatype.repoServer.HostedRepositoryEditor = function(config) {
                     fieldLabel : 'Allow File Browsing',
                     helpText : ht.browseable,
                     name : 'browseable'
+                  }, {
+                      fieldLabel : 'Allow File Auto Git Commiting',
+                      helpText : ht.gitlabbbbb,
+                      name : 'gitlabbbbb'
                   }, {
                     fieldLabel : 'Include in Search',
                     helpText : ht.indexable,
