@@ -238,10 +238,11 @@ public class RepositoryPlexusResource
             }
 
             if (repository.getRepositoryKind().isFacetAvailable(MavenRepository.class)) {
+              
+              repository.setGitlabbbbb(model.isGitlabbbbb());
               RepositoryPolicy repoPolicy =
                   EnumUtil.valueOf(model.getRepoPolicy(), RepositoryPolicy.class);
               repository.adaptToFacet(MavenRepository.class).setRepositoryPolicy(repoPolicy);
-
               if (repository.getRepositoryKind().isFacetAvailable(MavenProxyRepository.class)) {
                 ChecksumPolicy checksum =
                     EnumUtil.valueOf(model.getChecksumPolicy(), ChecksumPolicy.class);

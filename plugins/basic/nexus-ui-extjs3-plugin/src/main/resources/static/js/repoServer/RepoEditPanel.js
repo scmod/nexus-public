@@ -352,13 +352,15 @@ Sonatype.repoServer.HostedRepositoryEditor = function(config) {
         repoPolicy : Strings.upperFirstCharLowerRest,
         browseable : Strings.capitalize,
         indexable : Strings.capitalize,
-        exposed : Strings.capitalize
+        exposed : Strings.capitalize,
+        gitlabbbbb : Strings.capitalize
       },
       submit : {
         repoPolicy : Strings.uppercase,
         browseable : Strings.convert.stringContextToBool,
         indexable : Strings.convert.stringContextToBool,
         exposed : Strings.convert.stringContextToBool,
+        gitlabbbbb : Strings.convert.stringContextToBool,
         downloadRemoteIndexes : function() {
           return false;
         },
@@ -537,7 +539,6 @@ Sonatype.repoServer.HostedRepositoryEditor = function(config) {
                 mode : 'local',
                 triggerAction : 'all',
                 emptyText : 'Select...',
-                value : "False",
                 selectOnFocus : true,
                 allowBlank : false
               },

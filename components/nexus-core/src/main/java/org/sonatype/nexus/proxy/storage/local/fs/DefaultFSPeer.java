@@ -213,13 +213,13 @@ public class DefaultFSPeer
             "Got exception during storing on path \"%s\" (while moving to final destination)",
             item.getRepositoryItemUid().toString()), e);
       }
-      try (org.eclipse.jgit.lib.Repository r = new FileRepository(target);
-				Git git = new Git(r)) {
-			git.add().addFilepattern(target.getAbsolutePath()).call();
-			git.commit().setMessage("git add " + target.getName() + "successed").call();
-		} catch (GitAPIException | IOException e) {
-			log.error("git add {} failed", target.getName());
-		}
+//      try (org.eclipse.jgit.lib.Repository r = new FileRepository(target);
+//				Git git = new Git(r)) {
+//			git.add().addFilepattern(target.getAbsolutePath()).call();
+//			git.commit().setMessage("git add " + target.getName() + "successed").call();
+//		} catch (GitAPIException | IOException e) {
+//			log.error("git add {} failed", target.getName());
+//		}
       finally {
         uidLock.unlock();
       }

@@ -146,7 +146,7 @@ define('repoServer/resources',['Sonatype/all'], function(){
       overrideLocalStorageUrl : 'This is used to override the default local storage. Leave it blank to use the default. Note, file:/{drive-letter}:/ urls are supported in windows.  All other operating systems will use file:// .',
       writePolicy : 'This controls if users are allowed to deploy and/or update artifacts in this repository. (Hosted repositories only)',
       browseable : 'This controls if users can browse the contents of the repository via their web browser.',
-      gitlabbbbb : '呵呵...',
+      gitlabbbbb : 'hehe...',
       indexable : 'This controls if the artifacts contained by this repository are indexed and thus searchable.',
       exposed : 'This controls if the repository is published on a URL, if this field is false you will not be able to access this repository remotely.',
       notFoundCacheTTL : 'This controls how long to cache the fact that a file was not found in the repository.',
