@@ -33,9 +33,11 @@ import com.google.common.base.Throwables;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.servlet.GuiceServletContextListener;
+
 import org.codehaus.plexus.PlexusConstants;
 import org.codehaus.plexus.PlexusContainer;
 import org.codehaus.plexus.context.Context;
+import org.eclipse.jgit.api.Git;
 import org.eclipse.sisu.plexus.PlexusSpaceModule;
 import org.eclipse.sisu.space.BeanScanning;
 import org.eclipse.sisu.space.ClassSpace;
@@ -71,6 +73,8 @@ public class WebappBootstrap
   private NxApplication application;
 
   private LogManager logManager;
+  
+  private Git git;
 
   @Override
   public void contextInitialized(final ServletContextEvent event) {
@@ -115,6 +119,13 @@ public class WebappBootstrap
       DirSupport.mkdir(workDir);
       lockFile = new LockFile(new File(workDir, "nexus.lock"));
       checkState(lockFile.lock(), "Nexus work directory already in use: %s", workDir);
+      
+      /**
+       * AbstractRepositoryConfigurator.doApplyConfiguration
+       * File defaultStorageFile = new File(new File(configuration.getWorkingDirectory(), "storage"), repo.getId());
+       * 他自己路径写死了..那就把git直接建立在storage里面好了
+      */
+      git = Git.init().setDirectory(new File(properties.get("nexus-work"), "storage")).call();
 
       properties.put(Constants.FRAMEWORK_STORAGE, workDir + "/felix-cache");
       properties.put(Constants.FRAMEWORK_STORAGE_CLEAN, Constants.FRAMEWORK_STORAGE_CLEAN_ONFIRSTINIT);
@@ -231,6 +242,10 @@ public class WebappBootstrap
     if (lockFile != null) {
       lockFile.release();
       lockFile = null;
+    }
+    
+    if(git != null) {
+    	git.close();
     }
 
     log.info("Destroyed");

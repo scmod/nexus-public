@@ -12,6 +12,9 @@
  */
 package org.sonatype.nexus.proxy.storage.local.fs;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+import static org.sonatype.nexus.proxy.ItemNotFoundException.reasonFor;
+
 import java.io.BufferedOutputStream;
 import java.io.EOFException;
 import java.io.File;
@@ -55,9 +58,6 @@ import com.google.common.base.Predicate;
 import com.google.common.base.Throwables;
 import com.google.common.collect.Lists;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-import static org.sonatype.nexus.proxy.ItemNotFoundException.reasonFor;
-
 /**
  * The default FSPeer implementation, directly implementating it. There might be alternate implementations, like doing
  * 2nd level caching and so on.
@@ -87,7 +87,7 @@ public class DefaultFSPeer
   private static final String APPENDIX = "nx-tmp";
 
   private static final String REPO_TMP_FOLDER = ".nexus/tmp";
-
+  
   @Override
   public boolean isReachable(final Repository repository, final File repositoryBaseDir,
                              final ResourceStoreRequest request, final File target)
@@ -174,6 +174,9 @@ public class DefaultFSPeer
       try {
         handleRenameOperation(hiddenTarget, target);
         target.setLastModified(item.getModified());
+        if(repository.isGitlabbbbb()) {
+        	Git git = Git.open(target);
+        }
       }
       catch (IOException e) {
         // if we ARE NOT handling attributes, do proper cleanup in case of IOEx
@@ -213,13 +216,6 @@ public class DefaultFSPeer
             "Got exception during storing on path \"%s\" (while moving to final destination)",
             item.getRepositoryItemUid().toString()), e);
       }
-//      try (org.eclipse.jgit.lib.Repository r = new FileRepository(target);
-//				Git git = new Git(r)) {
-//			git.add().addFilepattern(target.getAbsolutePath()).call();
-//			git.commit().setMessage("git add " + target.getName() + "successed").call();
-//		} catch (GitAPIException | IOException e) {
-//			log.error("git add {} failed", target.getName());
-//		}
       finally {
         uidLock.unlock();
       }

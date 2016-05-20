@@ -128,6 +128,8 @@
 
     <!-- Increase staging timeout to help prevent transient staging failures -->
     <staging.progressTimeout>60</staging.progressTimeout>
+    
+    <jgit.version>4.3.1.201605051710-r</jgit.version>
   </properties>
 
   <modules>
