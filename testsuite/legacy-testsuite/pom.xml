@@ -85,12 +85,6 @@
       <artifactId>nexus-plugin-console-plugin</artifactId>
     </dependency>
 
-    <!-- NEXUS-639 (Timeline) -->
-    <dependency>
-      <groupId>org.sonatype.nexus.plugins</groupId>
-      <artifactId>nexus-timeline-plugin</artifactId>
-    </dependency>
-
     <!-- NEXUS-156 (RRB perms) -->
     <dependency>
       <groupId>org.sonatype.nexus.plugins</groupId>
@@ -118,17 +112,6 @@
       <artifactId>junit-runner</artifactId>
     </dependency>
 
-    <dependency>
-      <groupId>org.sonatype.nexus.plugins</groupId>
-      <artifactId>nexus-ldap-realm-plugin</artifactId>
-      <scope>test</scope>
-    </dependency>
-
-    <dependency>
-      <groupId>org.sonatype.plexus</groupId>
-      <artifactId>plexus-ldap-testsuite</artifactId>
-      <scope>test</scope>
-    </dependency>
     <dependency>
       <groupId>org.bouncycastle</groupId>
       <artifactId>bcprov-jdk15on</artifactId>

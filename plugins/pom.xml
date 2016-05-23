@@ -76,28 +76,6 @@
 				not properly handle property definition in <type> element. NOTE: References 
 				in <dependency> sections (not DM) should continue to use '${nexus-plugin.type}'. -->
 
-			<!-- capabilities -->
-
-			<!-- <dependency> <groupId>org.sonatype.nexus.plugins</groupId> <artifactId>nexus-capabilities-model</artifactId> 
-				<version>2.13.0-01</version> </dependency> <dependency> <groupId>org.sonatype.nexus.plugins</groupId> 
-				<artifactId>nexus-capabilities-client</artifactId> <version>2.13.0-01</version> 
-				</dependency> <dependency> <groupId>org.sonatype.nexus.plugins</groupId> 
-				<artifactId>nexus-capabilities-plugin</artifactId> <type>nexus-plugin</type> 
-				<version>2.13.0-01</version> </dependency> <dependency> <groupId>org.sonatype.nexus.plugins</groupId> 
-				<artifactId>nexus-capabilities-plugin</artifactId> <type>jar</type> <version>2.13.0-01</version> 
-				</dependency> <dependency> <groupId>org.sonatype.nexus.plugins</groupId> 
-				<artifactId>nexus-capabilities-plugin</artifactId> <version>${nexus.version}</version> 
-				<classifier>bundle</classifier> <type>zip</type> </dependency> <dependency> 
-				<groupId>org.sonatype.nexus.plugins</groupId> <artifactId>nexus-capabilities-testsuite-helper</artifactId> 
-				<type>nexus-plugin</type> <version>2.13.0-01</version> </dependency> -->
-
-			<!-- <dependency> -->
-			<!-- <groupId>org.sonatype.nexus.plugins</groupId> -->
-			<!-- <artifactId>nexus-capabilities-testsuite-helper</artifactId> -->
-			<!-- <type>jar</type> -->
-			<!-- <version>2.13.0-01</version> -->
-			<!-- </dependency> -->
-
 			<!-- logging -->
 
 			<dependency>
@@ -190,22 +168,6 @@
 			<dependency>
 				<groupId>org.sonatype.nexus.plugins</groupId>
 				<artifactId>nexus-plexusplugin-plugin</artifactId>
-				<type>jar</type>
-				<version>2.13.0-01</version>
-			</dependency>
-
-			<!-- h2 -->
-
-			<dependency>
-				<groupId>org.sonatype.nexus.plugins</groupId>
-				<artifactId>nexus-h2-plugin</artifactId>
-				<type>nexus-plugin</type>
-				<version>2.13.0-01</version>
-			</dependency>
-
-			<dependency>
-				<groupId>org.sonatype.nexus.plugins</groupId>
-				<artifactId>nexus-h2-plugin</artifactId>
 				<type>jar</type>
 				<version>2.13.0-01</version>
 			</dependency>
@@ -316,30 +278,6 @@
 				<version>2.13.0-01</version>
 			</dependency>
 
-			<!-- ldap -->
-
-			<dependency>
-				<groupId>org.sonatype.nexus.plugins</groupId>
-				<artifactId>nexus-ldap-realm-plugin</artifactId>
-				<type>nexus-plugin</type>
-				<version>2.13.0-01</version>
-			</dependency>
-
-			<dependency>
-				<groupId>org.sonatype.nexus.plugins</groupId>
-				<artifactId>nexus-ldap-realm-plugin</artifactId>
-				<type>jar</type>
-				<version>2.13.0-01</version>
-			</dependency>
-
-			<dependency>
-				<groupId>org.sonatype.nexus.plugins</groupId>
-				<artifactId>nexus-ldap-realm-plugin</artifactId>
-				<classifier>bundle</classifier>
-				<type>zip</type>
-				<version>2.13.0-01</version>
-			</dependency>
-
 			<!-- rutauth -->
 
 			<dependency>
@@ -363,22 +301,6 @@
 				<classifier>bundle</classifier>
 				<type>zip</type>
 			</dependency>
-
-			<!-- lvo -->
-
-			<!-- <dependency> -->
-			<!-- <groupId>org.sonatype.nexus.plugins</groupId> -->
-			<!-- <artifactId>nexus-lvo-plugin</artifactId> -->
-			<!-- <type>nexus-plugin</type> -->
-			<!-- <version>2.13.0-01</version> -->
-			<!-- </dependency> -->
-
-			<!-- <dependency> -->
-			<!-- <groupId>org.sonatype.nexus.plugins</groupId> -->
-			<!-- <artifactId>nexus-lvo-plugin</artifactId> -->
-			<!-- <type>jar</type> -->
-			<!-- <version>2.13.0-01</version> -->
-			<!-- </dependency> -->
 
 			<!-- maven -->
 
@@ -409,118 +331,6 @@
 				<type>jar</type>
 				<version>2.13.0-01</version>
 			</dependency>
-
-			<!-- npm -->
-
-			<!-- <dependency> -->
-			<!-- <groupId>org.sonatype.nexus.plugins</groupId> -->
-			<!-- <artifactId>nexus-npm-repository-plugin</artifactId> -->
-			<!-- <type>nexus-plugin</type> -->
-			<!-- <version>2.13.0-01</version> -->
-			<!-- </dependency> -->
-
-			<!-- <dependency> -->
-			<!-- <groupId>org.sonatype.nexus.plugins</groupId> -->
-			<!-- <artifactId>nexus-npm-repository-plugin</artifactId> -->
-			<!-- <type>jar</type> -->
-			<!-- <version>2.13.0-01</version> -->
-			<!-- </dependency> -->
-
-			<!-- <dependency> -->
-			<!-- <groupId>org.sonatype.nexus.plugins</groupId> -->
-			<!-- <artifactId>nexus-npm-repository-plugin</artifactId> -->
-			<!-- <version>${nexus.version}</version> -->
-			<!-- <classifier>bundle</classifier> -->
-			<!-- <type>zip</type> -->
-			<!-- </dependency> -->
-
-			<!-- <dependency> -->
-			<!-- <groupId>org.sonatype.nexus.plugins</groupId> -->
-			<!-- <artifactId>nexus-npm-repository-client</artifactId> -->
-			<!-- <version>2.13.0-01</version> -->
-			<!-- </dependency> -->
-
-			<!-- obr -->
-
-			<!-- <dependency> -->
-			<!-- <groupId>org.sonatype.nexus.plugins</groupId> -->
-			<!-- <artifactId>nexus-obr-client</artifactId> -->
-			<!-- <version>2.13.0-01</version> -->
-			<!-- </dependency> -->
-
-			<!-- <dependency> -->
-			<!-- <groupId>org.sonatype.nexus.plugins</groupId> -->
-			<!-- <artifactId>nexus-obr-plugin</artifactId> -->
-			<!-- <type>nexus-plugin</type> -->
-			<!-- <version>2.13.0-01</version> -->
-			<!-- </dependency> -->
-
-			<!-- <dependency> -->
-			<!-- <groupId>org.sonatype.nexus.plugins</groupId> -->
-			<!-- <artifactId>nexus-obr-plugin</artifactId> -->
-			<!-- <type>jar</type> -->
-			<!-- <version>2.13.0-01</version> -->
-			<!-- </dependency> -->
-
-			<!-- <dependency> -->
-			<!-- <groupId>org.sonatype.nexus.plugins</groupId> -->
-			<!-- <artifactId>nexus-obr-plugin</artifactId> -->
-			<!-- <version>${nexus.version}</version> -->
-			<!-- <classifier>bundle</classifier> -->
-			<!-- <type>zip</type> -->
-			<!-- </dependency> -->
-
-			<!-- p2 -->
-
-			<!-- <dependency> -->
-			<!-- <groupId>org.sonatype.nexus.plugins</groupId> -->
-			<!-- <artifactId>nexus-p2-client</artifactId> -->
-			<!-- <version>2.13.0-01</version> -->
-			<!-- </dependency> -->
-
-			<!-- <dependency> -->
-			<!-- <groupId>org.sonatype.nexus.plugins</groupId> -->
-			<!-- <artifactId>nexus-p2-bridge-plugin</artifactId> -->
-			<!-- <type>nexus-plugin</type> -->
-			<!-- <version>2.13.0-01</version> -->
-			<!-- </dependency> -->
-
-			<!-- <dependency> -->
-			<!-- <groupId>org.sonatype.nexus.plugins</groupId> -->
-			<!-- <artifactId>nexus-p2-bridge-plugin</artifactId> -->
-			<!-- <type>jar</type> -->
-			<!-- <version>2.13.0-01</version> -->
-			<!-- </dependency> -->
-
-			<!-- <dependency> -->
-			<!-- <groupId>org.sonatype.nexus.plugins</groupId> -->
-			<!-- <artifactId>nexus-p2-bridge-plugin</artifactId> -->
-			<!-- <version>${nexus.version}</version> -->
-			<!-- <classifier>bundle</classifier> -->
-			<!-- <type>zip</type> -->
-			<!-- </dependency> -->
-
-			<!-- <dependency> -->
-			<!-- <groupId>org.sonatype.nexus.plugins</groupId> -->
-			<!-- <artifactId>nexus-p2-repository-plugin</artifactId> -->
-			<!-- <type>nexus-plugin</type> -->
-			<!-- <version>2.13.0-01</version> -->
-			<!-- </dependency> -->
-
-			<!-- <dependency> -->
-			<!-- <groupId>org.sonatype.nexus.plugins</groupId> -->
-			<!-- <artifactId>nexus-p2-repository-plugin</artifactId> -->
-			<!-- <type>jar</type> -->
-			<!-- <version>2.13.0-01</version> -->
-			<!-- </dependency> -->
-
-			<!-- <dependency> -->
-			<!-- <groupId>org.sonatype.nexus.plugins</groupId> -->
-			<!-- <artifactId>nexus-p2-repository-plugin</artifactId> -->
-			<!-- <version>${nexus.version}</version> -->
-			<!-- <classifier>bundle</classifier> -->
-			<!-- <type>zip</type> -->
-			<!-- </dependency> -->
 
 			<!-- plugin-console -->
 
@@ -579,37 +389,6 @@
 				<artifactId>nexus-restlet1x-testsupport-plugin</artifactId>
 				<version>2.13.0-01</version>
 			</dependency>
-
-			<!-- rubygems -->
-
-			<!-- <dependency> -->
-			<!-- <groupId>org.sonatype.nexus.plugins</groupId> -->
-			<!-- <artifactId>nexus-ruby-client</artifactId> -->
-			<!-- <type>jar</type> -->
-			<!-- <version>2.13.0-01</version> -->
-			<!-- </dependency> -->
-
-			<!-- <dependency> -->
-			<!-- <groupId>org.sonatype.nexus.plugins</groupId> -->
-			<!-- <artifactId>nexus-ruby-tools</artifactId> -->
-			<!-- <type>jar</type> -->
-			<!-- <version>2.13.0-01</version> -->
-			<!-- </dependency> -->
-
-			<!-- <dependency> -->
-			<!-- <groupId>org.sonatype.nexus.plugins</groupId> -->
-			<!-- <artifactId>nexus-ruby-plugin</artifactId> -->
-			<!-- <type>nexus-plugin</type> -->
-			<!-- <version>2.13.0-01</version> -->
-			<!-- </dependency> -->
-
-			<!-- <dependency> -->
-			<!-- <groupId>org.sonatype.nexus.plugins</groupId> -->
-			<!-- <artifactId>nexus-ruby-plugin</artifactId> -->
-			<!-- <version>${nexus.version}</version> -->
-			<!-- <classifier>bundle</classifier> -->
-			<!-- <type>zip</type> -->
-			<!-- </dependency> -->
 
 			<!-- rrb -->
 
@@ -673,38 +452,6 @@
 				<version>2.13.0-01</version>
 			</dependency>
 
-			<!-- atlas -->
-
-			<dependency>
-				<groupId>org.sonatype.nexus.plugins</groupId>
-				<artifactId>nexus-atlas-plugin</artifactId>
-				<type>nexus-plugin</type>
-				<version>2.13.0-01</version>
-			</dependency>
-
-			<dependency>
-				<groupId>org.sonatype.nexus.plugins</groupId>
-				<artifactId>nexus-atlas-plugin</artifactId>
-				<type>jar</type>
-				<version>2.13.0-01</version>
-			</dependency>
-
-			<!-- timeline -->
-
-			<dependency>
-				<groupId>org.sonatype.nexus.plugins</groupId>
-				<artifactId>nexus-timeline-plugin</artifactId>
-				<type>nexus-plugin</type>
-				<version>2.13.0-01</version>
-			</dependency>
-
-			<dependency>
-				<groupId>org.sonatype.nexus.plugins</groupId>
-				<artifactId>nexus-timeline-plugin</artifactId>
-				<type>jar</type>
-				<version>2.13.0-01</version>
-			</dependency>
-
 			<!-- ui -->
 
 			<dependency>
@@ -744,36 +491,6 @@
 				<classifier>bundle</classifier>
 				<type>zip</type>
 			</dependency>
-
-			<!-- yum -->
-
-			<!-- <dependency> -->
-			<!-- <groupId>org.sonatype.nexus.plugins</groupId> -->
-			<!-- <artifactId>nexus-yum-repository-plugin</artifactId> -->
-			<!-- <type>nexus-plugin</type> -->
-			<!-- <version>2.13.0-01</version> -->
-			<!-- </dependency> -->
-
-			<!-- <dependency> -->
-			<!-- <groupId>org.sonatype.nexus.plugins</groupId> -->
-			<!-- <artifactId>nexus-yum-repository-plugin</artifactId> -->
-			<!-- <type>jar</type> -->
-			<!-- <version>2.13.0-01</version> -->
-			<!-- </dependency> -->
-
-			<!-- <dependency> -->
-			<!-- <groupId>org.sonatype.nexus.plugins</groupId> -->
-			<!-- <artifactId>nexus-yum-repository-client</artifactId> -->
-			<!-- <version>2.13.0-01</version> -->
-			<!-- </dependency> -->
-
-			<!-- <dependency> -->
-			<!-- <groupId>org.sonatype.nexus.plugins</groupId> -->
-			<!-- <artifactId>nexus-yum-repository-plugin</artifactId> -->
-			<!-- <version>${nexus.version}</version> -->
-			<!-- <classifier>bundle</classifier> -->
-			<!-- <type>zip</type> -->
-			<!-- </dependency> -->
 
 			<!-- wonderland -->
 
