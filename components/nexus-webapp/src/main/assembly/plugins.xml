@@ -47,7 +47,6 @@
         <include>*:nexus-siesta-plugin</include>
         <include>*:nexus-logging-plugin</include>
         <include>*:nexus-plugin-console-plugin</include>
-        <include>*:nexus-ldap-realm-plugin</include>
         <include>*:nexus-rrb-plugin</include>
         <include>*:nexus-indexer-lucene-plugin</include>
         <include>*:nexus-archetype-plugin</include>
