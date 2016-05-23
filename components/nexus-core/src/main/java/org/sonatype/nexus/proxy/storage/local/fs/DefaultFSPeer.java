@@ -28,13 +28,16 @@ import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
+import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
 
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
-import org.eclipse.jgit.internal.storage.file.FileRepository;
+import org.eclipse.jgit.lib.Constants;
+import org.eclipse.sisu.Parameters;
 import org.sonatype.nexus.proxy.ItemNotFoundException;
 import org.sonatype.nexus.proxy.LocalStorageEOFException;
 import org.sonatype.nexus.proxy.LocalStorageException;
@@ -87,6 +90,19 @@ public class DefaultFSPeer
   private static final String APPENDIX = "nx-tmp";
 
   private static final String REPO_TMP_FOLDER = ".nexus/tmp";
+  
+  private static Git git;
+  
+  @Inject
+  public DefaultFSPeer(@Parameters Map<String, String> properties) {
+	  File gitDir = new File(new File(properties.get("nexus-work"), "storage"), Constants.DOT_GIT);
+	  try {
+		git = Git.open(gitDir);
+	} catch (IOException e) {
+		log.error("gitDir open error");
+		throw Throwables.propagate(e);
+	}
+  }
   
   @Override
   public boolean isReachable(final Repository repository, final File repositoryBaseDir,
@@ -174,9 +190,7 @@ public class DefaultFSPeer
       try {
         handleRenameOperation(hiddenTarget, target);
         target.setLastModified(item.getModified());
-        if(repository.isGitlabbbbb()) {
-        	Git git = Git.open(target);
-        }
+        gitCommit(repository, item);
       }
       catch (IOException e) {
         // if we ARE NOT handling attributes, do proper cleanup in case of IOEx
@@ -350,6 +364,18 @@ public class DefaultFSPeer
           "Could not create the directory hierarchy in repository %s to write \"%s\"",
           RepositoryStringUtils.getHumanizedNameString(repository), target.getAbsolutePath()), e);
     }
+  }
+  
+  private void gitCommit(Repository repository, StorageItem item) throws IOException {
+	  String path = item.getPath();
+      if(repository.isGitlabbbbb() && path.charAt(1) != '.') {
+      	try {
+      		git.add().addFilepattern(path).call();
+			git.commit().setMessage(path).call();
+		} catch (GitAPIException e) {
+			throw new IOException(e);
+		}
+      }
   }
 
   // ==
