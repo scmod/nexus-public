@@ -45,7 +45,7 @@
 		<module>basic</module>
 		<!-- <module>capabilities</module> -->
 		<module>indexer</module>
-		<module>internal</module>
+<!-- 		<module>internal</module> -->
 		<module>maven</module>
 		<!-- <module>npm</module> -->
 		<!-- <module>osgi</module> -->
@@ -238,30 +238,6 @@
 				<version>2.13.0-01</version>
 			</dependency>
 
-			<!-- orient -->
-
-			<dependency>
-				<groupId>org.sonatype.nexus.plugins</groupId>
-				<artifactId>nexus-orient-plugin</artifactId>
-				<type>nexus-plugin</type>
-				<version>2.13.0-01</version>
-			</dependency>
-
-			<dependency>
-				<groupId>org.sonatype.nexus.plugins</groupId>
-				<artifactId>nexus-orient-plugin</artifactId>
-				<classifier>bundle</classifier>
-				<type>zip</type>
-				<version>2.13.0-01</version>
-			</dependency>
-
-			<dependency>
-				<groupId>org.sonatype.nexus.plugins</groupId>
-				<artifactId>nexus-orient-plugin</artifactId>
-				<type>jar</type>
-				<version>2.13.0-01</version>
-			</dependency>
-
 			<!-- kenai -->
 
 			<dependency>
@@ -419,36 +395,6 @@
 				<groupId>org.sonatype.nexus.plugins</groupId>
 				<artifactId>nexus-siesta-plugin</artifactId>
 				<type>jar</type>
-				<version>2.13.0-01</version>
-			</dependency>
-
-			<!-- site -->
-
-			<dependency>
-				<groupId>org.sonatype.nexus.plugins</groupId>
-				<artifactId>nexus-site-repository-plugin</artifactId>
-				<type>nexus-plugin</type>
-				<version>2.13.0-01</version>
-			</dependency>
-
-			<dependency>
-				<groupId>org.sonatype.nexus.plugins</groupId>
-				<artifactId>nexus-site-repository-plugin</artifactId>
-				<type>jar</type>
-				<version>2.13.0-01</version>
-			</dependency>
-
-			<dependency>
-				<groupId>org.sonatype.nexus.plugins</groupId>
-				<artifactId>nexus-site-repository-plugin</artifactId>
-				<version>${nexus.version}</version>
-				<classifier>bundle</classifier>
-				<type>zip</type>
-			</dependency>
-
-			<dependency>
-				<groupId>org.sonatype.nexus.plugins</groupId>
-				<artifactId>nexus-site-repository-client</artifactId>
 				<version>2.13.0-01</version>
 			</dependency>
 

@@ -35,8 +35,6 @@
     <module>nexus-plugin-console-plugin</module>
     <module>nexus-rrb-plugin</module>
     <module>nexus-siesta-plugin</module>
-    <module>nexus-site-repository-client</module>
-    <module>nexus-site-repository-plugin</module>
     <module>nexus-ui-extjs3-plugin</module>
     <module>nexus-unpack-plugin</module>
     <module>nexus-webresources-plugin</module>
