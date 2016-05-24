@@ -28,13 +28,9 @@
   <packaging>pom</packaging>
 
   <modules>
-    <module>nexus-groovyremote-client</module>
-    <module>nexus-groovyremote-plugin</module>
     <module>nexus-kazuki-plugin</module>
     <module>nexus-orient-plugin</module>
     <module>nexus-plexusplugin-plugin</module>
-    <module>nexus-wonderland-model</module>
-    <module>nexus-wonderland-plugin</module>
   </modules>
 
 </project>

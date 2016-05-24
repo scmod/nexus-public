@@ -492,27 +492,6 @@
 				<type>zip</type>
 			</dependency>
 
-			<!-- wonderland -->
-
-			<dependency>
-				<groupId>org.sonatype.nexus.plugins</groupId>
-				<artifactId>nexus-wonderland-model</artifactId>
-				<version>2.13.0-01</version>
-			</dependency>
-
-			<dependency>
-				<groupId>org.sonatype.nexus.plugins</groupId>
-				<artifactId>nexus-wonderland-plugin</artifactId>
-				<type>nexus-plugin</type>
-				<version>2.13.0-01</version>
-			</dependency>
-
-			<dependency>
-				<groupId>org.sonatype.nexus.plugins</groupId>
-				<artifactId>nexus-wonderland-plugin</artifactId>
-				<type>jar</type>
-				<version>2.13.0-01</version>
-			</dependency>
 		</dependencies>
 	</dependencyManagement>
 
