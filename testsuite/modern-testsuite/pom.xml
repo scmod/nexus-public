@@ -87,11 +87,11 @@
 <!--       <scope>test</scope> -->
 <!--     </dependency> -->
 
-    <dependency>
-      <groupId>org.sonatype.nexus.plugins</groupId>
-      <artifactId>nexus-site-repository-client</artifactId>
-      <scope>test</scope>
-    </dependency>
+<!--     <dependency> -->
+<!--       <groupId>org.sonatype.nexus.plugins</groupId> -->
+<!--       <artifactId>nexus-site-repository-client</artifactId> -->
+<!--       <scope>test</scope> -->
+<!--     </dependency> -->
 
     <dependency>
       <groupId>org.sonatype.http-testing-harness</groupId>
