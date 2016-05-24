@@ -141,7 +141,7 @@
     <module>testsupport</module>
     <module>components</module>
     <module>plugins</module>
-    <module>assemblies</module>
+<!--     <module>assemblies</module> -->
     <module>testsuite</module>
   </modules>
 

@@ -210,6 +210,7 @@
         <artifactId>maven-war-plugin</artifactId>
         <configuration>
           <filteringDeploymentDescriptors>true</filteringDeploymentDescriptors>
+          <packagingExcludes>WEB-INF/lib/jetty*.jar</packagingExcludes>
         </configuration>
       </plugin>
 
