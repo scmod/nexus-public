@@ -24,6 +24,13 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 
+import org.codehaus.enunciate.contract.jaxrs.ResourceMethodSignature;
+import org.restlet.Context;
+import org.restlet.data.Form;
+import org.restlet.data.Request;
+import org.restlet.data.Response;
+import org.restlet.resource.ResourceException;
+import org.restlet.resource.Variant;
 import org.sonatype.nexus.ApplicationStatusSource;
 import org.sonatype.nexus.SystemStatus;
 import org.sonatype.nexus.rest.model.NexusAuthenticationClientPermissions;
@@ -34,15 +41,6 @@ import org.sonatype.plexus.rest.resource.ManagedPlexusResource;
 import org.sonatype.plexus.rest.resource.PathProtectionDescriptor;
 import org.sonatype.security.rest.authentication.AbstractUIPermissionCalculatingPlexusResource;
 import org.sonatype.security.rest.model.AuthenticationClientPermissions;
-
-import com.yammer.metrics.annotation.Timed;
-import org.codehaus.enunciate.contract.jaxrs.ResourceMethodSignature;
-import org.restlet.Context;
-import org.restlet.data.Form;
-import org.restlet.data.Request;
-import org.restlet.data.Response;
-import org.restlet.resource.ResourceException;
-import org.restlet.resource.Variant;
 
 @Named("StatusPlexusResource")
 @Singleton
@@ -83,7 +81,6 @@ public class StatusPlexusResource
    * @param perms If query parameter with this name present (without or with any value, does not matter, it is only
    *              checked for presence), this resource will emit the user permissions too.
    */
-  @Timed
   @Override
   @GET
   @ResourceMethodSignature(queryParams = {@QueryParam("perms")}, output = StatusResourceResponse.class)

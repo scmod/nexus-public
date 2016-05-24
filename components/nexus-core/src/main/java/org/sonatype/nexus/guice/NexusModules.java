@@ -12,10 +12,19 @@
  */
 package org.sonatype.nexus.guice;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+import static com.google.inject.name.Names.named;
+
 import java.util.Map;
 
 import javax.servlet.ServletContext;
 
+import org.apache.shiro.guice.aop.ShiroAopModule;
+import org.apache.shiro.web.filter.mgt.FilterChainResolver;
+import org.eclipse.sisu.inject.DefaultRankingFunction;
+import org.eclipse.sisu.inject.RankingFunction;
+import org.eclipse.sisu.wire.ParameterKeys;
+import org.osgi.framework.Bundle;
 import org.sonatype.nexus.web.TemplateRenderer;
 import org.sonatype.nexus.web.WebResourceBundle;
 import org.sonatype.nexus.web.internal.BaseUrlHolderFilter;
@@ -28,16 +37,6 @@ import org.sonatype.security.web.guice.SecurityWebModule;
 import com.google.inject.AbstractModule;
 import com.google.inject.name.Names;
 import com.google.inject.servlet.ServletModule;
-import com.yammer.metrics.guice.InstrumentationModule;
-import org.apache.shiro.guice.aop.ShiroAopModule;
-import org.apache.shiro.web.filter.mgt.FilterChainResolver;
-import org.eclipse.sisu.inject.DefaultRankingFunction;
-import org.eclipse.sisu.inject.RankingFunction;
-import org.eclipse.sisu.wire.ParameterKeys;
-import org.osgi.framework.Bundle;
-
-import static com.google.common.base.Preconditions.checkNotNull;
-import static com.google.inject.name.Names.named;
 
 /**
  * Nexus guice modules.
@@ -55,7 +54,6 @@ public class NexusModules
     @Override
     protected void configure() {
       install(new ShiroAopModule());
-      install(new InstrumentationModule());
     }
   }
 

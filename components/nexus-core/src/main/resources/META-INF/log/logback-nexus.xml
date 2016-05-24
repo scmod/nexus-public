@@ -34,12 +34,9 @@
     </rollingPolicy>
   </appender>
 
-  <appender name="metrics" class="com.yammer.metrics.logback.InstrumentedAppender"/>
-
   <root level="${root.level}">
     <appender-ref ref="console"/>
     <appender-ref ref="logfile"/>
-    <appender-ref ref="metrics"/>
   </root>
 
 </included>

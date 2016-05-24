@@ -58,6 +58,12 @@
         <version>2.13.0-01</version>
         <scope>import</scope>
       </dependency>
+      
+      <dependency>
+  		<groupId>org.eclipse.jetty.orbit</groupId>
+  		<artifactId>javax.servlet</artifactId>
+  		<version>3.0.0.v201112011016</version>
+  	  </dependency>
 
     </dependencies>
   </dependencyManagement>
@@ -70,5 +76,4 @@
       </plugin>
     </plugins>
   </build>
-
 </project>

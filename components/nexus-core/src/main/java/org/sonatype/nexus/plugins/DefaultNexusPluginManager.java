@@ -53,7 +53,6 @@ import org.sonatype.sisu.goodies.eventbus.EventBus;
 import com.google.inject.AbstractModule;
 import com.google.inject.Guice;
 import com.google.inject.Module;
-import com.yammer.metrics.annotation.Timed;
 import org.eclipse.sisu.Parameters;
 import org.eclipse.sisu.bean.BeanManager;
 import org.eclipse.sisu.inject.DefaultRankingFunction;
@@ -136,7 +135,6 @@ public class DefaultNexusPluginManager
     return new HashMap<GAVCoordinate, PluginResponse>(pluginResponses);
   }
 
-  @Timed
   public Collection<PluginManagerResponse> activateInstalledPlugins() {
     final List<PluginManagerResponse> result = new ArrayList<PluginManagerResponse>();
 
