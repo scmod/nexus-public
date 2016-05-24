@@ -52,7 +52,7 @@
 		<!-- <module>p2</module> -->
 		<module>restlet1x</module>
 		<!-- <module>rubygem</module> -->
-		<module>security</module>
+<!-- 		<module>security</module> -->
 		<!-- <module>yum</module> -->
 	</modules>
 
@@ -124,54 +124,6 @@
 				<version>2.13.0-01</version>
 			</dependency>
 
-			<!-- crypto -->
-
-			<dependency>
-				<groupId>org.sonatype.nexus.plugins</groupId>
-				<artifactId>nexus-crypto-plugin</artifactId>
-				<type>nexus-plugin</type>
-				<version>2.13.0-01</version>
-			</dependency>
-
-			<dependency>
-				<groupId>org.sonatype.nexus.plugins</groupId>
-				<artifactId>nexus-crypto-plugin</artifactId>
-				<type>jar</type>
-				<version>2.13.0-01</version>
-			</dependency>
-
-			<!-- groovy -->
-
-			<dependency>
-				<groupId>org.sonatype.nexus.plugins</groupId>
-				<artifactId>nexus-groovy-plugin</artifactId>
-				<type>nexus-plugin</type>
-				<version>2.13.0-01</version>
-			</dependency>
-
-			<dependency>
-				<groupId>org.sonatype.nexus.plugins</groupId>
-				<artifactId>nexus-groovy-plugin</artifactId>
-				<type>jar</type>
-				<version>2.13.0-01</version>
-			</dependency>
-
-			<!-- plexusplugin -->
-
-			<dependency>
-				<groupId>org.sonatype.nexus.plugins</groupId>
-				<artifactId>nexus-plexusplugin-plugin</artifactId>
-				<type>nexus-plugin</type>
-				<version>2.13.0-01</version>
-			</dependency>
-
-			<dependency>
-				<groupId>org.sonatype.nexus.plugins</groupId>
-				<artifactId>nexus-plexusplugin-plugin</artifactId>
-				<type>jar</type>
-				<version>2.13.0-01</version>
-			</dependency>
-
 			<!-- indexer -->
 
 			<dependency>
@@ -198,84 +150,6 @@
 				<artifactId>nexus-indexer-lucene-plugin</artifactId>
 				<type>jar</type>
 				<version>2.13.0-01</version>
-			</dependency>
-
-			<!-- internal -->
-
-			<dependency>
-				<groupId>org.sonatype.nexus.plugins</groupId>
-				<artifactId>nexus-groovyremote-plugin</artifactId>
-				<type>nexus-plugin</type>
-				<version>2.13.0-01</version>
-			</dependency>
-
-			<dependency>
-				<groupId>org.sonatype.nexus.plugins</groupId>
-				<artifactId>nexus-groovyremote-plugin</artifactId>
-				<type>jar</type>
-				<version>2.13.0-01</version>
-			</dependency>
-
-			<dependency>
-				<groupId>org.sonatype.nexus.plugins</groupId>
-				<artifactId>nexus-groovyremote-client</artifactId>
-				<version>2.13.0-01</version>
-			</dependency>
-
-			<!-- kazuki -->
-
-			<dependency>
-				<groupId>org.sonatype.nexus.plugins</groupId>
-				<artifactId>nexus-kazuki-plugin</artifactId>
-				<type>nexus-plugin</type>
-				<version>2.13.0-01</version>
-			</dependency>
-
-			<dependency>
-				<groupId>org.sonatype.nexus.plugins</groupId>
-				<artifactId>nexus-kazuki-plugin</artifactId>
-				<type>jar</type>
-				<version>2.13.0-01</version>
-			</dependency>
-
-			<!-- kenai -->
-
-			<dependency>
-				<groupId>org.sonatype.nexus.plugins</groupId>
-				<artifactId>nexus-kenai-plugin</artifactId>
-				<type>nexus-plugin</type>
-				<version>2.13.0-01</version>
-			</dependency>
-
-			<dependency>
-				<groupId>org.sonatype.nexus.plugins</groupId>
-				<artifactId>nexus-kenai-plugin</artifactId>
-				<type>jar</type>
-				<version>2.13.0-01</version>
-			</dependency>
-
-			<!-- rutauth -->
-
-			<dependency>
-				<groupId>org.sonatype.nexus.plugins</groupId>
-				<artifactId>nexus-rutauth-plugin</artifactId>
-				<type>nexus-plugin</type>
-				<version>2.13.0-01</version>
-			</dependency>
-
-			<dependency>
-				<groupId>org.sonatype.nexus.plugins</groupId>
-				<artifactId>nexus-rutauth-plugin</artifactId>
-				<type>jar</type>
-				<version>2.13.0-01</version>
-			</dependency>
-
-			<dependency>
-				<groupId>org.sonatype.nexus.plugins</groupId>
-				<artifactId>nexus-rutauth-plugin</artifactId>
-				<version>${nexus.version}</version>
-				<classifier>bundle</classifier>
-				<type>zip</type>
 			</dependency>
 
 			<!-- maven -->
