@@ -834,25 +834,9 @@ define('Sonatype/utils',['../extjs', 'Nexus/config', 'Nexus/util/Format', 'Sonat
      * Loads Nexus settings.
      */
     loadNexusSettings: function () {
-      Ext.Ajax.request({
-        method: 'GET',
-        suppressStatus: true,
-        url: Sonatype.config.contextPath + '/service/siesta/wonderland/settings',
-        callback: function (options, success, response) {
-          var respObj;
-
-          ns.settings = {};
-          if (success) {
-            respObj = Ext.decode(response.responseText);
-
-            Ext.each(respObj, function(entry){
-              ns.settings[entry.key] = entry.value;
-            });
-          }
-          ns.settings.keepAlive = ns.settings.keepAlive === 'true';
-          Sonatype.Events.fireEvent('nexusSettings');
-        }
-      });
+    	ns.settings = {};
+    	ns.settings.keepAlive = 'true';
+    	Sonatype.Events.fireEvent('nexusSettings');
     },
 
     loadNexusStatus : function() {
