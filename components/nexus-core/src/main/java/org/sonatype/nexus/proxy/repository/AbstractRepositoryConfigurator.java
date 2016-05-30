@@ -103,17 +103,7 @@ public abstract class AbstractRepositoryConfigurator
       throw new InvalidConfigurationException("Malformed URL for LocalRepositoryStorage!", e);
     }
 
-    String localUrl;
-    boolean usingDefaultLocalUrl;
-
-    if (repo.getLocalStorage() != null && !Strings.isNullOrEmpty(repo.getLocalStorage().getUrl())) {
-      localUrl = repo.getLocalStorage().getUrl();
-      usingDefaultLocalUrl = false;
-    }
-    else {
-      localUrl = repo.defaultLocalStorageUrl;
-      usingDefaultLocalUrl = true;
-    }
+    String localUrl = repo.defaultLocalStorageUrl;
 
     if (repo.getLocalStorage() == null) {
       repo.setLocalStorage(new CLocalStorage());
@@ -123,30 +113,11 @@ public abstract class AbstractRepositoryConfigurator
 
     LocalRepositoryStorage ls = getLocalRepositoryStorage(repo.getId(), repo.getLocalStorage().getProvider());
 
-    try {
-      ls.validateStorageUrl(localUrl);
-
-      if (!usingDefaultLocalUrl) {
-        repo.getLocalStorage().setUrl(localUrl);
-      }
-
-      repository.setLocalStorage(ls);
-      // mark local storage context dirty, if applicable
-      final LocalStorageContext ctx = repository.getLocalStorageContext();
-      if (ctx != null) {
-        ctx.incrementGeneration();
-      }
-    }
-    catch (LocalStorageException e) {
-      ValidationResponse response = new ApplicationValidationResponse();
-
-      ValidationMessage error =
-          new ValidationMessage("overrideLocalStorageUrl", "Repository has an invalid local storage URL '"
-              + localUrl, "Invalid file location");
-
-      response.addValidationError(error);
-
-      throw new InvalidConfigurationException(response);
+    repository.setLocalStorage(ls);
+    // mark local storage context dirty, if applicable
+    final LocalStorageContext ctx = repository.getLocalStorageContext();
+    if (ctx != null) {
+      ctx.incrementGeneration();
     }
 
     // clear the NotFoundCache

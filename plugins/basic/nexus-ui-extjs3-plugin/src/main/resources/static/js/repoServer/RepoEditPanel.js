@@ -503,19 +503,12 @@ Sonatype.repoServer.HostedRepositoryEditor = function(config) {
               }
             }, {
               xtype : 'textfield',
-              fieldLabel : 'Default Local Storage Location',
+              fieldLabel : 'Local Storage Location',
               helpText : ht.defaultLocalStorageUrl,
               name : 'defaultLocalStorageUrl',
               anchor : Sonatype.view.FIELD_OFFSET_WITH_SCROLL,
               allowBlank : true,
               disabled : true
-            }, {
-              xtype : 'textfield',
-              fieldLabel : 'Override Local Storage Location',
-              helpText : ht.overrideLocalStorageUrl,
-              name : 'overrideLocalStorageUrl',
-              anchor : Sonatype.view.FIELD_OFFSET_WITH_SCROLL,
-              allowBlank : true
             }, {
               xtype : 'fieldset',
               checkboxToggle : false,
@@ -793,19 +786,12 @@ Sonatype.repoServer.ProxyRepositoryEditor = function(config) {
               }
             }, {
               xtype : 'textfield',
-              fieldLabel : 'Default Local Storage Location',
+              fieldLabel : 'Local Storage Location',
               helpText : ht.defaultLocalStorageUrl,
               name : 'defaultLocalStorageUrl',
               anchor : Sonatype.view.FIELD_OFFSET_WITH_SCROLL,
               allowBlank : true,
               disabled : true
-            }, {
-              xtype : 'textfield',
-              fieldLabel : 'Override Local Storage Location',
-              helpText : ht.overrideLocalStorageUrl,
-              name : 'overrideLocalStorageUrl',
-              anchor : Sonatype.view.FIELD_OFFSET_WITH_SCROLL,
-              allowBlank : true
             }, {
               xtype : 'fieldset',
               checkboxToggle : false,

@@ -123,7 +123,7 @@ public class WebappBootstrap
       /**
        * AbstractRepositoryConfigurator.doApplyConfiguration
        * File defaultStorageFile = new File(new File(configuration.getWorkingDirectory(), "storage"), repo.getId());
-       * 他自己路径写死了..那就把git直接建立在storage里面好了
+       * 默认就把git直接建立在storage里面好了,去掉自定义仓库保存路径,不然要分开来一个个git检出
       */
       git = Git.init().setDirectory(new File(properties.get("nexus-work"), "storage")).call();
 

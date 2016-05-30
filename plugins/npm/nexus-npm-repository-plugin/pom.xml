@@ -46,13 +46,6 @@
     </dependency>
 
     <dependency>
-      <groupId>org.sonatype.nexus.plugins</groupId>
-      <artifactId>nexus-orient-plugin</artifactId>
-      <type>${nexus-plugin.type}</type>
-      <scope>provided</scope>
-    </dependency>
-
-    <dependency>
       <groupId>com.fasterxml.jackson.dataformat</groupId>
       <artifactId>jackson-dataformat-smile</artifactId>
     </dependency>

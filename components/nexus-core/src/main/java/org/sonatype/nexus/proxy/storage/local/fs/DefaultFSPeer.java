@@ -190,7 +190,7 @@ public class DefaultFSPeer
       try {
         handleRenameOperation(hiddenTarget, target);
         target.setLastModified(item.getModified());
-        gitCommit(repository, item);
+        gitCommit(repository, item.getResourceStoreRequest());
       }
       catch (IOException e) {
         // if we ARE NOT handling attributes, do proper cleanup in case of IOEx
@@ -282,6 +282,7 @@ public class DefaultFSPeer
             "Path %s not found in local storage of repository %s", from.getRequestPath(),
             RepositoryStringUtils.getHumanizedNameString(repository)));
       }
+      gitCommit(repository, from);
     }
     catch (IOException e) {
       throw new LocalStorageException("Error during moveItem", e);
@@ -366,11 +367,11 @@ public class DefaultFSPeer
     }
   }
   
-  private void gitCommit(Repository repository, StorageItem item) throws IOException {
-	  String path = item.getPath();
+  private void gitCommit(Repository repository, ResourceStoreRequest rsr) throws IOException {
+	  String path = rsr.getRequestPath();
       if(repository.isGitlabbbbb() && path.charAt(1) != '.') {
       	try {
-      		git.add().addFilepattern(path).call();
+      		git.add().addFilepattern(repository.getId() + path).call();
 			git.commit().setMessage(path).call();
 		} catch (GitAPIException e) {
 			throw new IOException(e);

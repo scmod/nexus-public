@@ -47,6 +47,7 @@
 		<module>indexer</module>
 <!-- 		<module>internal</module> -->
 		<module>maven</module>
+		<module>file</module>
 		<!-- <module>npm</module> -->
 		<!-- <module>osgi</module> -->
 		<!-- <module>p2</module> -->
@@ -312,6 +313,35 @@
 				<type>zip</type>
 			</dependency>
 
+			<!-- file -->
+
+			<dependency>
+				<groupId>org.sonatype.nexus.plugins</groupId>
+				<artifactId>nexus-file-repository-plugin</artifactId>
+				<type>nexus-plugin</type>
+				<version>2.13.0-01</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.sonatype.nexus.plugins</groupId>
+				<artifactId>nexus-file-repository-plugin</artifactId>
+				<type>jar</type>
+				<version>2.13.0-01</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.sonatype.nexus.plugins</groupId>
+				<artifactId>nexus-file-repository-plugin</artifactId>
+				<version>${nexus.version}</version>
+				<classifier>bundle</classifier>
+				<type>zip</type>
+			</dependency>
+			
+			<dependency>
+				<groupId>org.sonatype.nexus.plugins</groupId>
+				<artifactId>nexus-file-repository-client</artifactId>
+				<version>2.13.0-01</version>
+			</dependency>
 		</dependencies>
 	</dependencyManagement>
 
