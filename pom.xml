@@ -313,16 +313,6 @@
         <version>2.13.0-01</version>
       </dependency>
 
-      <!-- assemblies -->
-
-      <dependency>
-        <groupId>org.sonatype.nexus.assemblies</groupId>
-        <artifactId>nexus-bundle-template</artifactId>
-        <version>2.13.0-01</version>
-        <classifier>bundle</classifier>
-        <type>zip</type>
-      </dependency>
-
     </dependencies>
   </dependencyManagement>
 
@@ -609,20 +599,7 @@
               <exclude>**/nexus-ui-extjs3-plugin/src/main/resources/static/js/ext/ux/**</exclude>
               <exclude>**/nexus-ui-extjs3-plugin/src/main/resources/static/css/ext/ux/**</exclude>
               <exclude>**/nexus-ui-extjs3-plugin/src/main/js-lib/**</exclude>
-              <exclude>**/nexus-csrfguard/src/main/resources/org/sonatype/nexus/csrfguard/csrfguard.*</exclude>
 
-              <!--
-              Excludes for specific classes which have compatible, yet different licences.
-              -->
-              <exclude>**/nexus-ldap-common/**/org/sonatype/security/ldap/dao/password/hash/MD5Crypt.java</exclude>
-              <exclude>**/nexus-csrfguard/**/org/sonatype/nexus/csrfguard/CsrfGuardFilter.java</exclude>
-              <exclude>**/nexus-csrfguard/**/org/sonatype/nexus/csrfguard/CsrfGuardServlet.java</exclude>
-              <exclude>**/nexus-ldap-common/**/org/sonatype/security/ldap/LdapEncoder.java</exclude>
-
-              <!--
-              HACK: Exclude npm sources due to ASL license from contributor
-              -->
-              <exclude>plugins/npm/**</exclude>
             </excludes>
           </configuration>
         </plugin>
