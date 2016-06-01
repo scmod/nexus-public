@@ -11,10 +11,11 @@
  * See the Apache License Version 2.0 for the specific language governing permissions and limitations there under.
  */
 define('nexus-file-repository-plugin-boot', [
-        './FileUploadPanel'
+        'hosted/FileUploadPanel'
 ], function () {
 //    NX.log.enabled = true;
 //    NX.log.levels['debug'] = true;
 
     NX.log.debug('Module loaded: nexus-file-repository-plugin-boot');
+    
 });

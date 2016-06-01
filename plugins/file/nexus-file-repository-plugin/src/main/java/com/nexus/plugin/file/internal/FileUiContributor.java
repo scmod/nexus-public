@@ -25,6 +25,9 @@ import com.nexus.plugin.file.FilePlugin;
  *
  * @author Georgy Bolyuba (georgy@bolyuba.com)
  */
+/**
+ * 实现这个@ {@link UiContributorSupport}来获取css,js资源文件
+ */
 @Named
 @Singleton
 public class FileUiContributor

@@ -10,9 +10,11 @@
  * of Sonatype, Inc. Apache Maven is a trademark of the Apache Software Foundation. M2eclipse is a trademark of the
  * Eclipse Foundation. All other trademarks are the property of their respective owners.
  */
-/*global NX, Sonatype, Ext*/
-//define('repoServer/FileUploadPanel', ['extjs', 'Sonatype/all'], function(Ext, Sonatype) {
-NX.define('FileUploadPanel', {
+define(["Nexus/config"], function() {
+	Sonatype.config.repos.urls.fileUpload = Sonatype.config.servicePath + "/file/content";
+})
+
+NX.define('hosted.FileUploadPanel', {
   extend : 'Ext.FormPanel',
   requirejs : ['Sonatype/all'],
   mixins : ['Nexus.LogAwareMixin'],
@@ -20,7 +22,7 @@ NX.define('FileUploadPanel', {
   constructor : function(cfg) {
     Ext.apply(this, cfg || {});
 
-    var ht = Sonatype.repoServer.resources.help.artifact,
+    var ht = Sonatype.repoServer.resources.help.artifact;
 
     this.fileInput = null;
 
@@ -28,7 +30,7 @@ NX.define('FileUploadPanel', {
 
     this.extraItems = this.extraItems || {};
 
-    Sonatype.repoServer.FileUploadPanel.superclass.constructor.call(this, {
+    hosted.FileUploadPanel.superclass.constructor.call(this, {
       region : 'center',
       id : this.id || 'uploadFormId',
       trackResetOnLoad : true,
@@ -83,8 +85,7 @@ NX.define('FileUploadPanel', {
                       helpText : ht.groupId,
                       anchor : Sonatype.view.FIELD_OFFSET,
                       name : 'g',
-                      allowBlank : false,
-                      disabled : true,
+                      allowBlank : true,
                       validator : function(v) {
                         if (!/^[\w\.\-]+$/.test(v)) {
                           return 'Group ID is illegal, only letters, numbers, underscore(_), hyphon(-), and dot(.) are allowed.';
@@ -99,8 +100,7 @@ NX.define('FileUploadPanel', {
                       helpText : ht.fileId,
                       anchor : Sonatype.view.FIELD_OFFSET,
                       name : 'a',
-                      allowBlank : false,
-                      disabled : true,
+                      allowBlank : true,
                       validator : function(v) {
                         if (!/^[\w\.\-]+$/.test(v)) {
                           return 'File ID is illegal, only letters, numbers, underscore(_), hyphon(-), and dot(.) are allowed.';
@@ -115,15 +115,14 @@ NX.define('FileUploadPanel', {
                       helpText : ht.version,
                       anchor : Sonatype.view.FIELD_OFFSET,
                       name : 'v',
-                      allowBlank : false,
+                      allowBlank : true,
                       uploadPanel : this,
                       validator : function(v) {
                         if (!/^[\w\.\-]+$/.test(v)) {
                           return 'Version is illegal, only letters, numbers, underscore(_), hyphon(-), and dot(.) are allowed.';
                         }
                         return true;
-                      },
-                      disabled : true
+                      }
                     }
                   ]
                 }
@@ -150,7 +149,7 @@ NX.define('FileUploadPanel', {
               name : 'uploadFileButton',
               handler : function(b) {
                 b.uploadPanel.fileInput = b.detachInputFile();
-                var filename = b.uploadPanel.fileInput.getValue(),
+                var filename = b.uploadPanel.fileInput.getValue();
                 b.uploadPanel.updateFilename(b.uploadPanel, filename);
               }
             },
@@ -346,7 +345,7 @@ NX.define('FileUploadPanel', {
           addFileBtn = this.find('id', 'add-button')[0],
           g = this.find('name', 'g')[0],
           a = this.find('name', 'a')[0],
-          v = this.find('name', 'v')[0],
+          v = this.find('name', 'v')[0];
 
     filenameField.reset();
     classifierField.reset();
@@ -463,9 +462,10 @@ NX.define('FileUploadPanel', {
     // match extension to guess the packaging
     var extensionIndex = filename.lastIndexOf('.');
     if (extensionIndex > 0) {
-      p = filename.substring(extensionIndex + 1);
+      e = filename.substring(extensionIndex + 1);
       filename = filename.substring(0, extensionIndex);
     }
+    //c留着先~说不定以后配置文件分debug之类的版本时候有用
     uploadPanel.find('name', 'classifier')[0].setRawValue(c);
     uploadPanel.find('name', 'extension')[0].setRawValue(e);
     if (!a) {
@@ -555,12 +555,10 @@ NX.define('FileUploadPanel', {
       }]
     });
 
-    if (fileInput) {
-      fileInput.appendTo(tmpForm);
-    }
+    fileInput.appendTo(tmpForm);
 
     Ext.Ajax.request({
-      url: Sonatype.config.repos.urls.upload,
+      url: Sonatype.config.repos.urls.fileUpload,
       form : tmpForm,
       isUpload : true,
       cbPassThru : {
@@ -627,11 +625,10 @@ NX.define('FileUploadPanel', {
 }, function() {
 
   Sonatype.Events.addListener('repositoryViewInit', function(cardPanel, rec) {
-    var sp = Sonatype.lib.Permissions;
+	var sp = Sonatype.lib.Permissions;
 
     if (rec.data.resourceURI && rec.data.userManaged && sp.checkPermission('nexus:file', sp.CREATE)
-          && rec.data.repoType === 'hosted' && rec.data.repoPolicy && rec.data.repoPolicy.toUpperCase()
-          === 'MIXED' && rec.data.provider === "file") {
+          && rec.data.repoType === 'hosted' && rec.data.format === "file") {
 
       Ext.Ajax.request({
         url : rec.data.resourceURI,
@@ -642,7 +639,7 @@ NX.define('FileUploadPanel', {
             if (statusResp.data) {
               if (statusResp.data.writePolicy === 'ALLOW_WRITE' || statusResp.data.writePolicy
                     === 'ALLOW_WRITE_ONCE') {
-                var uploadPanel = new Sonatype.repoServer.FileUploadPanel({
+                var uploadPanel = new hosted.FileUploadPanel({
                   payload : rec,
                   name : 'upload'
                 });

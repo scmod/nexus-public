@@ -21,6 +21,10 @@ import org.sonatype.nexus.plugin.support.StaticSecurityResourceSupport;
 
 import com.nexus.plugin.file.FilePlugin;
 
+/**
+ * 实现这个@ {@link StaticSecurityResourceSupport}来获取默认名为"{artifact}-security.xml"中的权限属性
+ * @author John Smith
+ */
 @Named
 @Singleton
 public class FileSecurityResource
