@@ -51,10 +51,11 @@ import com.nexus.plugin.file.resource.FileStoreRequest;
 @Named(DefaultFileHostedRepository.ROLE_HINT)
 @Typed(Repository.class)
 @Description("File registry hosted repo")
+/*这个不是直接实现Repository接口的话会加不进仓库类型里面去... 不知道为啥*/
 public class DefaultFileHostedRepository extends AbstractRepository implements
-		FileHostedRepository {
+		Repository, FileHostedRepository {
 
-	public static final String ROLE_HINT = "file";
+	public static final String ROLE_HINT = "file-hosted";
 
 	private final ContentClass contentClass;
 

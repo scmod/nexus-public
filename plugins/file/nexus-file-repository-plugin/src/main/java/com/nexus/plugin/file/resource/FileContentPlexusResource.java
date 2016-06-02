@@ -54,7 +54,9 @@ public class FileContentPlexusResource
 
   @Override
   public String getResourceUri() {
-    return "/service/local/file/content";
+	  /*Router选择适合的资源路径时候用到..*/
+//    return "/service/local/file/content";
+	  return "/file/content";
   }
 
   @Override
@@ -88,6 +90,6 @@ public class FileContentPlexusResource
   public Object get(Context context, Request request, Response response, Variant variant)
       throws ResourceException
   {
-    return getContent(variant, false, request, response);
+    return getContent(variant, request, response);
   }
 }
