@@ -10,7 +10,7 @@
  * of Sonatype, Inc. Apache Maven is a trademark of the Apache Software Foundation. M2eclipse is a trademark of the
  * Eclipse Foundation. All other trademarks are the property of their respective owners.
  */
-package com.nexus.plugin.file.client.internal;
+package com.nexus.plugin.file.resource;
 
 import java.util.Collections;
 import java.util.List;
@@ -29,15 +29,14 @@ import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.resource.ResourceException;
 import org.restlet.resource.Variant;
-import org.sonatype.nexus.rest.artifact.AbstractArtifactPlexusResource;
 import org.sonatype.plexus.rest.resource.PathProtectionDescriptor;
 
 @Named
 @Singleton
-@Path("/file/content")
+@Path("/service/local/file/content")
 @Produces("*/*")
 public class FileContentPlexusResource
-    extends AbstractArtifactPlexusResource
+    extends AbstractFilePlexusResource
 {
   public FileContentPlexusResource() {
     this.setModifiable(true);
@@ -55,7 +54,7 @@ public class FileContentPlexusResource
 
   @Override
   public String getResourceUri() {
-    return "/file/content";
+    return "/service/local/file/content";
   }
 
   @Override
@@ -73,19 +72,17 @@ public class FileContentPlexusResource
    * disposition headers in HTTP response, where the real name of the artifact (but not the path!) is set, if name of
    * the artifact file is needed.
    *
-   * @param g Group id of the artifact (Required).
-   * @param a Artifact id of the artifact (Required).
-   * @param v Version of the artifact (Required) Supports resolving of "LATEST", "RELEASE" and snapshot versions
-   *          ("1.0-SNAPSHOT") too.
-   * @param r Repository that the artifact is contained in (Required).
-   * @param p Packaging type of the artifact (Optional).
+   * @param g Group id of the artifact (Optional).
+   * @param a Artifact id of the artifact (Optional).
+   * @param v Version of the artifact (Optional)
+   * @param r Repository that the artifact is contained in (Optional).
    * @param c Classifier of the artifact (Optional).
    * @param e Extension of the artifact (Optional).
    */
   @Override
   @GET
   @ResourceMethodSignature(queryParams = {
-      @QueryParam("g"), @QueryParam("a"), @QueryParam("v"), @QueryParam("p"), 
+      @QueryParam("g"), @QueryParam("a"), @QueryParam("v"),
       @QueryParam("r"), @QueryParam("c"), @QueryParam("e")
   }, output = String.class)
   public Object get(Context context, Request request, Response response, Variant variant)

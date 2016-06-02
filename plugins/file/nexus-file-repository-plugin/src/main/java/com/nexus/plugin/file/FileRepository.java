@@ -12,36 +12,60 @@
  */
 package com.nexus.plugin.file;
 
+import java.io.InputStream;
+import java.util.Map;
+
+import org.sonatype.nexus.proxy.AccessDeniedException;
+import org.sonatype.nexus.proxy.IllegalOperationException;
+import org.sonatype.nexus.proxy.ItemNotFoundException;
+import org.sonatype.nexus.proxy.ResourceStoreRequest;
+import org.sonatype.nexus.proxy.StorageException;
+import org.sonatype.nexus.proxy.item.AbstractStorageItem;
+import org.sonatype.nexus.proxy.item.StorageItem;
+import org.sonatype.nexus.proxy.maven.RepositoryPolicy;
+import org.sonatype.nexus.proxy.maven.gav.Gav;
+import org.sonatype.nexus.proxy.maven.gav.GavCalculator;
 import org.sonatype.nexus.proxy.repository.Repository;
+import org.sonatype.nexus.proxy.storage.UnsupportedStorageOperationException;
 
-import com.nexus.plugin.file.internal.FileMimeRulesSource;
-
+import com.nexus.plugin.file.resource.FileStoreHelper;
+import com.nexus.plugin.file.resource.FileStoreRequest;
+/**
+ * 文件服务器的话似乎并没有什么metadata的概念,因为有也获取不到版本信息之类的,
+ * 最多一个上传日期(可以作为默认的gav)
+ * @author John Smith
+ *
+ */
 public interface FileRepository
     extends Repository
 {
-  /**
-   * Mime type used for file metadata downstream. See {@link FileMimeRulesSource}.
-   */
-  String JSON_MIME_TYPE = "application/json";
+  
+  Gav resolveFile(FileStoreRequest request);
+	
+  GavCalculator getGavCalculator();
 
-  /**
-   * Mime type used for file tarballs downstream. See {@link FileMimeRulesSource}.
-   */
-  String TARBALL_MIME_TYPE = "application/x-gzip";
+  FileStoreHelper getFileStoreHelper();
 
-  /**
-   * Registry "escape" character, that is invalid package name or version.
-   */
-  String FILE_REGISTRY_SPECIAL = "-";
+  RepositoryPolicy getRepositoryPolicy();
 
-  /**
-   * Key for flag used to mark a store request "already serviced" by FILE metadata service.
-   */
-  String FILE_METADATA_SERVICED = "FileMetadataServiced";
+  void setRepositoryPolicy(RepositoryPolicy repositoryPolicy);
 
-  /**
-   * Key for flag used to disable FILE metadata service in repository.
-   */
-  String FILE_METADATA_NO_SERVICE = "FileMetadataNoService";
+  // == "Public API" (JSec protected)
+
+  void storeItemWithChecksums(ResourceStoreRequest request, InputStream is, Map<String, String> userAttributes)
+      throws UnsupportedStorageOperationException, ItemNotFoundException, IllegalOperationException,
+             StorageException, AccessDeniedException;
+
+  void deleteItemWithChecksums(ResourceStoreRequest request)
+      throws UnsupportedStorageOperationException, ItemNotFoundException, IllegalOperationException,
+             StorageException, AccessDeniedException;
+
+  // == "Insider API" (unprotected)
+
+  void storeItemWithChecksums(boolean fromTask, AbstractStorageItem item)
+      throws UnsupportedStorageOperationException, IllegalOperationException, StorageException;
+
+  void deleteItemWithChecksums(boolean fromTask, ResourceStoreRequest request)
+      throws UnsupportedStorageOperationException, IllegalOperationException, ItemNotFoundException, StorageException;
 
 }

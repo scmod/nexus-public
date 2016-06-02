@@ -14,6 +14,7 @@ package com.nexus.plugin.file.templates;
 
 import java.io.IOException;
 
+import org.codehaus.plexus.util.xml.Xpp3Dom;
 import org.sonatype.configuration.ConfigurationException;
 import org.sonatype.nexus.configuration.model.CRepository;
 import org.sonatype.nexus.configuration.model.CRepositoryCoreConfiguration;
@@ -27,8 +28,6 @@ import com.nexus.plugin.file.FileContentClass;
 import com.nexus.plugin.file.hosted.DefaultFileHostedRepository;
 import com.nexus.plugin.file.hosted.FileHostedRepository;
 import com.nexus.plugin.file.hosted.FileHostedRepositoryConfiguration;
-
-import org.codehaus.plexus.util.xml.Xpp3Dom;
 
 public class FileHostedRepositoryTemplate
     extends AbstractRepositoryTemplate

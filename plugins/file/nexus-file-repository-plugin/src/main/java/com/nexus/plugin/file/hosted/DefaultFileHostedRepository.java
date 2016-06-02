@@ -14,6 +14,9 @@ package com.nexus.plugin.file.hosted;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
+import java.io.InputStream;
+import java.util.Map;
+
 import javax.enterprise.inject.Typed;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -24,73 +27,146 @@ import org.sonatype.nexus.configuration.Configurator;
 import org.sonatype.nexus.configuration.model.CRepository;
 import org.sonatype.nexus.configuration.model.CRepositoryExternalConfigurationHolderFactory;
 import org.sonatype.nexus.mime.MimeRulesSource;
+import org.sonatype.nexus.proxy.AccessDeniedException;
+import org.sonatype.nexus.proxy.IllegalOperationException;
+import org.sonatype.nexus.proxy.ItemNotFoundException;
+import org.sonatype.nexus.proxy.ResourceStoreRequest;
+import org.sonatype.nexus.proxy.StorageException;
+import org.sonatype.nexus.proxy.item.AbstractStorageItem;
+import org.sonatype.nexus.proxy.item.StorageItem;
+import org.sonatype.nexus.proxy.maven.RepositoryPolicy;
+import org.sonatype.nexus.proxy.maven.gav.Gav;
+import org.sonatype.nexus.proxy.maven.gav.GavCalculator;
 import org.sonatype.nexus.proxy.registry.ContentClass;
 import org.sonatype.nexus.proxy.repository.AbstractRepository;
 import org.sonatype.nexus.proxy.repository.DefaultRepositoryKind;
-import org.sonatype.nexus.proxy.repository.HostedRepository;
 import org.sonatype.nexus.proxy.repository.Repository;
 import org.sonatype.nexus.proxy.repository.RepositoryKind;
+import org.sonatype.nexus.proxy.storage.UnsupportedStorageOperationException;
 
 import com.nexus.plugin.file.FileContentClass;
-import com.nexus.plugin.file.internal.FileMimeRulesSource;
+import com.nexus.plugin.file.resource.FileStoreHelper;
+import com.nexus.plugin.file.resource.FileStoreRequest;
 
 @Named(DefaultFileHostedRepository.ROLE_HINT)
 @Typed(Repository.class)
 @Description("File registry hosted repo")
-public class DefaultFileHostedRepository
-    extends AbstractRepository
-    implements Repository
-{
+public class DefaultFileHostedRepository extends AbstractRepository implements
+		FileHostedRepository {
 
-  public static final String ROLE_HINT = "file-hosted";
+	public static final String ROLE_HINT = "file";
 
-  private final ContentClass contentClass;
+	private final ContentClass contentClass;
 
-  private final FileHostedRepositoryConfigurator configurator;
+	private final FileHostedRepositoryConfigurator configurator;
 
-  private final RepositoryKind repositoryKind;
+	private final RepositoryKind repositoryKind;
 
-  private final FileMimeRulesSource mimeRulesSource;
 
-  @Inject
-  public DefaultFileHostedRepository(final @Named(FileContentClass.ID) ContentClass contentClass,
-                                    final FileHostedRepositoryConfigurator configurator)
-  {
-    this.mimeRulesSource = new FileMimeRulesSource();
-    this.contentClass = checkNotNull(contentClass);
-    this.configurator = checkNotNull(configurator);
-    this.repositoryKind = new DefaultRepositoryKind(FileHostedRepository.class, null);
-  }
+	@Inject
+	public DefaultFileHostedRepository(
+			final @Named(FileContentClass.ID) ContentClass contentClass,
+			final FileHostedRepositoryConfigurator configurator) {
+		this.contentClass = checkNotNull(contentClass);
+		this.configurator = checkNotNull(configurator);
+		this.repositoryKind = new DefaultRepositoryKind(
+				FileHostedRepository.class, null);
+	}
 
-  @Override
-  protected Configurator getConfigurator() {
-    return this.configurator;
-  }
+	@Override
+	protected Configurator getConfigurator() {
+		return this.configurator;
+	}
 
-  @Override
-  public RepositoryKind getRepositoryKind() {
-    return this.repositoryKind;
-  }
+	@Override
+	public RepositoryKind getRepositoryKind() {
+		return this.repositoryKind;
+	}
 
-  @Override
-  public ContentClass getRepositoryContentClass() {
-    return this.contentClass;
-  }
+	@Override
+	public ContentClass getRepositoryContentClass() {
+		return this.contentClass;
+	}
 
-  @Override
-  public MimeRulesSource getMimeRulesSource() {
-    return mimeRulesSource;
-  }
+	@Override
+	protected CRepositoryExternalConfigurationHolderFactory<?> getExternalConfigurationHolderFactory() {
+		return new CRepositoryExternalConfigurationHolderFactory<FileHostedRepositoryConfiguration>() {
+			@Override
+			public FileHostedRepositoryConfiguration createExternalConfigurationHolder(
+					final CRepository config) {
+				return new FileHostedRepositoryConfiguration(
+						(Xpp3Dom) config.getExternalConfiguration());
+			}
+		};
+	}
 
-  @Override
-  protected CRepositoryExternalConfigurationHolderFactory<?> getExternalConfigurationHolderFactory() {
-    return new CRepositoryExternalConfigurationHolderFactory<FileHostedRepositoryConfiguration>()
-    {
-      @Override
-      public FileHostedRepositoryConfiguration createExternalConfigurationHolder(final CRepository config) {
-        return new FileHostedRepositoryConfiguration((Xpp3Dom) config.getExternalConfiguration());
-      }
-    };
-  }
+	@Override
+	public Gav resolveFile(FileStoreRequest gavRequest) {
+		String version = gavRequest.getVersion();
+
+		Gav gav = null;
+
+		gav = new Gav(gavRequest.getGroupId(), gavRequest.getArtifactId(),
+				version, gavRequest.getClassifier(), gavRequest.getExtension(),
+				null, null, null, false, null, false, null);
+
+		return gav;
+	}
+
+	@Override
+	public GavCalculator getGavCalculator() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public FileStoreHelper getFileStoreHelper() {
+		return new FileStoreHelper(this);
+	}
+
+	@Override
+	public RepositoryPolicy getRepositoryPolicy() {
+		return RepositoryPolicy.MIXED;
+	}
+
+	@Override
+	public void setRepositoryPolicy(RepositoryPolicy repositoryPolicy) {
+
+	}
+
+	@Override
+	public void storeItemWithChecksums(ResourceStoreRequest request,
+			InputStream is, Map<String, String> userAttributes)
+			throws UnsupportedStorageOperationException, ItemNotFoundException,
+			IllegalOperationException, StorageException, AccessDeniedException {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void deleteItemWithChecksums(ResourceStoreRequest request)
+			throws UnsupportedStorageOperationException, ItemNotFoundException,
+			IllegalOperationException, StorageException, AccessDeniedException {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void storeItemWithChecksums(boolean fromTask,
+			AbstractStorageItem item)
+			throws UnsupportedStorageOperationException,
+			IllegalOperationException, StorageException {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void deleteItemWithChecksums(boolean fromTask,
+			ResourceStoreRequest request)
+			throws UnsupportedStorageOperationException,
+			IllegalOperationException, ItemNotFoundException, StorageException {
+		// TODO Auto-generated method stub
+
+	}
 
 }
