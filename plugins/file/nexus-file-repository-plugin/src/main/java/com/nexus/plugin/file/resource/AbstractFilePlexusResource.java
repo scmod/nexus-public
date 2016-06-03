@@ -9,12 +9,10 @@ import java.util.regex.Pattern;
 import javax.inject.Inject;
 
 import org.apache.commons.fileupload.FileItem;
-import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.shiro.subject.Subject;
 import org.restlet.Context;
 import org.restlet.data.Form;
-import org.restlet.data.Reference;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
@@ -47,28 +45,20 @@ public abstract class AbstractFilePlexusResource extends
 	}
 
 	protected FileStoreRequest getFileStoreRequest(Request request,
-			boolean localOnly, boolean remoteOnly, String repositoryId,
-			String g, String a, String v, String p, String c, String e)
-			throws ResourceException {
+			String repositoryId, String g, String a, String v, String c,
+			String e, String fileName) throws ResourceException {
 
 		FileRepository fileRepository = getFileRepository(repositoryId);
-
-		// if extension is not given, fall-back to packaging and apply mapper
-		if (StringUtils.isBlank(e)) {
-			// e = fileRepository.getArtifactPackagingMapper()
-			// .getExtensionForPackaging(p);
-		}
 
 		// clean up the classifier
 		if (StringUtils.isBlank(c)) {
 			c = null;
 		}
 
-		Gav gav = new Gav(g, a, v, c, e, null, null, null, false, null, false,
+		Gav gav = new Gav(g, a, v, c, e, null, null, fileName, false, null, false,
 				null);
 
-		FileStoreRequest result = new FileStoreRequest(fileRepository, gav,
-				localOnly, remoteOnly);
+		FileStoreRequest result = new FileStoreRequest(fileRepository, gav);
 
 		if (getLogger().isDebugEnabled()) {
 			getLogger().debug(
@@ -119,20 +109,20 @@ public abstract class AbstractFilePlexusResource extends
 
 		String version = form.getFirstValue("v");
 
-		String packaging = form.getFirstValue("p");
-
 		String classifier = form.getFirstValue("c");
 
 		String repositoryId = form.getFirstValue("r");
 
 		String extension = form.getFirstValue("e");
 
+		String fileName = form.getFirstValue("fileName");
+
 		if (repositoryId == null) {
 			throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST);
 		}
-		FileStoreRequest gavRequest = getFileStoreRequest(request, false,
-				false, repositoryId, groupId, artifactId, version, packaging,
-				classifier, extension);
+		FileStoreRequest gavRequest = getFileStoreRequest(request,
+				repositoryId, groupId, artifactId, version, classifier,
+				extension, fileName);
 
 		gavRequest.setRequestLocalOnly(true);
 
@@ -175,14 +165,13 @@ public abstract class AbstractFilePlexusResource extends
 
 					uploadGavParametersAvailable(request, uploadContext);
 					is = fi.getInputStream();
-					gavRequest = getFileStoreRequest(request, true, false,
+					gavRequest = getFileStoreRequest(request,
 							uploadContext.getRepositoryId(),
 							uploadContext.getGroupId(),
 							uploadContext.getArtifactId(),
 							uploadContext.getVersion(),
-							uploadContext.getPackaging(),
 							uploadContext.getClassifier(),
-							uploadContext.getExtension());
+							uploadContext.getExtension(), fi.getName());
 
 					final FileRepository fr = gavRequest.getFileRepository();
 					final FileStoreHelper helper = fr.getFileStoreHelper();
@@ -195,17 +184,10 @@ public abstract class AbstractFilePlexusResource extends
 		}
 
 		final ArtifactCoordinate coords = new ArtifactCoordinate();
-		
-		if (uploadContext.getGroupId() == null && uploadContext.getArtifactId() == null && uploadContext.getVersion() == null) {
-			Calendar c = Calendar.getInstance(Locale.CHINA);
-			coords.setGroupId(String.valueOf(c.get(Calendar.YEAR)));
-			coords.setArtifactId(String.valueOf(c.get(Calendar.MONTH) + 1));
-			coords.setVersion(String.valueOf(c.get(Calendar.DAY_OF_MONTH)));
-		} else {
-			coords.setGroupId(uploadContext.getGroupId());
-			coords.setArtifactId(uploadContext.getArtifactId());
-			coords.setVersion(uploadContext.getVersion());
-		}
+		coords.setGroupId(uploadContext.getGroupId());
+		coords.setArtifactId(uploadContext.getArtifactId());
+		coords.setVersion(uploadContext.getVersion());
+
 		return coords;
 	}
 
@@ -233,6 +215,18 @@ public abstract class AbstractFilePlexusResource extends
 			uploadContext.setClassifier(fi.getString());
 		} else if ("e".equals(fi.getFieldName())) {
 			uploadContext.setExtension(fi.getString());
+		}
+	}
+
+	protected void uploadGavParametersAvailable(final Request request,
+			final UploadContext uploadContext) throws ResourceException {
+		if (StringUtils.isBlank(uploadContext.getGroupId())
+				&& StringUtils.isBlank(uploadContext.getArtifactId())
+				&& StringUtils.isBlank(uploadContext.getVersion())) {
+			Calendar c = Calendar.getInstance(Locale.CHINA);
+			uploadContext.setGroupId(String.valueOf(c.get(Calendar.YEAR)));
+			uploadContext.setArtifactId(String.valueOf(c.get(Calendar.MONTH) + 1));
+			uploadContext.setVersion(String.valueOf(c.get(Calendar.DAY_OF_MONTH)));
 		}
 	}
 

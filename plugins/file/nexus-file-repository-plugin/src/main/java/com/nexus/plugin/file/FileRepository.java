@@ -60,12 +60,4 @@ public interface FileRepository
       throws UnsupportedStorageOperationException, ItemNotFoundException, IllegalOperationException,
              StorageException, AccessDeniedException;
 
-  // == "Insider API" (unprotected)
-
-  void storeItemWithChecksums(boolean fromTask, AbstractStorageItem item)
-      throws UnsupportedStorageOperationException, IllegalOperationException, StorageException;
-
-  void deleteItemWithChecksums(boolean fromTask, ResourceStoreRequest request)
-      throws UnsupportedStorageOperationException, IllegalOperationException, ItemNotFoundException, StorageException;
-
 }

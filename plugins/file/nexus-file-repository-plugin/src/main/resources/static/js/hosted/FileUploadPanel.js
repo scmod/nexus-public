@@ -11,7 +11,8 @@
  * Eclipse Foundation. All other trademarks are the property of their respective owners.
  */
 define(["Nexus/config"], function() {
-	Sonatype.config.repos.urls.fileUpload = Sonatype.config.servicePath + "/file/content";
+	if(!Sonatype.config.repos.urls.fileUpload)
+		Sonatype.config.repos.urls.fileUpload = Sonatype.config.servicePath + "/file/content";
 })
 
 NX.define('hosted.FileUploadPanel', {
@@ -32,7 +33,7 @@ NX.define('hosted.FileUploadPanel', {
 
     hosted.FileUploadPanel.superclass.constructor.call(this, {
       region : 'center',
-      id : this.id || 'uploadFormId',
+      id : this.id || 'fileUploadFormId',
       trackResetOnLoad : true,
       autoScroll : true,
       bodyStyle : 'overflow:auto;',
@@ -61,7 +62,7 @@ NX.define('hosted.FileUploadPanel', {
           items : [
             {
               xtype : 'panel',
-              id : 'gav-definition-card-panel',
+              id : 'file-gav-definition-card-panel',
               header : false,
               layout : 'card',
               region : 'center',
@@ -87,7 +88,7 @@ NX.define('hosted.FileUploadPanel', {
                       name : 'g',
                       allowBlank : true,
                       validator : function(v) {
-                        if (!/^[\w\.\-]+$/.test(v)) {
+                        if (!/^[\w\.\-]*$/.test(v)) {
                           return 'Group ID is illegal, only letters, numbers, underscore(_), hyphon(-), and dot(.) are allowed.';
                         }
                         return true;
@@ -95,14 +96,14 @@ NX.define('hosted.FileUploadPanel', {
                     },
                     {
                       xtype : 'textfield',
-                      fieldLabel : 'File',
+                      fieldLabel : 'Artifact',
 //                      itemCls : 'required-field',
-                      helpText : ht.fileId,
+                      helpText : ht.artifactId,
                       anchor : Sonatype.view.FIELD_OFFSET,
                       name : 'a',
                       allowBlank : true,
                       validator : function(v) {
-                        if (!/^[\w\.\-]+$/.test(v)) {
+                        if (!/^[\w\.\-]*$/.test(v)) {
                           return 'File ID is illegal, only letters, numbers, underscore(_), hyphon(-), and dot(.) are allowed.';
                         }
                         return true;
@@ -118,7 +119,7 @@ NX.define('hosted.FileUploadPanel', {
                       allowBlank : true,
                       uploadPanel : this,
                       validator : function(v) {
-                        if (!/^[\w\.\-]+$/.test(v)) {
+                        if (!/^[\w\.\-]*$/.test(v)) {
                           return 'Version is illegal, only letters, numbers, underscore(_), hyphon(-), and dot(.) are allowed.';
                         }
                         return true;
@@ -179,7 +180,7 @@ NX.define('hosted.FileUploadPanel', {
             },
             {
               xtype : 'button',
-              id : 'add-button',
+              id : 'file-add-button',
               text : 'Add File',
               handler : this.addFile,
               scope : this,
@@ -247,7 +248,7 @@ NX.define('hosted.FileUploadPanel', {
                       xtype : 'button',
                       text : 'Remove',
                       minWidth : 100,
-                      id : 'button-remove',
+                      id : 'file-button-remove',
                       handler : this.removeFile,
                       scope : this
                     },
@@ -256,7 +257,7 @@ NX.define('hosted.FileUploadPanel', {
                       text : 'Remove All',
                       style : 'margin-top: 5px',
                       minWidth : 100,
-                      id : 'button-remove-all',
+                      id : 'file-button-remove-all',
                       handler : this.removeAllFiles,
                       scope : this
                     }
@@ -267,7 +268,7 @@ NX.define('hosted.FileUploadPanel', {
             this.extraItems,
             {
               xtype : 'panel',
-              id : 'end-button-card-panel',
+              id : 'file-end-button-card-panel',
               header : false,
               deferredRender : false,
               autoScroll : false,
@@ -280,14 +281,14 @@ NX.define('hosted.FileUploadPanel', {
               buttons : [
                 {
                   xtype : 'button',
-                  id : 'upload-button',
+                  id : 'file-upload-button',
                   text : 'Upload File(s)',
                   handler : this.uploadFiles,
                   scope : this
                 },
                 {
                   xtype : 'button',
-                  id : 'reset-all-button',
+                  id : 'file-reset-all-button',
                   text : 'Reset',
                   handler : this.resetFields,
                   scope : this
@@ -342,7 +343,7 @@ NX.define('hosted.FileUploadPanel', {
           filenameField = this.find('name', 'filenameField')[0],
           classifierField = this.find('name', 'classifier')[0],
           extensionField = this.find('name', 'extension')[0],
-          addFileBtn = this.find('id', 'add-button')[0],
+          addFileBtn = this.find('id', 'file-add-button')[0],
           g = this.find('name', 'g')[0],
           a = this.find('name', 'a')[0],
           v = this.find('name', 'v')[0];
@@ -404,6 +405,7 @@ NX.define('hosted.FileUploadPanel', {
 
     if (this.fileInput) {
       treePanel.root.appendChild(new Ext.tree.TreeNode({
+    	//filenameField = this.find('name', 'filenameField')[0],这个似乎也没什么关系不会重复先不管
         id : filenameField.getValue(),
         text : nodeText,
         payload : {
@@ -423,7 +425,7 @@ NX.define('hosted.FileUploadPanel', {
     classifierField.setValue('');
     extensionField.setValue('');
     this.fileInput = null;
-    this.find('id', 'add-button')[0].setDisabled(true);
+    this.find('id', 'file-add-button')[0].setDisabled(true);
   },
   removeFile : function() {
     var treePanel = this.find('name', 'file-list')[0];
@@ -457,7 +459,7 @@ NX.define('hosted.FileUploadPanel', {
       }
     }
 
-    var cardPanel = uploadPanel.find('id', 'gav-definition-card-panel')[0];
+    var cardPanel = uploadPanel.find('id', 'file-gav-definition-card-panel')[0];
 
     // match extension to guess the packaging
     var extensionIndex = filename.lastIndexOf('.');
@@ -471,7 +473,7 @@ NX.define('hosted.FileUploadPanel', {
     if (!a) {
       uploadPanel.form.clearInvalid();
     }
-    uploadPanel.find('id', 'add-button')[0].setDisabled(false);
+    uploadPanel.find('id', 'file-add-button')[0].setDisabled(false);
   },
 
   uploadFiles : function() {
@@ -526,6 +528,7 @@ NX.define('hosted.FileUploadPanel', {
     var tmpForm = Ext.getBody().createChild({
       tag : 'form',
       cls : 'x-hidden',
+      //这个是个类似自增长的id,不会重复先不管
       id : Ext.id(),
       children : [repoTag, {
         tag : 'input',
@@ -667,10 +670,6 @@ NX.define('hosted.FileUploadPanel', {
                     }
                     p.browseButtonsUpdated = true;
                   }
-
-                  var gavDefComboField = p.find('name', 'gavDefinition')[0];
-                  // another hack to fix the combo box lists
-                  gavDefComboField.syncSize();
                 });
               }
               else {

@@ -271,7 +271,7 @@ public class FileStoreHelper {
 
 		Gav gav = new Gav(gavRequest.getGroupId(), gavRequest.getArtifactId(),
 				gavRequest.getVersion(), gavRequest.getClassifier(),
-				gavRequest.getExtension(), null, null, null, false, null,
+				gavRequest.getExtension(), null, null, gavRequest.getFileName(), false, null,
 				false, null);
 
 		gavRequest.setRequestPath(repository.getGavCalculator().gavToPath(gav));

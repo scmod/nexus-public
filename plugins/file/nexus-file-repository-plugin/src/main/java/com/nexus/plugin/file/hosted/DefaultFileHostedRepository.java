@@ -26,14 +26,11 @@ import org.eclipse.sisu.Description;
 import org.sonatype.nexus.configuration.Configurator;
 import org.sonatype.nexus.configuration.model.CRepository;
 import org.sonatype.nexus.configuration.model.CRepositoryExternalConfigurationHolderFactory;
-import org.sonatype.nexus.mime.MimeRulesSource;
 import org.sonatype.nexus.proxy.AccessDeniedException;
 import org.sonatype.nexus.proxy.IllegalOperationException;
 import org.sonatype.nexus.proxy.ItemNotFoundException;
 import org.sonatype.nexus.proxy.ResourceStoreRequest;
 import org.sonatype.nexus.proxy.StorageException;
-import org.sonatype.nexus.proxy.item.AbstractStorageItem;
-import org.sonatype.nexus.proxy.item.StorageItem;
 import org.sonatype.nexus.proxy.maven.RepositoryPolicy;
 import org.sonatype.nexus.proxy.maven.gav.Gav;
 import org.sonatype.nexus.proxy.maven.gav.GavCalculator;
@@ -51,7 +48,7 @@ import com.nexus.plugin.file.resource.FileStoreRequest;
 @Named(DefaultFileHostedRepository.ROLE_HINT)
 @Typed(Repository.class)
 @Description("File registry hosted repo")
-/*这个不是直接实现Repository接口的话会加不进仓库类型里面去... 不知道为啥*/
+/* 这个不是直接实现Repository接口的话会加不进仓库类型里面去... 不知道为啥 */
 public class DefaultFileHostedRepository extends AbstractRepository implements
 		Repository, FileHostedRepository {
 
@@ -63,15 +60,21 @@ public class DefaultFileHostedRepository extends AbstractRepository implements
 
 	private final RepositoryKind repositoryKind;
 
+	private final GavCalculator gavCalculator;
+	
+	private final FileStoreHelper fileStoreHelper;
 
 	@Inject
 	public DefaultFileHostedRepository(
 			final @Named(FileContentClass.ID) ContentClass contentClass,
+			final @Named("file") GavCalculator gavCalculator,
 			final FileHostedRepositoryConfigurator configurator) {
 		this.contentClass = checkNotNull(contentClass);
+		this.gavCalculator = checkNotNull(gavCalculator);
 		this.configurator = checkNotNull(configurator);
 		this.repositoryKind = new DefaultRepositoryKind(
 				FileHostedRepository.class, null);
+		this.fileStoreHelper = new FileStoreHelper(this);
 	}
 
 	@Override
@@ -109,20 +112,19 @@ public class DefaultFileHostedRepository extends AbstractRepository implements
 
 		gav = new Gav(gavRequest.getGroupId(), gavRequest.getArtifactId(),
 				version, gavRequest.getClassifier(), gavRequest.getExtension(),
-				null, null, null, false, null, false, null);
+				null, null, gavRequest.getFileName(), false, null, false, null);
 
 		return gav;
 	}
 
 	@Override
 	public GavCalculator getGavCalculator() {
-		// TODO Auto-generated method stub
-		return null;
+		return gavCalculator;
 	}
 
 	@Override
 	public FileStoreHelper getFileStoreHelper() {
-		return new FileStoreHelper(this);
+		return fileStoreHelper;
 	}
 
 	@Override
@@ -132,7 +134,6 @@ public class DefaultFileHostedRepository extends AbstractRepository implements
 
 	@Override
 	public void setRepositoryPolicy(RepositoryPolicy repositoryPolicy) {
-
 	}
 
 	@Override
@@ -140,34 +141,20 @@ public class DefaultFileHostedRepository extends AbstractRepository implements
 			InputStream is, Map<String, String> userAttributes)
 			throws UnsupportedStorageOperationException, ItemNotFoundException,
 			IllegalOperationException, StorageException, AccessDeniedException {
-		// TODO Auto-generated method stub
-
+		if (log.isDebugEnabled()) {
+			log.debug("storeItemWithChecksums() :: " + request.getRequestPath());
+		}
+		fileStoreHelper.storeItemWithChecksums(request, is, userAttributes);
 	}
 
 	@Override
 	public void deleteItemWithChecksums(ResourceStoreRequest request)
 			throws UnsupportedStorageOperationException, ItemNotFoundException,
 			IllegalOperationException, StorageException, AccessDeniedException {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void storeItemWithChecksums(boolean fromTask,
-			AbstractStorageItem item)
-			throws UnsupportedStorageOperationException,
-			IllegalOperationException, StorageException {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void deleteItemWithChecksums(boolean fromTask,
-			ResourceStoreRequest request)
-			throws UnsupportedStorageOperationException,
-			IllegalOperationException, ItemNotFoundException, StorageException {
-		// TODO Auto-generated method stub
-
+		if (log.isDebugEnabled()) {
+			log.debug("deleteItemWithChecksums() :: " + request.getRequestPath());
+		}
+		fileStoreHelper.deleteItemWithChecksums(request);
 	}
 
 }

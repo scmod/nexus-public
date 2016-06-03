@@ -18,72 +18,80 @@ import org.sonatype.nexus.proxy.utils.RepositoryStringUtils;
 
 import com.nexus.plugin.file.FileRepository;
 
-public class FileStoreRequest
-    extends ResourceStoreRequest
-{
-  private final FileRepository fileRepository;
+public class FileStoreRequest extends ResourceStoreRequest {
+	private final FileRepository fileRepository;
 
-  private final Gav gav;
+	private final Gav gav;
 
-  public FileStoreRequest(FileRepository repository, Gav gav, boolean localOnly) {
-    this(repository, gav, localOnly, false);
-  }
+	public FileStoreRequest(FileRepository repository, Gav gav,
+			boolean localOnly) {
+		this(repository, gav, localOnly, false);
+	}
 
-  public FileStoreRequest(FileRepository repository, Gav gav, boolean localOnly, boolean remoteOnly) {
-    super(repository.getGavCalculator().gavToPath(gav), localOnly, remoteOnly);
+	public FileStoreRequest(FileRepository repository, Gav gav) {
+		this(repository, gav, true, false);
+	}
 
-    this.fileRepository = repository;
+	public FileStoreRequest(FileRepository repository, Gav gav,
+			boolean localOnly, boolean remoteOnly) {
+		super(repository.getGavCalculator().gavToPath(gav), true, false);
+		this.fileRepository = repository;
+		this.gav = gav;
+	}
 
-    this.gav = gav;
-  }
+	public FileRepository getFileRepository() {
+		return fileRepository;
+	}
 
-  public FileRepository getFileRepository() {
-    return fileRepository;
-  }
+	public Gav getGav() {
+		return gav;
+	}
 
-  public Gav getGav() {
-    return gav;
-  }
+	public String getGroupId() {
+		return gav.getGroupId();
+	}
 
-  public String getGroupId() {
-    return gav.getGroupId();
-  }
+	public String getArtifactId() {
+		return gav.getArtifactId();
+	}
 
-  public String getArtifactId() {
-    return gav.getArtifactId();
-  }
+	public String getVersion() {
+		return gav.getVersion();
+	}
 
-  public String getVersion() {
-    return gav.getVersion();
-  }
+	public String getClassifier() {
+		return gav.getClassifier();
+	}
 
-  public String getClassifier() {
-    return gav.getClassifier();
-  }
+	public String getExtension() {
+		return gav.getExtension();
+	}
+	
+	public String getFileName() {
+		return gav.getName();
+	}
 
-  public String getExtension() {
-    return gav.getExtension();
-  }
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder(super.toString());
+		sb.append("(GAVCE=");
+		sb.append(getGroupId());
+		sb.append(":");
+		sb.append(getArtifactId());
+		sb.append(":");
+		sb.append(getVersion());
+		sb.append(":c=");
+		sb.append(getClassifier());
+		sb.append(":e=");
+		sb.append(getExtension());
+		sb.append(":fileName=");
+		sb.append(getFileName());
+		sb.append(", for ");
+		sb.append(RepositoryStringUtils
+				.getHumanizedNameString(getFileRepository()));
+		sb.append(") ");
 
-  @Override
-  public String toString() {
-    StringBuilder sb = new StringBuilder(super.toString());
-    sb.append("(GAVCE=");
-    sb.append(getGroupId());
-    sb.append(":");
-    sb.append(getArtifactId());
-    sb.append(":");
-    sb.append(getVersion());
-    sb.append(":c=");
-    sb.append(getClassifier());
-    sb.append(":e=");
-    sb.append(getExtension());
-    sb.append(", for ");
-    sb.append(RepositoryStringUtils.getHumanizedNameString(getFileRepository()));
-    sb.append(") ");
-
-    return sb.toString();
-  }
+		return sb.toString();
+	}
 
 }
-
