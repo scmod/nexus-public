@@ -19,19 +19,24 @@ import org.sonatype.nexus.proxy.registry.AbstractIdContentClass;
 
 @Named(FileContentClass.ID)
 @Singleton
-public class FileContentClass
-    extends AbstractIdContentClass
-{
+public class FileContentClass extends AbstractIdContentClass {
 
-  public static final String ID = "file";
+	public static final String ID = "file";
 
-  @Override
-  public String getId() {
-    return ID;
-  }
+	@Override
+	public String getId() {
+		return ID;
+	}
 
-  @Override
-  public String getName() {
-    return ID;
-  }
+	@Override
+	public String getName() {
+		return ID;
+	}
+
+	//no FileGroupRepository, not groupable.. it seems useless
+	@Override
+	public boolean isGroupable() {
+		return false;
+	}
+
 }

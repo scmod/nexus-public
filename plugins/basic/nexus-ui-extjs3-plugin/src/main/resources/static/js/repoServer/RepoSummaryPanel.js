@@ -52,7 +52,8 @@ Ext.extend(Sonatype.repoServer.AbstractRepositorySummaryPanel, Sonatype.ext.Form
         this.populateInformationField('Repository ID: ' + srcObj.id + '\n');
         this.populateInformationField('Repository Name: ' + this.payload.data.name + '\n');
         this.populateInformationField('Repository Type: ' + this.payload.data.repoType + '\n');
-        this.populateInformationField('Repository Policy: ' + this.payload.data.repoPolicy + '\n');
+        //no MIXED, hack it!!!
+        this.populateInformationField('Repository Policy: ' + this.payload.data.repoPolicy ? this.payload.data.repoPolicy : "Mixed" + '\n');
         this.populateInformationField('Repository Format: ' + this.payload.data.format + '\n');
         this.populateInformationField('Contained in groups: ' + '\n' + this.combineGroups(srcObj.groups) + '\n');
       },

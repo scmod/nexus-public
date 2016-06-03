@@ -191,33 +191,6 @@ public abstract class AbstractFilePlexusResource extends
 		return coords;
 	}
 
-	/**
-	 * Invoked for every form field that upload is receiving.
-	 */
-	protected void processFormField(final Request request,
-			final UploadContext uploadContext, final FileItem fi)
-			throws ResourceException {
-		// Ensure valid characters in field
-		if (!validInputPattern.matcher(fi.getString()).matches()) {
-			throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST,
-					"Only letters, digits, underscores(_), hyphens(-), and dots(.) are allowed");
-		}
-
-		if ("r".equals(fi.getFieldName())) {
-			uploadContext.setRepositoryId(fi.getString());
-		} else if ("g".equals(fi.getFieldName())) {
-			uploadContext.setGroupId(fi.getString());
-		} else if ("a".equals(fi.getFieldName())) {
-			uploadContext.setArtifactId(fi.getString());
-		} else if ("v".equals(fi.getFieldName())) {
-			uploadContext.setVersion(fi.getString());
-		} else if ("c".equals(fi.getFieldName())) {
-			uploadContext.setClassifier(fi.getString());
-		} else if ("e".equals(fi.getFieldName())) {
-			uploadContext.setExtension(fi.getString());
-		}
-	}
-
 	protected void uploadGavParametersAvailable(final Request request,
 			final UploadContext uploadContext) throws ResourceException {
 		if (StringUtils.isBlank(uploadContext.getGroupId())
