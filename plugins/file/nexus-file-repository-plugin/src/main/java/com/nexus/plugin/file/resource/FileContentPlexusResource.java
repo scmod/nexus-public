@@ -81,15 +81,15 @@ public class FileContentPlexusResource
    * @param c Classifier of the artifact (Optional).
    * @param e Extension of the artifact (Optional).
    */
-  @Override
-  @GET
-  @ResourceMethodSignature(queryParams = {
-      @QueryParam("g"), @QueryParam("a"), @QueryParam("v"),
-      @QueryParam("r"), @QueryParam("c"), @QueryParam("e")
-  }, output = String.class)
-  public Object get(Context context, Request request, Response response, Variant variant)
-      throws ResourceException
-  {
-    return getContent(variant, request, response);
-  }
+//  @Override
+//  @GET
+//  @ResourceMethodSignature(queryParams = {
+//      @QueryParam("g"), @QueryParam("a"), @QueryParam("v"),
+//      @QueryParam("r"), @QueryParam("c"), @QueryParam("e")
+//  }, output = String.class)
+//  public Object get(Context context, Request request, Response response, Variant variant)
+//      throws ResourceException
+//  {
+//    return getContent(variant, request, response);
+//  }
 }

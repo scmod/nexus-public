@@ -183,6 +183,7 @@ public class RepositoryPlexusResource
 
             repository.setIndexable(model.isIndexable());
             repository.setSearchable(model.isIndexable());
+            repository.setGitlabbbbb(model.isGitlabbbbb());
 
             repository.setNotFoundCacheTimeToLive(model.getNotFoundCacheTTL());
 
@@ -239,7 +240,6 @@ public class RepositoryPlexusResource
 
             if (repository.getRepositoryKind().isFacetAvailable(MavenRepository.class)) {
               
-              repository.setGitlabbbbb(model.isGitlabbbbb());
               RepositoryPolicy repoPolicy =
                   EnumUtil.valueOf(model.getRepoPolicy(), RepositoryPolicy.class);
               repository.adaptToFacet(MavenRepository.class).setRepositoryPolicy(repoPolicy);
