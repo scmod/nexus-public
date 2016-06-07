@@ -97,8 +97,13 @@ public class LockFile
         randomAccessFile.write(payload);
       }
     }
-    catch (IOException | OverlappingFileLockException e) {
+    catch (IOException e) {
       log.warn("Failed to write lock file", e);
+      // handle it as null result
+      fileLock = null;
+    }
+    catch(OverlappingFileLockException e) {
+	  log.warn("Failed to write lock file", e);
       // handle it as null result
       fileLock = null;
     }

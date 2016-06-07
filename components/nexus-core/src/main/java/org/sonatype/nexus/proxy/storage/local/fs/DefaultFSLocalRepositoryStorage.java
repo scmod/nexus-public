@@ -547,7 +547,7 @@ public class DefaultFSLocalRepositoryStorage
 
   private static boolean validFile(File file) {
     if (roots == null) {
-      roots = new HashSet<>();
+      roots = new HashSet<File>();
 
       File[] listedRoots = File.listRoots();
 

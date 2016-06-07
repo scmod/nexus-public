@@ -64,11 +64,13 @@ import ch.qos.logback.core.FileAppender;
 import ch.qos.logback.core.joran.spi.JoranException;
 import ch.qos.logback.core.rolling.RollingFileAppender;
 import ch.qos.logback.core.util.StatusPrinter;
+
 import com.google.common.base.Strings;
 import com.google.common.base.Throwables;
 import com.google.common.collect.Maps;
 import com.google.common.eventbus.Subscribe;
 import com.google.inject.Injector;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -371,10 +373,17 @@ public class LogbackLogManager
     prepareConfigurationFiles();
     String logConfigDir = getLogConfigDir();
     File logConfigPropsFile = new File(logConfigDir, LOG_CONF_PROPS);
-    try (final InputStream in = new FileInputStream(logConfigPropsFile)) {
+    final InputStream in = new FileInputStream(logConfigPropsFile);
+    try {
       Properties properties = new Properties();
       properties.load(in);
       return properties;
+    } finally {
+    	try {
+    		if(in != null)
+    			in.close();
+		} catch (Exception e) {
+		}
     }
   }
 
@@ -416,8 +425,15 @@ public class LogbackLogManager
     if (!logConfigPropsFile.exists()) {
       try {
         URL configUrl = this.getClass().getResource(LOG_CONF_PROPS_RESOURCE);
-        try (final InputStream is = configUrl.openStream()) {
+        final InputStream is = configUrl.openStream();
+        try {
           FileSupport.copy(is, logConfigPropsFile.toPath());
+        } finally {
+        	try {
+        		if(is != null)
+        			is.close();
+    		} catch (Exception e) {
+    		}
         }
       }
       catch (IOException e) {
@@ -441,8 +457,15 @@ public class LogbackLogManager
               public void write(final BufferedOutputStream output)
                   throws IOException
               {
-                try (final InputStream in = participant.getConfiguration()) {
+                  final InputStream in = participant.getConfiguration();
+            	  try {
                   StreamSupport.copy(in, output, StreamSupport.BUFFER_SIZE);
+                } finally {
+                	try {
+                		if(in != null)
+                			in.close();
+            		} catch (Exception e) {
+            		}
                 }
               }
             });
@@ -465,7 +488,8 @@ public class LogbackLogManager
         public void write(final BufferedOutputStream output)
             throws IOException
         {
-          try (final PrintWriter out = new PrintWriter(output)) {
+            final PrintWriter out = new PrintWriter(output);
+        	try {
             out.println("<?xml version='1.0' encoding='UTF-8'?>");
             out.println();
             out.println("<!--");
@@ -489,7 +513,13 @@ public class LogbackLogManager
               );
             }
             out.write("</configuration>");
-          }
+          } finally {
+          	try {
+        		if(out != null)
+        			out.close();
+    		} catch (Exception e) {
+    		}
+        }
         }
       });
     }

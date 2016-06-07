@@ -60,7 +60,8 @@ class StaticWebResource
     this.cacheable = cacheable;
     try {
       final URLConnection urlConnection = resourceURL.openConnection();
-      try (final InputStream is = urlConnection.getInputStream()) {
+      final InputStream is = urlConnection.getInputStream();
+      try {
         // support for legacy int and modern long content-length
         long size = urlConnection.getContentLengthLong();
         if (size == -1) {
@@ -69,7 +70,13 @@ class StaticWebResource
         this.size = size;
 
         this.lastModified = urlConnection.getLastModified();
-      }
+      } finally {
+    	try {
+    		if(is != null)
+    			is.close();
+		} catch (Exception e) {
+		}
+    }
     }
     catch (IOException e) {
       throw new IllegalArgumentException("Static resource " + resourceURL + " inaccessible", e);

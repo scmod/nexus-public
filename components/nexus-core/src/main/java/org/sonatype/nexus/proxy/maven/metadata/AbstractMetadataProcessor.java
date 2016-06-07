@@ -75,8 +75,10 @@ public abstract class AbstractMetadataProcessor
 
   protected Metadata readMetadata(String path)
       throws IOException
-  {
-    try (final InputStream mdStream = metadataHelper.retrieveContent(path + METADATA_SUFFIX)) {
+  { 
+	InputStream mdStream = null;
+    try {
+      mdStream = metadataHelper.retrieveContent(path + METADATA_SUFFIX);
       Metadata md = MetadataBuilder.read(mdStream);
       return md;
     }

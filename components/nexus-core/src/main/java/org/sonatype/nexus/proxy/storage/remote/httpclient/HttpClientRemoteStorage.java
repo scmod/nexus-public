@@ -219,7 +219,10 @@ public class HttpClientRemoteStorage
         try {
           mimeType = ContentType.getOrDefault(httpResponse.getEntity()).getMimeType();
         }
-        catch (ParseException | UnsupportedCharsetException e) {
+        catch (ParseException e) {
+          // NEXUS-6622: Java/HC4 gave up, let's ask mime support instead then
+        }
+        catch (UnsupportedCharsetException e) {
           // NEXUS-6622: Java/HC4 gave up, let's ask mime support instead then
         }
         if (mimeType == null) {

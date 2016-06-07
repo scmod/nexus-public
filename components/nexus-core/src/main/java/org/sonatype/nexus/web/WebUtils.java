@@ -101,9 +101,16 @@ public class WebUtils
       // user override present, tell container what buffer size we'd like
       response.setBufferSize(bufferSize);
     }
-    try (final InputStream from = input; final OutputStream to = response.getOutputStream()) {
+    final InputStream from = input; final OutputStream to = response.getOutputStream();
+    try {
       StreamSupport.copy(from, to, bufferSize);
       response.flushBuffer();
+    }finally {
+    	try {
+    		if(from != null)
+    			from.close();
+		} catch (Exception e) {
+		}
     }
   }
 }

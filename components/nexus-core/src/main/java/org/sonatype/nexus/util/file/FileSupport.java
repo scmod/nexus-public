@@ -71,11 +71,19 @@ public final class FileSupport
     checkNotNull(from);
     checkNotNull(to);
     DirSupport.mkdir(to.getParent());
-    try (final InputStream is = from) {
+    InputStream is = null;
+    try {
+      is = from;
       Files.copy(is, to, options);
     }
     catch (IOException e) {
       Files.delete(to);
+    }finally {
+    	try {
+    		if(is != null)
+    			is.close();
+		} catch (Exception e) {
+		}
     }
   }
 
@@ -100,7 +108,8 @@ public final class FileSupport
   {
     validateFile(file);
     checkNotNull(charset);
-    try (final BufferedReader reader = Files.newBufferedReader(file, charset)) {
+    final BufferedReader reader = Files.newBufferedReader(file, charset);
+    try {
       final StringBuilder result = new StringBuilder();
       String line1 = reader.readLine();
       String line2 = reader.readLine();
@@ -116,6 +125,12 @@ public final class FileSupport
         line2 = reader.readLine();
       }
       return result.toString();
+    }finally {
+    	try {
+    		if(reader != null)
+    			reader.close();
+		} catch (Exception e) {
+		}
     }
   }
 
@@ -139,9 +154,16 @@ public final class FileSupport
     checkNotNull(charset);
     checkNotNull(payload);
     DirSupport.mkdir(file.getParent());
-    try (final BufferedWriter writer = Files.newBufferedWriter(file, charset)) {
+    final BufferedWriter writer = Files.newBufferedWriter(file, charset);
+    try {
       writer.write(payload);
       writer.flush();
+    }finally {
+    	try {
+    		if(writer != null)
+    			writer.close();
+		} catch (Exception e) {
+		}
     }
   }
 

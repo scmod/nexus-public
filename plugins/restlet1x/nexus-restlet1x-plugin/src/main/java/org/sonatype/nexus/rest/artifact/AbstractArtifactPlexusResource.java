@@ -167,12 +167,23 @@ public abstract class AbstractArtifactPlexusResource
       ArtifactStoreHelper helper = mavenRepository.getArtifactStoreHelper();
 
       StorageFileItem file = helper.retrieveArtifactPom(gavRequest);
-
-      try (InputStream pomContent = file.getInputStream();
-           InputStreamReader ir = new InputStreamReader(pomContent)) {
+	  InputStream pomContent = file.getInputStream();
+	  InputStreamReader ir = new InputStreamReader(pomContent);
+      try {
         MavenXpp3Reader reader = new MavenXpp3Reader();
         return reader.read(ir);
-      }
+      }finally {
+    	try {
+    		if(ir != null)
+    			ir.close();
+		} catch (Exception e) {
+		}
+    	try {
+    		if(pomContent != null)
+    			pomContent.close();
+		} catch (Exception e) {
+		}
+    }
     }
     catch (Exception e) {
       handleException(request, response, e);

@@ -296,7 +296,8 @@ public class DefaultNexusBundleConfiguration
     final Map<String, String> logLevels = getLogLevels();
     if (logLevels != null && !logLevels.isEmpty()) {
       final ByteArrayOutputStream baos = new ByteArrayOutputStream();
-      try (PrintWriter writer = new PrintWriter(baos)) {
+      PrintWriter writer = new PrintWriter(baos);
+      try {
         writer.println("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
         writer.println();
         writer.println("<included>");
@@ -314,7 +315,13 @@ public class DefaultNexusBundleConfiguration
       }
       catch (UnsupportedEncodingException e) {
         throw Throwables.propagate(e);
-      }
+      }finally {
+    	try {
+    		if(writer != null)
+    			writer.close();
+		} catch (Exception e) {
+		}
+    }
     }
 
     if (keystoreLocation != null) {

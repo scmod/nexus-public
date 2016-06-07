@@ -115,13 +115,20 @@ public class DigesterUtils
    */
   public static String getSha1Digest(File file) {
     try {
-      try (FileInputStream fis = new FileInputStream(file)) {
+      FileInputStream fis = new FileInputStream(file);
+      try {
         return getDigest("SHA1", fis);
       }
       catch (NoSuchAlgorithmException e) {
         // will not happen
         return null;
-      }
+      }finally {
+    	try {
+    		if(fis != null)
+    			fis.close();
+		} catch (Exception e) {
+		}
+    }
     }
     catch (IOException e) {
       return null;

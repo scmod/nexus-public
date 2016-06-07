@@ -160,8 +160,15 @@ public class M2GroupRepository
       throws IOException, MetadataException
   {
     Metadata metadata;
-    try (InputStream inputStream = fileItem.getInputStream()) {
+    InputStream inputStream = fileItem.getInputStream();
+    try  {
       metadata = MetadataBuilder.read(inputStream);
+    }finally {
+    	try {
+    		if(inputStream != null)
+    			inputStream.close();
+		} catch (Exception e) {
+		}
     }
 
     MavenRepository repo = fileItem.getRepositoryItemUid().getRepository().adaptToFacet(MavenRepository.class);

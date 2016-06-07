@@ -1368,7 +1368,7 @@ public abstract class AbstractProxyRepository
     try {
       List<String> remoteUrls = getRemoteUrls(request);
 
-      List<RepositoryItemValidationEvent> events = new ArrayList<>();
+      List<RepositoryItemValidationEvent> events = new ArrayList<RepositoryItemValidationEvent>();
 
       Exception lastException = null;
 

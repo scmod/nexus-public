@@ -55,14 +55,28 @@ public abstract class AbstractStaticSecurityResource
       assert url != null;
 
       log.debug("Loading static security configuration: {}", url);
-      try (InputStream is = url.openStream();
-           Reader fr = new InputStreamReader(is)) {
+      InputStream is = null;
+      Reader fr = null;
+      try {
+        is = url.openStream();
+    	fr = new InputStreamReader(is);
         SecurityConfigurationXpp3Reader reader = new SecurityConfigurationXpp3Reader();
         return reader.read(fr);
       }
       catch (Exception e) {
         log.error("Failed to read configuration", e);
-      }
+      }finally {
+    	try {
+      		if(fr != null)
+      			fr.close();
+  		} catch (Exception e) {
+  		}
+    	try {
+    		if(is != null)
+    			is.close();
+		} catch (Exception e) {
+		}
+    }
     }
 
     // any other time just return null

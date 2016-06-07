@@ -115,11 +115,12 @@
     <it.nexus.bundle.version>${nexus.version}</it.nexus.bundle.version>
 
     <!--
+    666666
     Default compile support for Java7+
     A few modules need to remain compatible with Java6 and must override and provide animal-sniffer configuration.
     -->
-    <maven.compiler.source>1.7</maven.compiler.source>
-    <maven.compiler.target>1.7</maven.compiler.target>
+    <maven.compiler.source>1.6</maven.compiler.source>
+    <maven.compiler.target>1.6</maven.compiler.target>
 
     <!--
     Sonar configuration.

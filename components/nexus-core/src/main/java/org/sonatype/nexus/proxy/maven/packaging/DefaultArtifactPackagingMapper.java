@@ -91,8 +91,9 @@ public class DefaultArtifactPackagingMapper
             log.info("Found artifact packaging mapping file {}", propertiesFile);
 
             final Properties userMappings = new Properties();
-
-            try (final FileInputStream fis =new FileInputStream(propertiesFile)) {
+			FileInputStream fis = null;
+            try {
+              fis = new FileInputStream(propertiesFile);
               userMappings.load(fis);
 
               if (userMappings.keySet().size() > 0) {
@@ -107,6 +108,12 @@ public class DefaultArtifactPackagingMapper
             catch (IOException e) {
               log.warn(
                   "Got IO exception during read of file: {}", propertiesFile.getAbsolutePath(), e);
+            }finally {
+            	try {
+            		if(fis != null)
+            			fis.close();
+        		} catch (Exception e) {
+        		}
             }
           }
           else {

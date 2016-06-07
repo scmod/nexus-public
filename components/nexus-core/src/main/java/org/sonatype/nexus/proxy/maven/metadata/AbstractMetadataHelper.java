@@ -276,7 +276,8 @@ abstract public class AbstractMetadataHelper
     String prefix = null;
     try {
       if (exists(jarPath)) {
-        try (ZipInputStream zip = new ZipInputStream(retrieveContent(jarPath))) {
+    	ZipInputStream zip = new ZipInputStream(retrieveContent(jarPath));
+        try {
           ZipEntry entry;
           while ((entry = zip.getNextEntry()) != null) {
             if (!entry.isDirectory() && entry.getName().equals("META-INF/maven/plugin.xml")) {
@@ -289,6 +290,12 @@ abstract public class AbstractMetadataHelper
             }
             zip.closeEntry();
           }
+        }finally {
+        	try {
+        		if(zip != null)
+        			zip.close();
+    		} catch (Exception e) {
+    		}
         }
       }
     }

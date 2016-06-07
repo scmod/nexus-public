@@ -124,10 +124,16 @@ public class MavenRepositoryMetadataLocator
       request.setRequestPath(pomPath);
 
       StorageFileItem pomFile = (StorageFileItem) request.getMavenRepository().retrieveItem(false, request);
-
-      try (final Reader reader = ReaderFactory.newXmlReader(pomFile.getInputStream())) {
+      final Reader reader = ReaderFactory.newXmlReader(pomFile.getInputStream());
+      try {
         packaging = getPackaging(reader);
-      }
+      }finally {
+    	try {
+    		if(reader != null)
+    			reader.close();
+		} catch (Exception e) {
+		}
+    }
     }
     catch (ItemNotFoundException e) {
       return null;
@@ -190,14 +196,20 @@ public class MavenRepositoryMetadataLocator
       request.setRequestPath(pomPath);
 
       StorageFileItem pomFile = (StorageFileItem) request.getMavenRepository().retrieveItem(false, request);
-
-      try (final InputStream is = pomFile.getInputStream()) {
+	final InputStream is = pomFile.getInputStream();
+      try  {
         MavenXpp3Reader rd = new MavenXpp3Reader();
         return rd.read(is);
       }
       catch (XmlPullParserException e) {
         throw createIOExceptionWithCause(e.getMessage(), e);
-      }
+      }finally {
+    	try {
+    		if(is != null)
+    			is.close();
+		} catch (Exception e) {
+		}
+    }
     }
     catch (Exception e) {
       throw createIOExceptionWithCause(e.getMessage(), e);
@@ -314,9 +326,15 @@ public class MavenRepositoryMetadataLocator
 
       if (StorageFileItem.class.isAssignableFrom(item.getClass())) {
         StorageFileItem fileItem = (StorageFileItem) item;
-
-        try (final InputStream is = fileItem.getInputStream()) {
+		final InputStream is = fileItem.getInputStream();
+        try {
           result = MetadataBuilder.read(is);
+        }finally {
+        	try {
+        		if(is != null)
+        			is.close();
+    		} catch (Exception e) {
+    		}
         }
       }
       else {

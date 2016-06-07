@@ -143,9 +143,16 @@ public class UnpackPlexusResource
               }
               final ResourceStoreRequest storeRequest =
                   getResourceStoreRequest(request, basePath + "/" + entry.getName());
-              try (InputStream is = zip.getInputStream(entry)) {
+              InputStream is = zip.getInputStream(entry);
+              try {
                 repository.storeItem(storeRequest, is, null);
-              }
+              }finally {
+              	try {
+            		if(is != null)
+            			is.close();
+        		} catch (Exception e) {
+        		}
+            }
             }
           }
           finally {
@@ -199,8 +206,15 @@ public class UnpackPlexusResource
   private void copyToFile(final FileItem source, final File target)
       throws IOException
   {
-    try (InputStream is = source.getInputStream()) {
+	InputStream is = source.getInputStream();
+    try {
       FileUtils.copyInputStreamToFile(is, target);
+    }finally {
+    	try {
+    		if(is != null)
+    			is.close();
+		} catch (Exception e) {
+		}
     }
   }
 

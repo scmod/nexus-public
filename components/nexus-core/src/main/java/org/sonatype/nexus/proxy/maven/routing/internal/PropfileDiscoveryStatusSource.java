@@ -89,7 +89,9 @@ public class PropfileDiscoveryStatusSource
     }
 
     final Properties props = new Properties();
-    try (final InputStream inputStream = file.getInputStream()) {
+    InputStream inputStream = null;
+    try {
+      inputStream = file.getInputStream();
       props.load(inputStream);
       final DStatus lastDiscoveryStatus = DStatus.valueOf(props.getProperty(LAST_DISCOVERY_STATUS_KEY));
       final String lastDiscoveryStrategy = props.getProperty(LAST_DISCOVERY_STRATEGY_KEY, "unknown");
@@ -107,6 +109,12 @@ public class PropfileDiscoveryStatusSource
     catch (NullPointerException e) {
       deleteFileItem();
       return null;
+    }finally {
+    	try {
+    		if(inputStream != null)
+    			inputStream.close();
+		} catch (Exception e) {
+		}
     }
   }
 

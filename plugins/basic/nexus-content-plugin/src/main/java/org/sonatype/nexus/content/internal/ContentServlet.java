@@ -341,32 +341,19 @@ public class ContentServlet
     response.setHeader("Accept-Ranges", "bytes");
 
     final String method = request.getMethod();
-    switch (method) {
-      case "GET":
-      case "HEAD":
-        doGet(request, response);
-        break;
-
-      case "PUT":
-      case "POST":
-        doPut(request, response);
-        break;
-
-      case "DELETE":
-        doDelete(request, response);
-        break;
-
-      case "OPTIONS":
-        doOptions(request, response);
-        break;
-
-      case "TRACE":
-        doTrace(request, response);
-        break;
-
-      default:
+    //hashCode不好用...用if else好了...
+    if("GET".equals(method) || "HEAD".equals(method))
+    	doGet(request, response);
+    else if("PUT".equals(method) || "POST".equals(method))
+    	doPut(request, response);
+    else if("DELETE".equals(method))
+    	doDelete(request, response);
+    else if("OPTIONS".equals(method))
+    	doOptions(request, response);
+    else if("TRACE".equals(method))
+    	doTrace(request, response);
+    else
         throw new ErrorStatusException(SC_METHOD_NOT_ALLOWED, null, "Method not supported: " + method);
-    }
   }
 
   // GET
@@ -535,9 +522,13 @@ public class ContentServlet
       response.setHeader("Content-Range",
           range.lowerEndpoint() + "-" + range.upperEndpoint() + "/" + file.getLength());
       if (contentNeeded) {
-        try (final InputStream in = file.getInputStream()) {
+    	final InputStream in = file.getInputStream();
+        try {
           in.skip(range.lowerEndpoint());
           webUtils.sendContent(limit(in, bodySize), response);
+        } finally {
+        	if(in != null)
+        		in.close();
         }
       }
     }

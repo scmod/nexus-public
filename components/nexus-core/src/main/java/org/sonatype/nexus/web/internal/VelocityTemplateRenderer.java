@@ -133,7 +133,9 @@ public class VelocityTemplateRenderer
     // ATM all templates render HTML
     response.setContentType("text/html");
     final Context context = new VelocityContext(dataModel);
-    try (final OutputStream outputStream = response.getOutputStream()) {
+    OutputStream outputStream = null;
+    try {
+      outputStream = response.getOutputStream();
       final Writer tmplWriter;
       // Load the template
       if (template.getEncoding() == null) {
@@ -154,6 +156,12 @@ public class VelocityTemplateRenderer
     }
     catch (VelocityException e) {
       throw new IOException("Template processing error: " + e, e);
+    }finally {
+    	try {
+    		if(outputStream != null)
+    			outputStream.close();
+		} catch (Exception e) {
+		}
     }
   }
 

@@ -24,7 +24,6 @@ import org.sonatype.nexus.proxy.IllegalOperationException;
 import org.sonatype.nexus.proxy.ItemNotFoundException;
 import org.sonatype.nexus.proxy.LocalStorageException;
 import org.sonatype.nexus.proxy.repository.Repository;
-
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
 
@@ -55,13 +54,21 @@ public class VelocityContentGenerator
   {
     final StringWriter sw = new StringWriter();
     final VelocityContext vctx = new VelocityContext(item.getItemContext().flatten());
-
-    try(final InputStreamReader isr = new InputStreamReader(item.getInputStream(), "UTF-8")) {
+    
+	InputStreamReader isr = null;
+    try {
+      isr = new InputStreamReader(item.getInputStream(), "UTF-8");
       velocityEngineProvider.get().evaluate(vctx, sw, item.getRepositoryItemUid().toString(), isr);
       return new StringContentLocator(sw.toString());
     }
     catch (Exception e) {
       throw new LocalStorageException("Could not expand the template: " + item.getRepositoryItemUid().toString(), e);
+    }finally {
+    	try {
+    		if(isr != null)
+    			isr.close();
+		} catch (Exception e) {
+		}
     }
   }
 }

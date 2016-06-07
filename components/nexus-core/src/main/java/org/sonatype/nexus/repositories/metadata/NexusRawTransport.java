@@ -58,8 +58,15 @@ public class NexusRawTransport
         StorageFileItem file = (StorageFileItem) item;
 
         final ByteArrayOutputStream os = new ByteArrayOutputStream();
-        try (final InputStream is = file.getInputStream()) {
+        final InputStream is = file.getInputStream();
+        try {
           StreamSupport.copy(is, os, StreamSupport.BUFFER_SIZE);
+        }finally {
+        	try {
+        		if(is != null)
+        			is.close();
+    		} catch (Exception e) {
+    		}
         }
         lastReadFile = file;
         return os.toByteArray();

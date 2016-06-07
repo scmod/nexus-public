@@ -147,12 +147,16 @@ public class DefaultFSPeer
       // NEXUS-4550: Part One, saving to "hidden" (temp) file
       // In case of error cleaning up only what needed
       // No locking needed, AbstractRepository took care of that
-      try (final InputStream is = cl.getContent(); final OutputStream os = new BufferedOutputStream(
-          new FileOutputStream(hiddenTarget), getCopyStreamBufferSize())) {
+      InputStream is = null;
+      OutputStream os = null;
+      try {
+    	is = cl.getContent(); 
+    	os = new BufferedOutputStream(
+                new FileOutputStream(hiddenTarget), getCopyStreamBufferSize());
         StreamSupport.copy(is, os, getCopyStreamBufferSize());
         os.flush();
       }
-      catch (EOFException | RemoteStorageEOFException e)
+      catch (EOFException e)
       // NXCM-4852: Upload premature end (thrown by Jetty org.eclipse.jetty.io.EofException)
       // NXCM-4852: Proxy remote peer response premature end (should be translated by RRS)
       {
@@ -165,6 +169,17 @@ public class DefaultFSPeer
         throw new LocalStorageEOFException(String.format(
             "EOF during storing on path \"%s\" (while writing to hiddenTarget: \"%s\")",
             item.getRepositoryItemUid().toString(), hiddenTarget.getAbsolutePath()), e);
+      }
+      catch (RemoteStorageEOFException e) {
+    	  try {
+              Files.deleteIfExists(hiddenTarget.toPath());
+            }
+            catch (IOException e1) {
+              // best effort to delete, we already have what to throw
+            }
+            throw new LocalStorageEOFException(String.format(
+                "EOF during storing on path \"%s\" (while writing to hiddenTarget: \"%s\")",
+                item.getRepositoryItemUid().toString(), hiddenTarget.getAbsolutePath()), e);
       }
       catch (IOException e) {
         try {

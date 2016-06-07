@@ -25,14 +25,15 @@ import javax.net.ssl.SSLSocketFactory;
 import com.google.common.base.Splitter;
 import com.google.common.collect.Iterables;
 import com.google.common.io.Closeables;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.HttpHost;
 import org.apache.http.conn.socket.LayeredConnectionSocketFactory;
 import org.apache.http.conn.ssl.X509HostnameVerifier;
 import org.apache.http.protocol.HttpContext;
 import org.codehaus.mojo.animal_sniffer.IgnoreJRERequirement;
-import sun.security.ssl.SSLSocketImpl;
 
+import sun.security.ssl.SSLSocketImpl;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
@@ -159,7 +160,7 @@ public class NexusSSLConnectionSocketFactory
     else {
       // If supported protocols are not explicitly set, remove all SSL protocol versions
       String[] allProtocols = socket.getSupportedProtocols();
-      List<String> enabledProtocols = new ArrayList<>(allProtocols.length);
+      List<String> enabledProtocols = new ArrayList<String>(allProtocols.length);
       for (String protocol : allProtocols) {
         if (!protocol.startsWith("SSL")) {
           enabledProtocols.add(protocol);

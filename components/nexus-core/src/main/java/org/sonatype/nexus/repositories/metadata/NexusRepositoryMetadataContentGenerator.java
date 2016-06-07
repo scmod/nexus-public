@@ -48,7 +48,9 @@ public class NexusRepositoryMetadataContentGenerator
       throws IllegalOperationException, ItemNotFoundException, StorageException
   {
     ByteArrayOutputStream bos = new ByteArrayOutputStream();
-    try (final InputStream is = item.getInputStream()) {
+    InputStream is = null;
+    try {
+      is = item.getInputStream();
       StreamSupport.copy(is, bos, StreamSupport.BUFFER_SIZE);
       String body = new String(bos.toByteArray(), "UTF-8");
       StringContentLocator result = null;
@@ -62,6 +64,12 @@ public class NexusRepositoryMetadataContentGenerator
     }
     catch (IOException e) {
       throw new LocalStorageException(e);
+    }finally {
+    	try {
+    		if(is != null)
+    			is.close();
+		} catch (Exception e) {
+		}
     }
   }
 }

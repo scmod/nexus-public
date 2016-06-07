@@ -24,7 +24,6 @@ import org.sonatype.configuration.upgrade.SingleVersionUpgrader;
 import org.sonatype.configuration.upgrade.UpgradeMessage;
 import org.sonatype.nexus.configuration.model.Configuration;
 import org.sonatype.sisu.goodies.common.ComponentSupport;
-
 import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
 
 /**
@@ -43,8 +42,8 @@ public class Upgrade270to280
       throws IOException, ConfigurationIsCorruptedException
   {
     org.sonatype.nexus.configuration.model.v2_7_0.Configuration conf = null;
-
-    try (FileReader fr = new FileReader(file)) {
+	FileReader fr = new FileReader(file);
+    try {
       // reading without interpolation to preserve user settings as variables
       org.sonatype.nexus.configuration.model.v2_7_0.io.xpp3.NexusConfigurationXpp3Reader reader =
           new org.sonatype.nexus.configuration.model.v2_7_0.io.xpp3.NexusConfigurationXpp3Reader();
@@ -53,6 +52,12 @@ public class Upgrade270to280
     }
     catch (XmlPullParserException e) {
       throw new ConfigurationIsCorruptedException(file.getAbsolutePath(), e);
+    } finally {
+    	try {
+    		if(fr != null)
+    			fr.close();
+		} catch (Exception e) {
+		}
     }
 
     return conf;

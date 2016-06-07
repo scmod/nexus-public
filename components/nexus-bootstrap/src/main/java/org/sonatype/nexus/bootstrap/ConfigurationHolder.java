@@ -21,7 +21,7 @@ import java.util.Map;
  */
 public class ConfigurationHolder
 {
-  private static final InheritableThreadLocal<Map<String, String>> reference = new InheritableThreadLocal<>();
+  private static final InheritableThreadLocal<Map<String, String>> reference = new InheritableThreadLocal<Map<String, String>>();
 
   public static void set(final Map<String,String> properties) {
     reference.set(properties);

@@ -52,8 +52,15 @@ public class MUtils
   public static String readDigestFromStream(final InputStream inputStream)
       throws IOException
   {
-    try (InputStreamReader isr = new InputStreamReader(inputStream, Charsets.UTF_8)) {
+	InputStreamReader isr = new InputStreamReader(inputStream, Charsets.UTF_8);
+    try {
       return readDigest(CharStreams.toString(isr));
+    }finally {
+    	try {
+    		if(isr != null)
+    			isr.close();
+		} catch (Exception e) {
+		}
     }
   }
 

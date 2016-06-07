@@ -68,8 +68,15 @@ public class PropertyMap
   }
 
   public void load(final URL url) throws IOException {
-    try (InputStream input = url.openStream()) {
+	InputStream input = url.openStream();
+    try {
       load(input);
+    } finally {
+    	try {
+    		if(input != null)
+    			input.close();
+		} catch (Exception e) {
+		}
     }
   }
 
@@ -77,7 +84,7 @@ public class PropertyMap
    * Returns list of sorted keys.
    */
   public List<String> keys() {
-    List<String> keys = new ArrayList<>(keySet());
+    List<String> keys = new ArrayList<String>(keySet());
     Collections.sort(keys);
     return Collections.unmodifiableList(keys);
   }

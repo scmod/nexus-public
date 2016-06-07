@@ -57,7 +57,8 @@ public class UrlWebResource
     // open connection to get details about the resource
     try {
       final URLConnection connection = this.url.openConnection();
-      try (final InputStream ignore = connection.getInputStream()) {
+      final InputStream ignore = connection.getInputStream();
+      try {
         if (Strings.isNullOrEmpty(contentType)) {
           this.contentType = connection.getContentType();
         }
@@ -73,7 +74,13 @@ public class UrlWebResource
         this.size = size;
 
         this.lastModified = connection.getLastModified();
-      }
+      }finally {
+    	try {
+    		if(ignore != null)
+    			ignore.close();
+		} catch (Exception e) {
+		}
+    }
     }
     catch (IOException e) {
       throw new IllegalArgumentException("Resource inaccessible: " + url, e);

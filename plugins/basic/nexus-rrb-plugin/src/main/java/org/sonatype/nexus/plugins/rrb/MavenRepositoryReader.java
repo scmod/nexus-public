@@ -232,13 +232,19 @@ public class MavenRepositoryReader
 
       int statusCode = response.getStatusLine().getStatusCode();
       logger.debug("Status code: {}", statusCode);
-
-      try (BufferedReader reader = new BufferedReader(new InputStreamReader(response.getEntity().getContent()))) {
+		BufferedReader reader = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
+      try {
         String line;
         while ((line = reader.readLine()) != null) {
           buff.append(line).append("\n");
         }
-      }
+      }finally {
+    	try {
+    		if(reader != null)
+    			reader.close();
+		} catch (Exception e) {
+		}
+    }
 
       // HACK: Deal with S3 edge-case
       // here is the deal, For reasons I do not understand, S3 comes back with an empty response (and a 200),

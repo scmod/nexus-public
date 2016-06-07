@@ -29,6 +29,7 @@ import org.sonatype.sisu.goodies.common.io.FileReplacer.ContentWriter;
 
 import com.google.common.base.Throwables;
 import com.google.common.collect.Maps;
+
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
@@ -95,7 +96,8 @@ public class LogbackOverrides
         public void write(final BufferedOutputStream output)
             throws IOException
         {
-          try (final PrintWriter out = new PrintWriter(output)) {
+            final PrintWriter out = new PrintWriter(output);
+        	try {
             out.println("<?xml version='1.0' encoding='UTF-8'?>");
             out.println();
             out.println("<!--");
@@ -110,7 +112,13 @@ public class LogbackOverrides
               ));
             }
             out.write("</included>");
-          }
+          } finally {
+          	try {
+        		if(out != null)
+        			out.close();
+    		} catch (Exception e) {
+    		}
+        }
         }
       });
     }

@@ -53,6 +53,7 @@ import org.sonatype.sisu.goodies.eventbus.EventBus;
 import com.google.inject.AbstractModule;
 import com.google.inject.Guice;
 import com.google.inject.Module;
+
 import org.eclipse.sisu.Parameters;
 import org.eclipse.sisu.bean.BeanManager;
 import org.eclipse.sisu.inject.DefaultRankingFunction;
@@ -399,11 +400,19 @@ public class DefaultNexusPluginManager
   }
 
   private static boolean exists(final URL url) {
-    try (final InputStream content = url.openStream()) {
-      return true;
+	  InputStream content = null;
+	  try {
+		   content = url.openStream();
+		   return true;
     }
     catch (IOException e) {
       return false;
+    } finally {
+    	try {
+    		if(content != null)
+    			content.close();
+		} catch (Exception e) {
+		}
     }
   }
 

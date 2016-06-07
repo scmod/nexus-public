@@ -216,10 +216,17 @@ public class DefaultLSAttributeStorage
           // NEXUS-4871
           throw new InvalidInputException("Attribute of " + uid + " is empty!");
         }
-
-        try (InputStream attributeStream = attributeItem.getContentLocator().getContent())
+		InputStream attributeStream = null;
+        try
         {
+          attributeStream = attributeItem.getContentLocator().getContent();
           result = marshaller.unmarshal(attributeStream);
+        } finally {
+        	try {
+        		if(attributeStream != null)
+        			attributeStream.close();
+    		} catch (Exception e) {
+    		}
         }
 
         result.setRepositoryId(uid.getRepository().getId());

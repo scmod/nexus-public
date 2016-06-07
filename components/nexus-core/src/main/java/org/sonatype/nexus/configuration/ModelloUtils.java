@@ -36,6 +36,7 @@ import com.google.common.base.Charsets;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+
 import org.codehaus.plexus.util.xml.Xpp3Dom;
 import org.codehaus.plexus.util.xml.Xpp3DomBuilder;
 import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
@@ -148,7 +149,8 @@ public class ModelloUtils
     }
 
     public String readVersion(final InputStream input) throws IOException, CorruptModelException {
-      try (final Reader r = new InputStreamReader(input, charset)) {
+      final Reader r = new InputStreamReader(input, charset);
+      try {
         try {
           final Xpp3Dom dom = Xpp3DomBuilder.build(r);
           final Xpp3Dom versionNode = dom.getChild(fieldName);
@@ -166,7 +168,13 @@ public class ModelloUtils
         catch (XmlPullParserException e) {
           throw new CorruptModelException("Passed in XML model cannot be parsed", e);
         }
-      }
+      } finally {
+    	try {
+    		if(r != null)
+    			r.close();
+		} catch (Exception e) {
+		}
+    }
     }
   }
 

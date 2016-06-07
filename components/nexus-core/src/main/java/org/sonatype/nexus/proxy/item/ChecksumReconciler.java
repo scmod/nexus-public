@@ -130,10 +130,10 @@ public class ChecksumReconciler
 
         sha1.reset();
         md5.reset();
-
+		final InputStream is = new DigestInputStream(new DigestInputStream(item.getContentLocator().getContent(),
+		            sha1), md5);
         // look for checksums affected by the link persister pre-fetching the first 8 bytes (see NEXUS-8178)
-        try (final InputStream is = new DigestInputStream(new DigestInputStream(item.getContentLocator().getContent(),
-            sha1), md5)) {
+        try {
 
           final byte[] buf = new byte[8];
           ByteStreams.read(is, buf, 0, 8);
@@ -141,6 +141,12 @@ public class ChecksumReconciler
           md5.update(buf);
 
           ByteStreams.copy(is, ByteStreams.nullOutputStream());
+        } finally {
+        	try {
+        		if(is != null)
+        			is.close();
+    		} catch (Exception e) {
+    		}
         }
 
         final String affectedSHA1 = DigesterUtils.getDigestAsString(sha1.digest());

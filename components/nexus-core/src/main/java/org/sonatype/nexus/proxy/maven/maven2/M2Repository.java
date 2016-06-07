@@ -197,8 +197,15 @@ public class M2Repository
       ByteArrayOutputStream backup1 = new ByteArrayOutputStream();
       try {
         // remote item is not reusable, and we usually cache remote stuff locally
-        try (final InputStream orig = mdFile.getInputStream()) {
+    	  final InputStream orig = mdFile.getInputStream();
+        try {
           StreamSupport.copy(orig, backup1, StreamSupport.BUFFER_SIZE);
+        }finally {
+        	try {
+        		if(orig != null)
+        			orig.close();
+    		} catch (Exception e) {
+    		}
         }
         backup = new ByteArrayInputStream(backup1.toByteArray());
 
@@ -340,9 +347,16 @@ public class M2Repository
 
         try {
           Metadata metadata;
-          try (final InputStream inputStream = mdItem.getInputStream()) {
+          final InputStream inputStream = mdItem.getInputStream();
+          try {
             metadata = MetadataBuilder.read(inputStream);
-          }
+          }finally {
+          	try {
+        		if(inputStream != null)
+        			inputStream.close();
+    		} catch (Exception e) {
+    		}
+        }
 
           Version requiredVersion = getClientSupportedVersion(userAgent);
           Version metadataVersion = ModelVersionUtility.getModelVersion(metadata);

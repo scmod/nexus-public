@@ -134,9 +134,11 @@ public class SecurityData201Upgrade
   private Map<String, CPrivilege> getStaticPrivilages() {
     String staticSecurityPath = "/META-INF/nexus/static-security.xml";
     Map<String, CPrivilege> privilegeMap = new HashMap<String, CPrivilege>();
-
-    try (InputStream is = getClass().getResourceAsStream(staticSecurityPath);
-         Reader fr = new InputStreamReader(is)) {
+    InputStream is = null;
+    Reader fr = null;
+    try {
+      is = getClass().getResourceAsStream(staticSecurityPath);
+      fr = new InputStreamReader(is);
       SecurityConfigurationXpp3Reader reader = new SecurityConfigurationXpp3Reader();
 
       Configuration staticConfig = reader.read(fr);
@@ -153,6 +155,18 @@ public class SecurityData201Upgrade
     }
     catch (org.codehaus.plexus.util.xml.pull.XmlPullParserException e) {
       logger.error("Invalid XML Configuration", e);
+    }finally {
+    	try {
+    		if(fr != null)
+    			fr.close();
+		} catch (Exception e) {
+		}
+    	try {
+    		if(is != null)
+    			is.close();
+		} catch (Exception e) {
+		}
+    	
     }
 
     return privilegeMap;

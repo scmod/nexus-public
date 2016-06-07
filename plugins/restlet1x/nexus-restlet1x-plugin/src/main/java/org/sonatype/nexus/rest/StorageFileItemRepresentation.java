@@ -66,7 +66,9 @@ public class StorageFileItemRepresentation
   public void write(OutputStream outputStream)
       throws IOException
   {
-    try(final InputStream is = getStorageItem().getInputStream()) {
+	InputStream is = null;
+    try{
+      is = getStorageItem().getInputStream();
       StreamSupport.copy(is, outputStream, OUTPUT_BUFFER_SIZE);
     }
     catch (IOException e) {
@@ -80,6 +82,12 @@ public class StorageFileItemRepresentation
       else {
         throw e;
       }
+    }finally {
+    	try {
+    		if(is != null)
+    			is.close();
+		} catch (Exception e) {
+		}
     }
   }
 }

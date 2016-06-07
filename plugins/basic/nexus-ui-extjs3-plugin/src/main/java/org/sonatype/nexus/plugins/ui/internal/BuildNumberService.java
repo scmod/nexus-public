@@ -46,12 +46,20 @@ class BuildNumberService
     }
 
     Properties props = new Properties();
-    try (InputStream input = url.openStream()) {
+    InputStream input = null;
+    try {
+      input = url.openStream();
       props.load(input);
       log.debug("Loaded properties: {}", props);
     }
     catch (Exception e) {
       log.warn("Could not determine build number", e);
+    }finally {
+    	try {
+    		if(input != null)
+    			input.close();
+		} catch (Exception e) {
+		}
     }
 
     return props.getProperty("version", "unknown-version");

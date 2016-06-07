@@ -44,12 +44,19 @@ public class Upgrade205to207
   public Object loadConfiguration(File file)
       throws IOException, ConfigurationIsCorruptedException
   {
-    try (Reader r = new BufferedReader(ReaderFactory.newXmlReader(file))) {
+	Reader r = new BufferedReader(ReaderFactory.newXmlReader(file));
+    try {
       // reading without interpolation to preserve user settings as variables
       return new org.sonatype.security.configuration.model.v2_0_5.io.xpp3.SecurityConfigurationXpp3Reader().read(r);
     }
     catch (XmlPullParserException e) {
       throw new ConfigurationIsCorruptedException(file.getAbsolutePath(), e);
+    }finally {
+    	try {
+    		if(r != null)
+    			r.close();
+		} catch (Exception e) {
+		}
     }
   }
 

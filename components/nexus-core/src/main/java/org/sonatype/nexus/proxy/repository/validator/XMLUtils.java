@@ -58,7 +58,8 @@ public class XMLUtils
       throws IOException
   {
     int lineCount = 0;
-    try (BufferedInputStream bis = new BufferedInputStream(file.getInputStream())) {
+    BufferedInputStream bis = new BufferedInputStream(file.getInputStream());
+    try {
       Scanner scanner = new Scanner(bis);
       while (scanner.hasNextLine() && lineCount < linesToCheck) {
         lineCount++;
@@ -67,6 +68,12 @@ public class XMLUtils
           return FileTypeValidity.VALID;
         }
       }
+    }finally {
+    	try {
+    		if(bis != null)
+    			bis.close();
+		} catch (Exception e) {
+		}
     }
 
     return FileTypeValidity.INVALID;

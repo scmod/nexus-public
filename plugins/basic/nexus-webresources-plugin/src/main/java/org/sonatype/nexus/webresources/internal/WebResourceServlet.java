@@ -132,8 +132,15 @@ public class WebResourceServlet
     else {
       // send the content only if needed (this method will be called for HEAD requests too)
       if ("GET".equalsIgnoreCase(request.getMethod())) {
-        try (InputStream in = resource.getInputStream()) {
+    	InputStream in = resource.getInputStream();
+        try {
           webUtils.sendContent(in, response);
+        }finally {
+        	try {
+        		if(in != null)
+        			in.close();
+    		} catch (Exception e) {
+    		}
         }
       }
     }

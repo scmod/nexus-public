@@ -29,7 +29,7 @@ public final class BaseUrlHolder
 
   // TODO: Sort out if we want a java.net.URL or if String is fine
 
-  private static final InheritableThreadLocal<String> value = new InheritableThreadLocal<>();
+  private static final InheritableThreadLocal<String> value = new InheritableThreadLocal<String>();
 
   /**
    * Set the current base URL.

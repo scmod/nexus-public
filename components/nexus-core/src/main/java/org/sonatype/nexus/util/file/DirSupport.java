@@ -291,11 +291,18 @@ public final class DirSupport
                 // not be empty, hence needs no deletion attempt as it would fail.
                 boolean needsDelete = true;
                 if (excludeFilter != null) {
-                  try (DirectoryStream<Path> dirStream = Files.newDirectoryStream(dir)) {
+                  DirectoryStream<Path> dirStream = Files.newDirectoryStream(dir);
+                  try {
                     if (dirStream.iterator().hasNext()) {
                       needsDelete = false;
                     }
-                  }
+                  }finally {
+                  	try {
+                		if(dirStream != null)
+                			dirStream.close();
+            		} catch (Exception e) {
+            		}
+                }
                 }
                 if (needsDelete) {
                   Files.delete(dir);

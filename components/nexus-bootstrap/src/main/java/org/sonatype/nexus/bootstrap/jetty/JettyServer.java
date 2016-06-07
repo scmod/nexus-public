@@ -25,7 +25,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.sonatype.nexus.bootstrap.PropertyMap;
-
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.util.component.LifeCycle;
 import org.eclipse.jetty.util.resource.Resource;
@@ -85,7 +84,7 @@ public class JettyServer
     Thread.currentThread().setContextClassLoader(classLoader);
 
     try {
-      final AtomicReference<Throwable> exception = new AtomicReference<>();
+      final AtomicReference<Throwable> exception = new AtomicReference<Throwable>();
       AccessController.doPrivileged(new PrivilegedAction<Object>()
       {
         public Object run() {
@@ -117,7 +116,7 @@ public class JettyServer
 
     log.info("Starting");
 
-    List<LifeCycle> components = new ArrayList<>();
+    List<LifeCycle> components = new ArrayList<LifeCycle>();
 
     PropertyMap props = new PropertyMap();
     props.putAll(JettyServer.this.properties);
@@ -167,7 +166,7 @@ public class JettyServer
     Thread.currentThread().setContextClassLoader(classLoader);
 
     try {
-      final AtomicReference<Throwable> exception = new AtomicReference<>();
+      final AtomicReference<Throwable> exception = new AtomicReference<Throwable>();
       AccessController.doPrivileged(new PrivilegedAction<Object>()
       {
         public Object run() {

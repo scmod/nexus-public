@@ -31,6 +31,7 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.google.common.collect.Lists;
+
 import org.apache.commons.io.FilenameUtils;
 import org.apache.tika.config.TikaConfig;
 import org.apache.tika.detect.Detector;
@@ -160,8 +161,15 @@ public class DefaultMimeSupport
   {
     final List<String> detected = Lists.newArrayList();
     MediaType mediaType;
-    try (final TikaInputStream tis = TikaInputStream.get(content.getContent())) {
+    final TikaInputStream tis = TikaInputStream.get(content.getContent());
+    try {
       mediaType = detector.detect(tis, new Metadata());
+    } finally {
+    	try {
+    		if(tis != null)
+    			tis.close();
+		} catch (Exception e) {
+		}
     }
     // unravel to least specific
     while (mediaType != null) {
@@ -179,8 +187,15 @@ public class DefaultMimeSupport
     final Metadata metadata = new Metadata();
     metadata.set(Metadata.RESOURCE_NAME_KEY, fileItem.getName());
     MediaType mediaType;
-    try (final TikaInputStream tis = TikaInputStream.get(fileItem.getInputStream())) {
+    final TikaInputStream tis = TikaInputStream.get(fileItem.getInputStream());
+    try {
       mediaType = detector.detect(tis, metadata);
+    } finally {
+    	try {
+    		if(tis != null)
+    			tis.close();
+		} catch (Exception e) {
+		}
     }
     // unravel to least specific
     while (mediaType != null) {

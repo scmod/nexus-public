@@ -48,8 +48,11 @@ public abstract class AbstractFormFieldResource
         }
         dtoList.add(dto);
       }
-      catch (InstantiationException | IllegalAccessException e) {
+      catch (InstantiationException e) {
         getLogger().error("Unable to properly translate DTO", e);
+      }
+      catch (IllegalAccessException e) {
+    	  getLogger().error("Unable to properly translate DTO", e);
       }
     }
 

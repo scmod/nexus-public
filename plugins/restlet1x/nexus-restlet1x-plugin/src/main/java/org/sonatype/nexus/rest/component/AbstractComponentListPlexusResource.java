@@ -82,11 +82,17 @@ public abstract class AbstractComponentListPlexusResource
         result.addData(resource);
       }
     }
-    catch (ClassNotFoundException | LinkageError e) {
+    catch (ClassNotFoundException e) {
       if (this.getLogger().isDebugEnabled()) {
         getLogger().debug("Unable to look up plexus component with role '" + role + "'.", e);
       }
       throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND);
+    }
+    catch(LinkageError e) {
+    	if (this.getLogger().isDebugEnabled()) {
+            getLogger().debug("Unable to look up plexus component with role '" + role + "'.", e);
+          }
+          throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND);
     }
 
     return result;

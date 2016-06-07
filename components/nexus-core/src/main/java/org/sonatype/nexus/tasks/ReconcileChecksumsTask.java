@@ -84,7 +84,7 @@ public class ReconcileChecksumsTask
 
   @Override
   public Object doRun() throws Exception {
-    final List<Repository> targetRepositories = new ArrayList<>();
+    final List<Repository> targetRepositories = new ArrayList<Repository>();
 
     if (getRepositoryId() != null) {
       // determine if we've been pointed to a group, as then we want to process its non-group members

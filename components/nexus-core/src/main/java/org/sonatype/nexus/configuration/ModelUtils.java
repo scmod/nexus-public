@@ -38,6 +38,7 @@ import org.sonatype.sisu.goodies.common.io.FileReplacer.ContentWriter;
 import com.google.common.base.Charsets;
 import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
+
 import org.slf4j.Logger;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -241,9 +242,16 @@ public class ModelUtils
 
     @Override
     public void write(final BufferedOutputStream output) throws IOException {
-      try (final InputStream input = new BufferedInputStream(Files.newInputStream(file.toPath()))) {
+      final InputStream input = new BufferedInputStream(Files.newInputStream(file.toPath()));
+      try {
         modelUpgrader.upgrade(input, output);
-      }
+      } finally {
+    	try {
+    		if(input != null)
+    			input.close();
+		} catch (Exception e) {
+		}
+    }
     }
   }
 
@@ -284,8 +292,15 @@ public class ModelUtils
     try {
       if (reader instanceof Versioned) {
         final String originalFileVersion;
-        try (final InputStream input = new BufferedInputStream(Files.newInputStream(file.toPath()))) {
+        final InputStream input = new BufferedInputStream(Files.newInputStream(file.toPath()));
+        try {
           originalFileVersion = ((Versioned) reader).readVersion(input);
+        } finally {
+        	try {
+        		if(input != null)
+        			input.close();
+    		} catch (Exception e) {
+    		}
         }
 
         if (Strings.isNullOrEmpty(originalFileVersion)) {
@@ -336,12 +351,19 @@ public class ModelUtils
           }
         }
       }
-
-      try (final InputStream input = new BufferedInputStream(Files.newInputStream(file.toPath()))) {
+      
+	final InputStream input = new BufferedInputStream(Files.newInputStream(file.toPath()));
+      try {
         E model = reader.read(input);
         // model.setVersion(currentModelVersion);
         return model;
-      }
+      } finally {
+    	try {
+    		if(input != null)
+    			input.close();
+		} catch (Exception e) {
+		}
+    }
     }
     catch (NoSuchFileException e) {
       // TODO: "translate" to old FileNotFoundEx as we have existing code relying on this exception

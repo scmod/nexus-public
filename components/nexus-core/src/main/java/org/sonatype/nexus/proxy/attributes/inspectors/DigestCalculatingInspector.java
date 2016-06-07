@@ -80,9 +80,16 @@ public class DigestCalculatingInspector
       ChecksummingContentLocator md5cl =
           new ChecksummingContentLocator(sha1cl, MessageDigest.getInstance("MD5"),
               StorageFileItem.DIGEST_MD5_KEY, item.getItemContext());
-      try (final InputStream is = md5cl.getContent()) {
+      final InputStream is = md5cl.getContent();
+      try {
         StreamSupport.copy(is, nullOutputStream(), StreamSupport.BUFFER_SIZE);
-      }
+      } finally {
+    	try {
+    		if(is != null)
+    			is.close();
+		} catch (Exception e) {
+		}
+    }
       // we made sure that above operations will make values into context
       maybeGetFromContext(item);
     }

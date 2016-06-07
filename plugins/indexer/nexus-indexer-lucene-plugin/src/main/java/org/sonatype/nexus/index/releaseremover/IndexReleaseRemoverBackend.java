@@ -110,11 +110,18 @@ public class IndexReleaseRemoverBackend
         final Set<String> artifactIds = Sets.newHashSet();
         final Query groupIdQ =
             indexerManager.constructQuery(MAVEN.GROUP_ID, new SourcedSearchExpression(groupId));
-        try (IteratorSearchResponse searchResponse = indexerManager
-            .searchQueryIterator(groupIdQ, repository.getId(), null, null, null, false, null)) {
-          for (ArtifactInfo ai : searchResponse) {
+        IteratorSearchResponse searchResponse1 = indexerManager
+            .searchQueryIterator(groupIdQ, repository.getId(), null, null, null, false, null);
+        try {
+          for (ArtifactInfo ai : searchResponse1) {
             artifactIds.add(ai.artifactId);
           }
+        }finally {
+        	try {
+        		if(searchResponse1 != null)
+        			searchResponse1.close();
+    		} catch (Exception e) {
+    		}
         }
 
         // iterate all artifactIds
@@ -127,9 +134,10 @@ public class IndexReleaseRemoverBackend
           final BooleanQuery gaQ = new BooleanQuery();
           gaQ.add(groupIdQ, Occur.MUST);
           gaQ.add(artifactIdQ, Occur.MUST);
-          try (IteratorSearchResponse searchResponse = indexerManager
-              .searchQueryIterator(gaQ, repository.getId(), null, null, null, false, null)) {
-            for (ArtifactInfo ai : searchResponse) {
+          IteratorSearchResponse searchResponse2 = indexerManager
+              .searchQueryIterator(gaQ, repository.getId(), null, null, null, false, null);
+          try {
+            for (ArtifactInfo ai : searchResponse2) {
               try {
                 versions.add(versionScheme.parseVersion(ai.version));
               }
@@ -137,7 +145,13 @@ public class IndexReleaseRemoverBackend
                 // this is never thrown, look at GenericVersion imple
               }
             }
-          }
+          }finally {
+          	try {
+        		if(searchResponse2 != null)
+        			searchResponse2.close();
+    		} catch (Exception e) {
+    		}
+        }
 
           // All Vs for GA collected, now do the math
           if (versions.size() > request.getNumberOfVersionsToKeep()) {

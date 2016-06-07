@@ -68,11 +68,22 @@ public class PomArtifactManager
     tmpPomFile = new File(tmpStorage, getNextIdentifier() + ".xml");
 
     tmpPomFile.deleteOnExit();
-
-    try (InputStream in = is;
-         FileOutputStream out = new FileOutputStream(tmpPomFile)) {
+	InputStream in = is;
+	FileOutputStream out = new FileOutputStream(tmpPomFile);
+    try {
       IOUtils.copy(is, out);
       state = STATE_FILE_STORED;
+    }finally {
+    	try {
+    		if(is != null)
+    			is.close();
+		} catch (Exception e) {
+		}
+    	try {
+    		if(out != null)
+    		out.close();
+		} catch (Exception e) {
+		}
     }
   }
 
@@ -97,10 +108,17 @@ public class PomArtifactManager
     if (STATE_GAV_PARSED == state) {
       return artifactCoordinate;
     }
-
-    try (Reader reader = ReaderFactory.newXmlReader(tmpPomFile)) {
+    
+	Reader reader = ReaderFactory.newXmlReader(tmpPomFile);
+    try {
       artifactCoordinate = parsePom(reader);
       state = STATE_GAV_PARSED;
+    }finally {
+    	try {
+    		if(reader != null)
+    			reader.close();
+		} catch (Exception e) {
+		}
     }
 
     return artifactCoordinate;

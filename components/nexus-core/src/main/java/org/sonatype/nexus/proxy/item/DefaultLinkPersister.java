@@ -65,13 +65,20 @@ public class DefaultLinkPersister
       throws NoSuchRepositoryException, IOException
   {
     if (locator != null) {
-      try (final InputStream is = locator.getContent()) {
+    	final InputStream is = locator.getContent();
+      try {
         final ByteArrayOutputStream baos = new ByteArrayOutputStream();
         StreamSupport.copy(is, baos, StreamSupport.BUFFER_SIZE);
         final String linkBody = new String(baos.toByteArray(), LINK_CHARSET);
         final String uidStr = linkBody.substring(LINK_PREFIX.length(), linkBody.length());
         return repositoryItemUidFactory.createUid(uidStr);
-      }
+      } finally {
+    	try {
+    		if(is != null)
+    			is.close();
+		} catch (Exception e) {
+		}
+    }
     }
     else {
       return null;
@@ -81,10 +88,17 @@ public class DefaultLinkPersister
   public void writeLinkContent(final StorageLinkItem link, final OutputStream os)
       throws IOException
   {
-    try (OutputStream out = os) {
+	OutputStream out = os;
+    try {
       final String linkBody = LINK_PREFIX + link.getTarget().toString();
       StreamSupport.copy(new ByteArrayInputStream(linkBody.getBytes(LINK_CHARSET)), out, StreamSupport.BUFFER_SIZE);
       out.flush();
+    }finally {
+    	try {
+    		if(out != null)
+    			out.close();
+		} catch (Exception e) {
+		}
     }
   }
 
@@ -102,13 +116,20 @@ public class DefaultLinkPersister
       throws IOException
   {
     if (locator != null) {
-      try (final DataInputStream dis = new DataInputStream(locator.getContent())) {
+     final DataInputStream dis = new DataInputStream(locator.getContent());
+      try {
         final byte[] buf = new byte[LINK_PREFIX_BYTES.length];
         dis.readFully(buf);
         return buf;
       } catch (EOFException e) {
         // content locator has less bytes, neglect it
-      }
+      }finally {
+    	try {
+    		if(dis != null)
+    			dis.close();
+		} catch (Exception e) {
+		}
+    }
     }
     return null;
   }

@@ -52,8 +52,8 @@ public class Upgrade250to270
       throws IOException, ConfigurationIsCorruptedException
   {
     org.sonatype.nexus.configuration.model.v2_5_0.Configuration conf = null;
-
-    try (FileReader fr = new FileReader(file)) {
+	FileReader fr = new FileReader(file);
+    try {
       // reading without interpolation to preserve user settings as variables
       org.sonatype.nexus.configuration.model.v2_5_0.io.xpp3.NexusConfigurationXpp3Reader reader =
           new org.sonatype.nexus.configuration.model.v2_5_0.io.xpp3.NexusConfigurationXpp3Reader();
@@ -62,6 +62,12 @@ public class Upgrade250to270
     }
     catch (XmlPullParserException e) {
       throw new ConfigurationIsCorruptedException(file.getAbsolutePath(), e);
+    } finally {
+    	try {
+    		if(fr != null)
+    			fr.close();
+		} catch (Exception e) {
+		}
     }
 
     return conf;
