@@ -124,7 +124,7 @@ public class DefaultFSLocalRepositoryStorage
       throws IOException
   {
     final File file = getFileFromUrl(repository.getLocalUrl());
-    DirSupport.mkdir(file.toPath());
+    DirSupport.mkdir(file);
     context.putContextObject(BASEDIR_FILE, file);
   }
 
@@ -163,8 +163,8 @@ public class DefaultFSLocalRepositoryStorage
     // FIXME: This check would be more appropriate in FSPeer impl?
 
     // normalize file path references to remove any relative tokens
-    Path basePath = baseDir.toPath().toAbsolutePath().normalize();
-    Path filePath = file.toPath().toAbsolutePath().normalize();
+    Path basePath = baseDir.toAbsolutePath().normalize();
+    Path filePath = file.toAbsolutePath().normalize();
     log.trace("Resolve request path '{}' to file: '{}'", requestPath, filePath);
 
     // ensure file is a child of repository base directory
@@ -259,7 +259,7 @@ public class DefaultFSLocalRepositoryStorage
           }
           catch (NoSuchRepositoryException e) {
             log.warn("Stale link object found on UID: {}, deleting it.", uid);
-            DirSupport.delete(target.toPath());
+            DirSupport.delete(target);
             throw new ItemNotFoundException(reasonFor(request, repository,
                 "Path %s not found in local storage of repository %s", request.getRequestPath(),
                 RepositoryStringUtils.getHumanizedNameString(repository)), e);

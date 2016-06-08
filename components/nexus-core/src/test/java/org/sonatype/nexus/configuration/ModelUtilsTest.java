@@ -122,10 +122,10 @@ public class ModelUtilsTest
   public void versioning() throws Exception {
     final String payload = "<foo><version>1</version></foo>";
     final File file = util.createTempFile();
-    FileSupport.writeFile(file.toPath(), payload);
+    FileSupport.writeFile(file, payload);
 
     final String version;
-    final InputStream input = Files.newInputStream(file.toPath());
+    final InputStream input = Files.newInputStream(file);
     try {
       version = DOM_READER.readVersion(input);
     }finally {
@@ -142,10 +142,10 @@ public class ModelUtilsTest
   public void versioningFieldWrong() throws Exception {
     final String payload = "<foo><versionField>1</versionField></foo>";
     final File file = util.createTempFile();
-    FileSupport.writeFile(file.toPath(), payload);
+    FileSupport.writeFile(file, payload);
 
     final String version;
-    final InputStream input = Files.newInputStream(file.toPath());
+    final InputStream input = Files.newInputStream(file);
     try {
       version = DOM_READER.readVersion(input);
     }finally {
@@ -161,7 +161,7 @@ public class ModelUtilsTest
   public void plainUpgrade() throws Exception {
     final String payload = "<foo><version>1</version></foo>";
     final File file = util.createTempFile();
-    FileSupport.writeFile(file.toPath(), payload);
+    FileSupport.writeFile(file, payload);
 
     final Xpp3Dom dom = ModelUtils.load("3", file, DOM_READER, V1_V2_UPGRADER, V2_V3_UPGRADER);
 
@@ -173,7 +173,7 @@ public class ModelUtilsTest
   public void intermediateUpgrade() throws Exception {
     final String payload = "<foo><version>1</version></foo>";
     final File file = util.createTempFile();
-    FileSupport.writeFile(file.toPath(), payload);
+    FileSupport.writeFile(file, payload);
 
     final Xpp3Dom dom = ModelUtils.load("2", file, DOM_READER, V1_V2_UPGRADER, V2_V3_UPGRADER);
 
@@ -185,7 +185,7 @@ public class ModelUtilsTest
   public void intermediateNoUpgrade() throws Exception {
     final String payload = "<foo><version>1</version></foo>";
     final File file = util.createTempFile();
-    FileSupport.writeFile(file.toPath(), payload);
+    FileSupport.writeFile(file, payload);
 
     final Xpp3Dom dom = ModelUtils.load("1", file, DOM_READER, V1_V2_UPGRADER, V2_V3_UPGRADER);
 
@@ -197,7 +197,7 @@ public class ModelUtilsTest
   public void noVersionNode() throws Exception {
     final String payload = "<foo></foo>";
     final File file = util.createTempFile();
-    FileSupport.writeFile(file.toPath(), payload);
+    FileSupport.writeFile(file, payload);
 
     ModelUtils.load("1", file, DOM_READER, V1_V2_UPGRADER, V2_V3_UPGRADER);
   }
@@ -206,7 +206,7 @@ public class ModelUtilsTest
   public void emptyVersionNode() throws Exception {
     final String payload = "<foo><version/></foo>";
     final File file = util.createTempFile();
-    FileSupport.writeFile(file.toPath(), payload);
+    FileSupport.writeFile(file, payload);
 
     ModelUtils.load("1", file, DOM_READER, V1_V2_UPGRADER, V2_V3_UPGRADER);
   }
@@ -215,7 +215,7 @@ public class ModelUtilsTest
   public void corruptXmlModel() throws Exception {
     final String payload = "<foo version/></foo>";
     final File file = util.createTempFile();
-    FileSupport.writeFile(file.toPath(), payload);
+    FileSupport.writeFile(file, payload);
 
     ModelUtils.load("1", file, DOM_READER, V1_V2_UPGRADER, V2_V3_UPGRADER);
   }
@@ -224,7 +224,7 @@ public class ModelUtilsTest
   public void corruptXmlModelDuringUpgrade() throws Exception {
     final String payload = "<foo><version>1</version></foo>";
     final File file = util.createTempFile();
-    FileSupport.writeFile(file.toPath(), payload);
+    FileSupport.writeFile(file, payload);
 
     ModelUtils.load("3", file, DOM_READER, V1_V2_UPGRADER, V2_V3_UPGRADER_FAILING);
   }
@@ -233,7 +233,7 @@ public class ModelUtilsTest
   public void upgradeNoConverter() throws Exception {
     final String payload = "<foo><version>1</version></foo>";
     final File file = util.createTempFile();
-    FileSupport.writeFile(file.toPath(), payload);
+    FileSupport.writeFile(file, payload);
 
     try {
       final Xpp3Dom dom = ModelUtils.load("99", file, DOM_READER, V1_V2_UPGRADER, V2_V3_UPGRADER);
@@ -250,23 +250,23 @@ public class ModelUtilsTest
     final String payload = "<foo><version>1</version></foo>";
     final File file = util.createTempFile();
     final File backupFile = new File(file.getParentFile(), file.getName() + ".bak");
-    Files.delete(file.toPath());
+    Files.delete(file);
     final Xpp3Dom model = Xpp3DomBuilder.build(new StringReader(payload));
 
     ModelUtils.save(model, file, DOM_WRITER);
 
     assertThat(file, exists());
-    assertThat(FileSupport.readFile(file.toPath()), equalTo(
+    assertThat(FileSupport.readFile(file), equalTo(
         "<foo>\n  <version>1</version>\n</foo>"));
     assertThat(backupFile, not(exists()));
 
     ModelUtils.save(model, file, DOM_WRITER);
 
     assertThat(file, exists());
-    assertThat(FileSupport.readFile(file.toPath()), equalTo(
+    assertThat(FileSupport.readFile(file), equalTo(
         "<foo>\n  <version>1</version>\n</foo>"));
     assertThat(backupFile, exists());
-    assertThat(FileSupport.readFile(backupFile.toPath()), equalTo(
+    assertThat(FileSupport.readFile(backupFile), equalTo(
         "<foo>\n  <version>1</version>\n</foo>"));
 
     final Xpp3Dom newnode = new Xpp3Dom("second");
@@ -276,10 +276,10 @@ public class ModelUtilsTest
     ModelUtils.save(model, file, DOM_WRITER);
 
     assertThat(file, exists());
-    assertThat(FileSupport.readFile(file.toPath()), equalTo(
+    assertThat(FileSupport.readFile(file), equalTo(
         "<foo>\n  <version>1</version>\n  <second>foo</second>\n</foo>"));
     assertThat(backupFile, exists());
-    assertThat(FileSupport.readFile(backupFile.toPath()), equalTo(
+    assertThat(FileSupport.readFile(backupFile), equalTo(
         "<foo>\n  <version>1</version>\n</foo>"));
   }
 

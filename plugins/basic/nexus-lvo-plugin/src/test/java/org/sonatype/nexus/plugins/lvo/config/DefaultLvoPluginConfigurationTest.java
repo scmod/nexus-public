@@ -51,7 +51,7 @@ public class DefaultLvoPluginConfigurationTest
 
   @Test
   public void perform100Upgrade() throws Exception {
-    Files.copy(new File(configDirectory, "lvo-plugin-100.xml").toPath(), lvoConfigurationFile.toPath(),
+    Files.copy(new File(configDirectory, "lvo-plugin-100.xml"), lvoConfigurationFile,
         StandardCopyOption.REPLACE_EXISTING);
 
     final DefaultLvoPluginConfiguration config = new DefaultLvoPluginConfiguration(applicationConfiguration);
@@ -62,7 +62,7 @@ public class DefaultLvoPluginConfigurationTest
 
   @Test
   public void perform101Upgrade() throws Exception {
-    Files.copy(new File(configDirectory, "lvo-plugin-101.xml").toPath(), lvoConfigurationFile.toPath(),
+    Files.copy(new File(configDirectory, "lvo-plugin-101.xml"), lvoConfigurationFile,
         StandardCopyOption.REPLACE_EXISTING);
 
     final DefaultLvoPluginConfiguration config = new DefaultLvoPluginConfiguration(applicationConfiguration);

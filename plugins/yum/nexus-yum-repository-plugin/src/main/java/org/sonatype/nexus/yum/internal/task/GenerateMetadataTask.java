@@ -154,9 +154,9 @@ public class GenerateMetadataTask
       try {
         // NEXUS-6680: Nuke cache dir if force rebuild in effect
         if (shouldForceFullScan()) {
-          DirSupport.deleteIfExists(getCacheDir().toPath());
+          DirSupport.deleteIfExists(getCacheDir());
         }
-        DirSupport.mkdir(getRepoDir().toPath());
+        DirSupport.mkdir(getRepoDir());
 
         File rpmListFile = createRpmListFile();
         commandLineExecutor.exec(buildCreateRepositoryCommand(rpmListFile));
@@ -348,7 +348,7 @@ public class GenerateMetadataTask
   private File getCacheDir(final String name) {
     final File cacheDir = new File(getCacheDir(), name);
     try {
-      DirSupport.mkdir(cacheDir.toPath());
+      DirSupport.mkdir(cacheDir);
     }
     catch (IOException e) {
       Throwables.propagate(e);

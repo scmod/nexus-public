@@ -58,7 +58,7 @@ final class SystemNexusPluginRepository
     }
 
     try {
-      DirSupport.mkdir(systemPluginsFolder.toPath());
+      DirSupport.mkdir(systemPluginsFolder);
     }
     catch (IOException e) {
       throw Throwables.propagate(e);

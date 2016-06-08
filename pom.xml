@@ -143,6 +143,7 @@
     <module>plugins</module>
 <!--     <module>assemblies</module> -->
     <module>testsuite</module>
+    <module>jdk6-bridge</module>
   </modules>
 
   <dependencyManagement>

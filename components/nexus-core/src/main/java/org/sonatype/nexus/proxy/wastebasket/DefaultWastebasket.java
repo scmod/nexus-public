@@ -155,7 +155,7 @@ public class DefaultWastebasket
     // check for existence, is this needed at all?
     if (basketFile.isDirectory()) {
       final long limitDate = System.currentTimeMillis() - age;
-      Files.walkFileTree(basketFile.toPath(), new SimpleFileVisitor<Path>()
+      Files.walkFileTree(basketFile, new SimpleFileVisitor<Path>()
       {
         @Override
         public FileVisitResult visitFile(Path file, BasicFileAttributes attrs)

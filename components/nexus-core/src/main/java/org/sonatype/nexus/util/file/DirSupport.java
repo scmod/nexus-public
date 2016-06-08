@@ -14,27 +14,18 @@ package org.sonatype.nexus.util.file;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.CopyOption;
-import java.nio.file.DirectoryStream;
-import java.nio.file.FileAlreadyExistsException;
-import java.nio.file.FileStore;
-import java.nio.file.FileVisitOption;
-import java.nio.file.FileVisitResult;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.SimpleFileVisitor;
-import java.nio.file.StandardCopyOption;
-import java.nio.file.attribute.BasicFileAttributes;
-import java.nio.file.attribute.FileAttribute;
 import java.util.EnumSet;
 import java.util.Set;
 
 import javax.annotation.Nullable;
 
+import org.codehaus.plexus.util.FileUtils;
 import org.sonatype.sisu.goodies.common.SimpleFormat;
 
 import com.google.common.base.Function;
 import com.google.common.base.Predicate;
+import com.google.common.base.Throwables;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -51,86 +42,9 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 public final class DirSupport
 {
-  private static final Logger log = LoggerFactory.getLogger(DirSupport.class);
-
-  public static final Set<FileVisitOption> DEFAULT_FILE_VISIT_OPTIONS = EnumSet.of(FileVisitOption.FOLLOW_LINKS);
 
   private DirSupport() {
     // no instance
-  }
-
-  // Visitors
-
-  public static class FunctionVisitor
-      extends SimpleFileVisitor<Path>
-  {
-    private final Function<Path, FileVisitResult> func;
-
-    public FunctionVisitor(final Function<Path, FileVisitResult> func) {
-      this.func = checkNotNull(func);
-    }
-
-    @Override
-    public FileVisitResult visitFile(final Path file, final BasicFileAttributes a) throws IOException {
-      return func.apply(file);
-    }
-
-    @Override
-    public FileVisitResult postVisitDirectory(final Path dir, final IOException e) throws IOException {
-      if (e != null) {
-        throw e;
-      }
-      return func.apply(dir);
-    }
-  }
-
-  public static class FunctionFileVisitor
-      extends SimpleFileVisitor<Path>
-  {
-    private final Function<Path, FileVisitResult> func;
-
-    public FunctionFileVisitor(final Function<Path, FileVisitResult> func) {
-      this.func = checkNotNull(func);
-    }
-
-    @Override
-    public FileVisitResult visitFile(final Path file, final BasicFileAttributes a) throws IOException {
-      return func.apply(file);
-    }
-  }
-
-  public static class CopyVisitor
-      extends SimpleFileVisitor<Path>
-  {
-    private final Path from;
-
-    private final Path to;
-
-    private final Predicate<Path> excludeFilter;
-
-    public CopyVisitor(final Path from, final Path to, final @Nullable Predicate<Path> excludeFilter) {
-      this.from = from;
-      this.to = to;
-      this.excludeFilter = excludeFilter;
-    }
-
-    @Override
-    public FileVisitResult preVisitDirectory(final Path dir, final BasicFileAttributes a) throws IOException {
-      if (excludeFilter != null && excludeFilter.apply(dir)) {
-        return FileVisitResult.SKIP_SUBTREE;
-      }
-      final Path targetPath = to.resolve(from.relativize(dir));
-      if (!Files.exists(targetPath)) {
-        mkdir(targetPath);
-      }
-      return FileVisitResult.CONTINUE;
-    }
-
-    @Override
-    public FileVisitResult visitFile(final Path file, final BasicFileAttributes a) throws IOException {
-      Files.copy(file, to.resolve(from.relativize(file)), StandardCopyOption.REPLACE_EXISTING);
-      return FileVisitResult.CONTINUE;
-    }
   }
 
   // MKDIR: directory creation resilient to symlinks
@@ -141,26 +55,20 @@ public final class DirSupport
    * {@link Files#createDirectories(Path, FileAttribute[])} method, this method does support paths having last
    * path element a symlink too. In this case, it's verified that symlink points to a directory and is readable.
    */
-  public static void mkdir(final Path dir) throws IOException {
+  public static void mkdir(final File dir) throws IOException {
     try {
-      Files.createDirectories(dir);
+      FileUtils.mkdir(dir.getAbsolutePath());
     }
-    catch (FileAlreadyExistsException e) {
+    catch (Exception e) {
       // this happens when last element of path exists, but is a symlink.
       // A simple test with Files.isDirectory should be able to  detect this
       // case as by default, it follows symlinks.
-      if (!Files.isDirectory(dir)) {
-        throw e;
+      if (!dir.isDirectory()) {
+        throw new IOException(e);
       }
     }
   }
 
-  /**
-   * @since 2.8
-   */
-  public static void mkdir(final File dir) throws IOException {
-    mkdir(dir.toPath());
-  }
 
   // CLEAN: remove files recursively of a directory but keeping the directory structure intact
 
@@ -169,27 +77,17 @@ public final class DirSupport
    * directories, and when returns, it's guaranteed that this directory might contain only subdirectories
    * that also might contain only subdirectories (recursively).
    */
-  public static void clean(final Path dir) throws IOException {
-    validateDirectory(dir);
-    Files.walkFileTree(dir, DEFAULT_FILE_VISIT_OPTIONS, Integer.MAX_VALUE,
-        new SimpleFileVisitor<Path>()
-        {
-          @Override
-          public FileVisitResult visitFile(final Path file, final BasicFileAttributes attrs) throws IOException {
-            Files.delete(file);
-            return FileVisitResult.CONTINUE;
-          }
-        }
-    );
+  public static void clean(final File dir) throws IOException {
+	  FileUtils.cleanDirectory(dir);
   }
 
   /**
    * Invokes {@link #clean(Path)} if passed in path exists and is a directory. Also, in that case {@code true} is
    * returned, and in any other case (path does not exists) {@code false} is returned.
    */
-  public static boolean cleanIfExists(final Path dir) throws IOException {
+  public static boolean cleanIfExists(final File dir) throws IOException {
     checkNotNull(dir);
-    if (Files.exists(dir)) {
+    if (dir.exists()) {
       clean(dir);
       return true;
     }
@@ -200,50 +98,6 @@ public final class DirSupport
 
   // EMPTY: removes directory subtree with directory itself left intact
 
-  /**
-   * Empties an existing directory, by recursively removing all it's siblings, regular files and directories. Accepts
-   * only existing directories, and when returns, it's guaranteed that passed in directory will be emptied (will
-   * have no siblings, not counting OS specific ones, will be "empty" as per current OS is empty defined).
-   */
-  public static void empty(final Path dir) throws IOException {
-    validateDirectory(dir);
-    Files.walkFileTree(dir, DEFAULT_FILE_VISIT_OPTIONS, Integer.MAX_VALUE,
-        new SimpleFileVisitor<Path>()
-        {
-          @Override
-          public FileVisitResult visitFile(final Path f, final BasicFileAttributes attrs) throws IOException {
-            Files.delete(f);
-            return FileVisitResult.CONTINUE;
-          }
-
-          @Override
-          public FileVisitResult postVisitDirectory(final Path d, final IOException exc) throws IOException {
-            if (exc != null) {
-              throw exc;
-            }
-            else if (dir != d) {
-              Files.delete(d);
-            }
-            return FileVisitResult.CONTINUE;
-          }
-        }
-    );
-  }
-
-  /**
-   * Invokes {@link #empty(Path)} if passed in path exists and is a directory. Also, in that case {@code true} is
-   * returned, and in any other case (path does not exists) {@code false} is returned.
-   */
-  public static boolean emptyIfExists(final Path dir) throws IOException {
-    checkNotNull(dir);
-    if (Files.exists(dir)) {
-      empty(dir);
-      return true;
-    }
-    else {
-      return false;
-    }
-  }
 
   // DELETE: removes directory subtree with directory itself recursively
 
@@ -251,7 +105,7 @@ public final class DirSupport
    * Deletes a file or directory recursively. This method accepts paths denoting regular files and directories. In case
    * of directory, this method will recursively delete all of it siblings and the passed in directory too.
    */
-  public static void delete(final Path dir) throws IOException {
+  public static void delete(final File dir) throws IOException {
     delete(dir, null);
   }
 
@@ -260,61 +114,13 @@ public final class DirSupport
    * of directory, this method will recursively delete all of it siblings and the passed in directory too.
    * The passed in filter can leave out a directory and it's complete subtree from operation.
    */
-  public static void delete(final Path dir, final @Nullable Predicate<Path> excludeFilter) throws IOException {
+  public static void delete(final File dir, final @Nullable Predicate<File> excludeFilter) throws IOException {
     validateDirectoryOrFile(dir);
-    if (Files.isDirectory(dir)) {
-      Files.walkFileTree(dir, DEFAULT_FILE_VISIT_OPTIONS, Integer.MAX_VALUE,
-          new SimpleFileVisitor<Path>()
-          {
-            @Override
-            public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
-              if (excludeFilter != null && excludeFilter.apply(dir)) {
-                return FileVisitResult.SKIP_SUBTREE;
-              }
-              return FileVisitResult.CONTINUE;
-            }
-
-            @Override
-            public FileVisitResult visitFile(final Path file, final BasicFileAttributes attrs) throws IOException {
-              Files.delete(file);
-              return FileVisitResult.CONTINUE;
-            }
-
-            @Override
-            public FileVisitResult postVisitDirectory(final Path dir, final IOException exc) throws IOException {
-              if (exc != null) {
-                throw exc;
-              }
-              else {
-                // Do this costly calculation only if filter is set,
-                // as in that case filtered folder and it's parents will
-                // not be empty, hence needs no deletion attempt as it would fail.
-                boolean needsDelete = true;
-                if (excludeFilter != null) {
-                  DirectoryStream<Path> dirStream = Files.newDirectoryStream(dir);
-                  try {
-                    if (dirStream.iterator().hasNext()) {
-                      needsDelete = false;
-                    }
-                  }finally {
-                  	try {
-                		if(dirStream != null)
-                			dirStream.close();
-            		} catch (Exception e) {
-            		}
-                }
-                }
-                if (needsDelete) {
-                  Files.delete(dir);
-                }
-                return FileVisitResult.CONTINUE;
-              }
-            }
-          }
-      );
+    if (dir.isDirectory()) {
+      FileUtils.deleteDirectory(dir);
     }
     else {
-      Files.delete(dir);
+      FileUtils.forceDelete(dir);
     }
   }
 
@@ -322,7 +128,7 @@ public final class DirSupport
    * Invokes {@link #delete(Path)} if passed in path exists. Also, in that case {@code true} is
    * returned, and in any other case (path does not exists) {@code false} is returned.
    */
-  public static boolean deleteIfExists(final Path dir) throws IOException {
+  public static boolean deleteIfExists(final File dir) throws IOException {
     return deleteIfExists(dir, null);
   }
 
@@ -331,11 +137,11 @@ public final class DirSupport
    * returned, and in any other case (path does not exists) {@code false} is returned.
    * The passed in filter can leave out a directory and it's complete subtree from operation.
    */
-  public static boolean deleteIfExists(final Path dir, final @Nullable Predicate<Path> excludeFilter)
+  public static boolean deleteIfExists(final File dir, final @Nullable Predicate<File> excludeFilter)
       throws IOException
   {
     checkNotNull(dir);
-    if (Files.exists(dir)) {
+    if (dir.exists()) {
       delete(dir, excludeFilter);
       return true;
     }
@@ -352,7 +158,7 @@ public final class DirSupport
    * "from" is a directory, a recursive copy happens of the whole subtree with "from" directory as root. Caller may
    * alter behaviour of Copy operation using copy options, as seen on {@link Files#copy(Path, Path, CopyOption...)}.
    */
-  public static void copy(final Path from, final Path to) throws IOException {
+  public static void copy(final File from, final File to) throws IOException {
     copy(from, to, null);
   }
 
@@ -365,20 +171,19 @@ public final class DirSupport
    * @throws IllegalArgumentException if 'from' is a parent directory of the 'to' path, unless an excludeFilter is
    *                                  provided
    */
-  public static void copy(final Path from, final Path to, final @Nullable Predicate<Path> excludeFilter)
+  public static void copy(final File from, final File to, final @Nullable Predicate<File> excludeFilter)
       throws IOException
   {
     validateDirectoryOrFile(from);
     checkNotNull(to);
-    if (Files.isDirectory(from)) {
+    if (from.isDirectory()) {
       // Avoiding recursion: unless there's an exclude filter, the 'to' dir must not be inside the 'from' dir
       checkArgument(!isParentOf(from, to) || excludeFilter != null);
-      Files.walkFileTree(from, DEFAULT_FILE_VISIT_OPTIONS, Integer.MAX_VALUE,
-          new CopyVisitor(from, to, excludeFilter));
+       FileUtils.copyDirectory(from, to);
     }
     else {
-      mkdir(to.getParent());
-      Files.copy(from, to, StandardCopyOption.REPLACE_EXISTING);
+      mkdir(to.getParentFile());
+      FileUtils.copyFile(from, to);
     }
   }
 
@@ -386,7 +191,7 @@ public final class DirSupport
    * Invokes {@link #copy(Path, Path)} if passed in "from" path exists and returns {@code true}. If
    * "from" path does not exists, {@code false} is returned.
    */
-  public static boolean copyIfExists(final Path from, final Path to) throws IOException {
+  public static boolean copyIfExists(final File from, final File to) throws IOException {
     return copyIfExists(from, to, null);
   }
 
@@ -395,58 +200,16 @@ public final class DirSupport
    * "from" path does not exists, {@code false} is returned.
    * The passed in filter can leave out a directory and it's complete subtree from operation.
    */
-  public static boolean copyIfExists(final Path from, final Path to, final @Nullable Predicate<Path> excludeFilter)
+  public static boolean copyIfExists(final File from, final File to, final @Nullable Predicate<File> excludeFilter)
       throws IOException
   {
     checkNotNull(from);
-    if (Files.exists(from)) {
+    if (from.exists()) {
       copy(from, to, excludeFilter);
       return true;
     }
     else {
       return false;
-    }
-  }
-
-  // MOVE: recursive copy of whole directory tree and then deleting it
-
-  /**
-   * Perform a move of existing directory (empty or not, does not matter) on same FileStore (volume or partition).
-   */
-  private static void sameFileStoreMove(final Path from, final Path to) throws IOException {
-    Files.move(from, to, StandardCopyOption.REPLACE_EXISTING);
-  }
-
-  /**
-   * Perform a pseudo-move of existing directory (empty or not, does not matter) between different FileStores (volume
-   * or partition) using {@link #copyDeleteMove(Path, Path, Predicate)} method.
-   */
-  private static void crossFileStoreMove(final Path from, final Path to) throws IOException {
-    copyDeleteMove(from, to, null);
-  }
-
-  /**
-   * Return {@code true} if paths {@code from} and {@code to} are located on same FileStore (volume or
-   * partition). The {@code from} must exists, while {@code to} does not have to.
-   */
-  private static boolean areOnSameFileStore(final Path from, final Path to) {
-    try {
-      final FileStore fromStore = Files.getFileStore(from); // from must exist
-      Path toExistingParent = to.normalize(); // to usually does not exists, is about to be created as part of move
-      while (toExistingParent != null && !Files.exists(toExistingParent)) {
-        toExistingParent = toExistingParent.getParent();
-      }
-      if (toExistingParent != null) {
-        final FileStore toStore = Files.getFileStore(toExistingParent);
-        return fromStore.equals(toStore);
-      }
-      else {
-        log.warn("No ultimate parent path found for '{}'", to, new RuntimeException("marker")); // record the stack trace?
-        return false; // no ultimate parent? be on safe side
-      }
-    }
-    catch (IOException e) {
-      return false; // be on safe side
     }
   }
 
@@ -456,26 +219,21 @@ public final class DirSupport
    * existing Paths that might denote a regular file or a directory. It basically delegates to {@link Files#move(Path,
    * Path, CopyOption...)} method with "replace existing" parameter.
    */
-  public static void move(final Path from, final Path to)
+  public static void move(final File from, final File to)
       throws IOException
   {
-    if (areOnSameFileStore(from, to)) {
-      sameFileStoreMove(from, to);
-    }
-    else {
-      crossFileStoreMove(from, to);
-    }
+	  copyDeleteMove(from, to);
   }
 
   /**
    * Invokes {@link #move(Path, Path)} if passed in "from" path exists and returns {@code true}. If
    * "from" path does not exists, {@code false} is returned.
    */
-  public static boolean moveIfExists(final Path from, final Path to)
+  public static boolean moveIfExists(final File from, final File to)
       throws IOException
   {
     checkNotNull(from);
-    if (Files.exists(from)) {
+    if (from.exists()) {
       move(from, to);
       return true;
     }
@@ -484,12 +242,18 @@ public final class DirSupport
     }
   }
 
+  public static void copyDeleteMove(final File from, final File to)
+	      throws IOException
+	  {
+	  copyDeleteMove(from, to, null);
+	  }
+  
   /**
    * Performs a pseudo move operation (copy+delete). This method accepts existing Paths that might denote a regular file
    * or a directory. While this method is not a real move (like {@link #move(Path, Path)} is), it is a bit more capable:
    * it can move a complete directory structure to it's one sub-directory.
    */
-  public static void copyDeleteMove(final Path from, final Path to, final @Nullable Predicate<Path> excludeFilter)
+  public static void copyDeleteMove(final File from, final File to, final @Nullable Predicate<File> excludeFilter)
       throws IOException
   {
     copy(from, to, excludeFilter);
@@ -500,13 +264,13 @@ public final class DirSupport
    * Invokes {@link #copyDeleteMove(Path, Path, Predicate)} if passed in "from" path exists and returns {@code true}. If
    * "from" path does not exists, {@code false} is returned.
    */
-  public static boolean copyDeleteMoveIfExists(final Path from,
-                                               final Path to,
-                                               final @Nullable Predicate<Path> excludeFilter)
+  public static boolean copyDeleteMoveIfExists(final File from,
+                                               final File to,
+                                               final @Nullable Predicate<File> excludeFilter)
       throws IOException
   {
     checkNotNull(from);
-    if (Files.exists(from)) {
+    if (from.exists()) {
       copyDeleteMove(from, to, excludeFilter);
       return true;
     }
@@ -515,52 +279,36 @@ public final class DirSupport
     }
   }
 
-  // APPLY: applies a function to dir tree, the function should not have any IO "side effect"
-
-  /**
-   * Traverses the subtree starting with "from" and applies passed in {@link Function} onto files and directories.
-   * This method accepts only existing directories.
-   */
-  public static void apply(final Path from, final Function<Path, FileVisitResult> func) throws IOException {
-    validateDirectory(from);
-    Files.walkFileTree(from, DEFAULT_FILE_VISIT_OPTIONS, Integer.MAX_VALUE, new FunctionVisitor(func));
-  }
-
-  /**
-   * Traverses the subtree starting with "from" and applies passed in {@link Function} onto files only.
-   * This method accepts only existing directories.
-   */
-  public static void applyToFiles(final Path from, final Function<Path, FileVisitResult> func) throws IOException {
-    validateDirectory(from);
-    Files.walkFileTree(from, DEFAULT_FILE_VISIT_OPTIONS, Integer.MAX_VALUE, new FunctionFileVisitor(func));
-  }
 
   // Validation
 
   /**
    * Determine if one path is a child of another.
    */
-  private static boolean isParentOf(Path possibleParent, Path possibleChild) {
-    return possibleChild.startsWith(possibleParent);
+  private static boolean isParentOf(File possibleParent, File possibleChild) {
+	  String parent = possibleParent.getAbsolutePath();
+	  String child = possibleChild.getAbsolutePath();
+	  child = child.substring(0, child.lastIndexOf(File.separator));
+    return parent.equals(child);
   }
 
   /**
    * Enforce all passed in paths are non-null and is existing directory.
    */
-  private static void validateDirectory(final Path... paths) {
-    for (Path path : paths) {
-      checkNotNull(path, "Path must be non-null");
-      checkArgument(Files.isDirectory(path), SimpleFormat.template("%s is not a directory", path));
+  private static void validateDirectory(final File... files) {
+	  for (File file : files) {
+      checkNotNull(file, "Path must be non-null");
+      checkArgument(file.isDirectory(), SimpleFormat.template("%s is not a directory", file));
     }
   }
 
   /**
    * Enforce all passed in paths are non-null and exist.
    */
-  private static void validateDirectoryOrFile(final Path... paths) {
-    for (Path path : paths) {
-      checkNotNull(path, "Path must be non-null");
-      checkArgument(Files.exists(path), SimpleFormat.template("%s does not exists", path));
+  private static void validateDirectoryOrFile(final File... files) {
+    for (File file : files) {
+      checkNotNull(file, "Path must be non-null");
+      checkArgument(file.exists(), SimpleFormat.template("%s does not exists", file));
     }
   }
 

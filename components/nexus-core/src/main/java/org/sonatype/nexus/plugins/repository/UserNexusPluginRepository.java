@@ -47,7 +47,7 @@ final class UserNexusPluginRepository
   public UserNexusPluginRepository(final @Named("${nexus-work}/plugin-repository") File userPluginsFolder) {
     this.userPluginsFolder = checkNotNull(userPluginsFolder);
     try {
-      DirSupport.mkdir(userPluginsFolder.toPath());
+      DirSupport.mkdir(userPluginsFolder);
     }
     catch (IOException e) {
       throw Throwables.propagate(e);

@@ -532,7 +532,7 @@ public class DefaultIndexerManager
 
   private File getRepositoryIndexDirectory(final Repository repository) throws IOException {
     File indexDirectory = new File(getWorkingDirectory(), getContextId(repository.getId()));
-    DirSupport.mkdir(indexDirectory.toPath());
+    DirSupport.mkdir(indexDirectory);
     return indexDirectory;
   }
 
@@ -1473,7 +1473,7 @@ public class DefaultIndexerManager
 
       targetDir = new File(getTempDirectory(), "nx-index-" + Long.toHexString(System.nanoTime()));
 
-      DirSupport.mkdir(targetDir.toPath());
+      DirSupport.mkdir(targetDir);
 
       IndexPackingRequest packReq = new IndexPackingRequest(context, targetDir);
       packReq.setCreateIncrementalChunks(true);
@@ -1503,7 +1503,7 @@ public class DefaultIndexerManager
             log.debug("Cleanup of temp files...");
           }
 
-          DirSupport.deleteIfExists(targetDir.toPath());
+          DirSupport.deleteIfExists(targetDir);
         }
         catch (IOException e) {
           lastException = e;
@@ -2342,8 +2342,8 @@ public class DefaultIndexerManager
 
     File location = File.createTempFile(indexId, null, getTempDirectory());
 
-    DirSupport.delete(location.toPath());
-    DirSupport.mkdir(location.toPath());
+    DirSupport.delete(location);
+    DirSupport.mkdir(location);
 
     final DefaultIndexingContext temporary = new DefaultIndexingContext(indexId, //
         repository.getId(), //
@@ -2382,7 +2382,7 @@ public class DefaultIndexerManager
     }
     finally {
       temporary.close(false);
-      DirSupport.deleteIfExists(location.toPath());
+      DirSupport.deleteIfExists(location);
     }
   }
 

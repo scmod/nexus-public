@@ -84,7 +84,7 @@ public class DefaultTimelinePersistor
   protected synchronized void setConfiguration(final TimelineConfiguration configuration) {
     if (!configuration.getPersistDirectory().exists()) {
       try {
-        DirSupport.mkdir(configuration.getPersistDirectory().toPath());
+        DirSupport.mkdir(configuration.getPersistDirectory());
       }
       catch (IOException e) {
         Throwables.propagate(e);

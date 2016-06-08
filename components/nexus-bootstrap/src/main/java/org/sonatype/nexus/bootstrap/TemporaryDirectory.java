@@ -42,11 +42,11 @@ public class TemporaryDirectory
 
   private static void mkdir(final File dir) throws IOException {
     try {
-      Files.createDirectories(dir.toPath());
+      Files.createDirectories(dir);
     }
     catch (FileAlreadyExistsException e) {
       // handle symlink case
-      if (!Files.isDirectory(dir.toPath())) {
+      if (!Files.isDirectory(dir)) {
         throw new IOException("Unable to create java.io.tmpdir: " + dir, e);
       }
     }

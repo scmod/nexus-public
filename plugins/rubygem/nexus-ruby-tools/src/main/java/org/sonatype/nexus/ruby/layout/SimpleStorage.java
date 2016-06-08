@@ -132,7 +132,7 @@ public class SimpleStorage
    * convert <code>RubygemsFile</code> into a <code>Path</code>.
    */
   protected Path toPath(RubygemsFile file) {
-    return new File(basedir, file.storagePath()).toPath();
+    return new File(basedir, file.storagePath());
   }
 
   @Override

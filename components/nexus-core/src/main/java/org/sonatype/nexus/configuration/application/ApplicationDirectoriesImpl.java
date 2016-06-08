@@ -116,7 +116,7 @@ public class ApplicationDirectoriesImpl
 
     if (create && !dir.isDirectory()) {
       try {
-        DirSupport.mkdir(dir.toPath());
+        DirSupport.mkdir(dir);
         log.debug("Created directory: {}", dir);
       }
       catch (Exception e) {

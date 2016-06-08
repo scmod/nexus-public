@@ -83,8 +83,8 @@ public class P2ProxyMetadataSource
 
     try {
       final File artifactRepositoryDir = File.createTempFile("artifacts", "");
-      DirSupport.delete(artifactRepositoryDir.toPath());
-      DirSupport.mkdir(artifactRepositoryDir.toPath());
+      DirSupport.delete(artifactRepositoryDir);
+      DirSupport.mkdir(artifactRepositoryDir);
 
       final File artifactMappingsXmlFile = File.createTempFile("p2proxy.artifact-mappings", ".xml");
       try {
@@ -168,8 +168,8 @@ public class P2ProxyMetadataSource
 
     try {
       final File metadataRepositoryDir = File.createTempFile("content", "");
-      DirSupport.delete(metadataRepositoryDir.toPath());
-      DirSupport.mkdir(metadataRepositoryDir.toPath());
+      DirSupport.delete(metadataRepositoryDir);
+      DirSupport.mkdir(metadataRepositoryDir);
 
       try {
         String username = null;

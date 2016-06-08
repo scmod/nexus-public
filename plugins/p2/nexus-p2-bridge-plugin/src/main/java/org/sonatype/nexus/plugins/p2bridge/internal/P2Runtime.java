@@ -104,7 +104,7 @@ class P2Runtime
     // if temporary plugin directory exists, remove it to avoid the fact that eclipse stores absolute paths to
     // installed bundles (see NXCM-4475)
     try {
-      DirSupport.deleteIfExists(p2BridgeRuntimeDir.toPath());
+      DirSupport.deleteIfExists(p2BridgeRuntimeDir);
     }
     catch (IOException e) {
       throw new RuntimeException(
@@ -112,7 +112,7 @@ class P2Runtime
       );
     }
     try {
-      DirSupport.mkdir(p2BridgeRuntimeDir.toPath());
+      DirSupport.mkdir(p2BridgeRuntimeDir);
     }
     catch (IOException e) {
       throw new RuntimeException(

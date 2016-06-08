@@ -63,7 +63,7 @@ public class DirSupportTest
   @Before
   public void prepare() throws IOException {
     root = util.createTempDir();
-    createDirectoryStructure(root.toPath());
+    createDirectoryStructure(root);
   }
 
   @Test
@@ -71,9 +71,9 @@ public class DirSupportTest
     final File mkdirA = new File(root, "mkdir-a");
     final File mkdirAB = new File(mkdirA, "mkdir-ab");
     final File dir211 = new File(new File(new File(root, "dir2"), "dir21"), "dir211");
-    DirSupport.mkdir(mkdirAB.toPath()); // new
-    DirSupport.mkdir(mkdirA.toPath()); // existing
-    DirSupport.mkdir(dir211.toPath()); // existing structure
+    DirSupport.mkdir(mkdirAB); // new
+    DirSupport.mkdir(mkdirA); // existing
+    DirSupport.mkdir(dir211); // existing structure
     assertThat(mkdirA, isDirectory());
     assertThat(mkdirAB, isDirectory());
     assertThat(dir211, isDirectory());
@@ -81,11 +81,11 @@ public class DirSupportTest
 
   @Test
   public void symlinkMkdir() throws IOException {
-    final Path dir1link = root.toPath().resolve("dir1-link");
+    final Path dir1link = root.resolve("dir1-link");
     try {
       // not all OSes support symlink creation
       // if symlink creation fails on given OS, just return from this test
-      Files.createSymbolicLink(dir1link, root.toPath().resolve("dir1"));
+      Files.createSymbolicLink(dir1link, root.resolve("dir1"));
     }
     catch (IOException e) {
       return;
@@ -95,26 +95,26 @@ public class DirSupportTest
 
   @Test
   public void clean() throws IOException {
-    DirSupport.clean(root.toPath());
+    DirSupport.clean(root);
     assertThat(root, exists());
     assertThat(root, isDirectory());
     assertThat(root, not(isEmptyDirectory()));
-    assertThat(root.toPath().resolve("dir2").resolve("dir21").toFile(), isDirectory());
+    assertThat(root.resolve("dir2").resolve("dir21").toFile(), isDirectory());
   }
 
   @Test
   public void cleanIfExists() throws IOException {
-    assertThat(DirSupport.cleanIfExists(root.toPath().resolve("not-existing")), is(false));
-    assertThat(DirSupport.cleanIfExists(root.toPath()), is(true));
+    assertThat(DirSupport.cleanIfExists(root.resolve("not-existing")), is(false));
+    assertThat(DirSupport.cleanIfExists(root), is(true));
     assertThat(root, exists());
     assertThat(root, isDirectory());
     assertThat(root, not(isEmptyDirectory()));
-    assertThat(root.toPath().resolve("dir2").resolve("dir21").toFile(), isDirectory());
+    assertThat(root.resolve("dir2").resolve("dir21").toFile(), isDirectory());
   }
 
   @Test
   public void empty() throws IOException {
-    DirSupport.empty(root.toPath());
+    DirSupport.empty(root);
     assertThat(root, exists());
     assertThat(root, isDirectory());
     assertThat(root, isEmptyDirectory());
@@ -122,8 +122,8 @@ public class DirSupportTest
 
   @Test
   public void emptyIfExists() throws IOException {
-    assertThat(DirSupport.emptyIfExists(root.toPath().resolve("not-existing")), is(false));
-    assertThat(DirSupport.emptyIfExists(root.toPath()), is(true));
+    assertThat(DirSupport.emptyIfExists(root.resolve("not-existing")), is(false));
+    assertThat(DirSupport.emptyIfExists(root), is(true));
     assertThat(root, exists());
     assertThat(root, isDirectory());
     assertThat(root, isEmptyDirectory());
@@ -131,21 +131,21 @@ public class DirSupportTest
 
   @Test
   public void delete() throws IOException {
-    DirSupport.delete(root.toPath());
+    DirSupport.delete(root);
     assertThat(root, not(exists()));
   }
 
   @Test
   public void deleteIfExists() throws IOException {
-    assertThat(DirSupport.deleteIfExists(root.toPath().resolve("not-existing")), is(false));
-    assertThat(DirSupport.deleteIfExists(root.toPath()), is(true));
+    assertThat(DirSupport.deleteIfExists(root.resolve("not-existing")), is(false));
+    assertThat(DirSupport.deleteIfExists(root), is(true));
     assertThat(root, not(exists()));
   }
 
   @Test
   public void copy() throws IOException {
-    final Path target = util.createTempDir().toPath();
-    DirSupport.copy(root.toPath(), target);
+    final Path target = util.createTempDir();
+    DirSupport.copy(root, target);
     assertThat(target.toFile(), exists());
     assertThat(target.toFile(), isDirectory());
     assertThat(target.toFile(), not(isEmptyDirectory()));
@@ -155,9 +155,9 @@ public class DirSupportTest
 
   @Test
   public void copyIfExists() throws IOException {
-    final Path target = util.createTempDir().toPath();
-    assertThat(DirSupport.copyIfExists(root.toPath().resolve("not-existing"), target), is(false));
-    assertThat(DirSupport.copyIfExists(root.toPath(), target), is(true));
+    final Path target = util.createTempDir();
+    assertThat(DirSupport.copyIfExists(root.resolve("not-existing"), target), is(false));
+    assertThat(DirSupport.copyIfExists(root, target), is(true));
     assertThat(target.toFile(), exists());
     assertThat(target.toFile(), isDirectory());
     assertThat(target.toFile(), not(isEmptyDirectory()));
@@ -167,8 +167,8 @@ public class DirSupportTest
 
   @Test
   public void move() throws IOException {
-    final Path target = util.createTempDir().toPath();
-    DirSupport.move(root.toPath(), target);
+    final Path target = util.createTempDir();
+    DirSupport.move(root, target);
     assertThat(root, not(exists()));
     assertThat(target.toFile(), exists());
     assertThat(target.toFile(), isDirectory());
@@ -179,8 +179,8 @@ public class DirSupportTest
 
   @Test
   public void copyDeleteMoveToSubdir() throws IOException {
-    final Path target = root.toPath().resolve("dir2/dir21");
-    DirSupport.copyDeleteMove(root.toPath(), target, new Predicate<Path>()
+    final Path target = root.resolve("dir2/dir21");
+    DirSupport.copyDeleteMove(root, target, new Predicate<Path>()
     {
       @Override
       public boolean apply(@Nullable final Path input) {
@@ -188,29 +188,29 @@ public class DirSupportTest
       }
     });
     assertThat(root, exists());
-    assertThat(root.toPath().resolve("dir1").toFile(), not(exists()));
-    assertThat(root.toPath().resolve("dir2").toFile(), exists());
-    assertThat(root.toPath().resolve("dir2/file21.txt").toFile(), not(exists()));
-    assertThat(root.toPath().resolve("dir2/file22.txt").toFile(), not(exists()));
-    assertThat(root.toPath().resolve("dir2/file23.txt").toFile(), not(exists()));
-    assertThat(root.toPath().resolve("dir2/dir21").toFile(), exists());
-    assertThat(root.toPath().resolve("dir2/dir21/file211.txt").toFile(), exists());
-    assertThat(root.toPath().resolve("dir2/dir21/file212.txt").toFile(), exists());
+    assertThat(root.resolve("dir1").toFile(), not(exists()));
+    assertThat(root.resolve("dir2").toFile(), exists());
+    assertThat(root.resolve("dir2/file21.txt").toFile(), not(exists()));
+    assertThat(root.resolve("dir2/file22.txt").toFile(), not(exists()));
+    assertThat(root.resolve("dir2/file23.txt").toFile(), not(exists()));
+    assertThat(root.resolve("dir2/dir21").toFile(), exists());
+    assertThat(root.resolve("dir2/dir21/file211.txt").toFile(), exists());
+    assertThat(root.resolve("dir2/dir21/file212.txt").toFile(), exists());
 
-    assertThat(root.toPath().resolve("dir2/dir21/dir1").toFile(), exists());
-    assertThat(root.toPath().resolve("dir2/dir21/dir1/file11.txt").toFile(), exists());
-    assertThat(root.toPath().resolve("dir2/dir21/dir1/file12.txt").toFile(), exists());
-    assertThat(root.toPath().resolve("dir2/dir21/dir2").toFile(), exists());
-    assertThat(root.toPath().resolve("dir2/dir21/dir2/file21.txt").toFile(), exists());
-    assertThat(root.toPath().resolve("dir2/dir21/dir2/file22.txt").toFile(), exists());
-    assertThat(root.toPath().resolve("dir2/dir21/dir2/file23.txt").toFile(), exists());
+    assertThat(root.resolve("dir2/dir21/dir1").toFile(), exists());
+    assertThat(root.resolve("dir2/dir21/dir1/file11.txt").toFile(), exists());
+    assertThat(root.resolve("dir2/dir21/dir1/file12.txt").toFile(), exists());
+    assertThat(root.resolve("dir2/dir21/dir2").toFile(), exists());
+    assertThat(root.resolve("dir2/dir21/dir2/file21.txt").toFile(), exists());
+    assertThat(root.resolve("dir2/dir21/dir2/file22.txt").toFile(), exists());
+    assertThat(root.resolve("dir2/dir21/dir2/file23.txt").toFile(), exists());
 
     assertThat(root, exists());
     assertThat(target.toFile(), exists());
     assertThat(target.toFile(), isDirectory());
     assertThat(target.toFile(), not(isEmptyDirectory()));
-    assertThat(root.toPath().resolve("dir2").resolve("dir21").toFile(), isDirectory());
-    assertThat(root.toPath().resolve("dir2").resolve("dir21").resolve("file211.txt").toFile(), isFile());
+    assertThat(root.resolve("dir2").resolve("dir21").toFile(), isDirectory());
+    assertThat(root.resolve("dir2").resolve("dir21").resolve("file211.txt").toFile(), isFile());
   }
 
   /**
@@ -221,21 +221,21 @@ public class DirSupportTest
    */
   @Test(expected = FileSystemException.class)
   public void moveToSubdir() throws IOException {
-    final Path target = root.toPath().resolve("dir2/dir21");
-    DirSupport.move(root.toPath(), target);
+    final Path target = root.resolve("dir2/dir21");
+    DirSupport.move(root, target);
   }
 
   @Test(expected = IllegalArgumentException.class)
   public void copyingToChildDirDisallowedWithoutFilter() throws IOException {
-    final Path target = root.toPath().resolve("dir2/dir21");
-    DirSupport.copyDeleteMove(root.toPath(), target, null);
+    final Path target = root.resolve("dir2/dir21");
+    DirSupport.copyDeleteMove(root, target, null);
   }
 
   @Test
   public void moveIfExists() throws IOException {
-    final Path target = util.createTempDir().toPath();
-    assertThat(DirSupport.moveIfExists(root.toPath().resolve("not-existing"), target), is(false));
-    assertThat(DirSupport.moveIfExists(root.toPath(), target), is(true));
+    final Path target = util.createTempDir();
+    assertThat(DirSupport.moveIfExists(root.resolve("not-existing"), target), is(false));
+    assertThat(DirSupport.moveIfExists(root, target), is(true));
     assertThat(root, not(exists()));
     assertThat(target.toFile(), exists());
     assertThat(target.toFile(), isDirectory());
@@ -261,7 +261,7 @@ public class DirSupportTest
         return FileVisitResult.CONTINUE;
       }
     };
-    DirSupport.apply(root.toPath(), tf);
+    DirSupport.apply(root, tf);
 
     assertThat(fileNames, hasSize(9));
     // root + 3dirs
@@ -285,7 +285,7 @@ public class DirSupportTest
         return FileVisitResult.CONTINUE;
       }
     };
-    DirSupport.applyToFiles(root.toPath(), tf);
+    DirSupport.applyToFiles(root, tf);
 
     assertThat(fileNames, hasSize(9));
     // func never invoked on dirs

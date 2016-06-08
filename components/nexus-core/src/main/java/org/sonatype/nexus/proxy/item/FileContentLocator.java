@@ -96,7 +96,7 @@ public class FileContentLocator
   public void delete() throws IOException {
     // locator is used against files only, not directories
     // but their existence is not enforced!
-    DirSupport.deleteIfExists(getFile().toPath());
+    DirSupport.deleteIfExists(getFile());
   }
 
   // ==
@@ -122,7 +122,7 @@ public class FileContentLocator
       super.close();
       // locator is used against files only, not directories
       // but their existence is not enforced!
-      DirSupport.deleteIfExists(file.toPath());
+      DirSupport.deleteIfExists(file);
     }
   }
 }

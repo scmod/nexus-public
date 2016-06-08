@@ -49,7 +49,7 @@ public abstract class AbstractRepositoryFolderCleaner
       throws IOException
   {
     Path basketPath =
-        new File(getApplicationConfiguration().getWorkingDirectory(GLOBAL_TRASH_KEY), file.getName()).toPath();
+        new File(getApplicationConfiguration().getWorkingDirectory(GLOBAL_TRASH_KEY), file.getName());
     if (!deleteForever) {
       // if trash already has this named path (whatever is), rename it
       DirSupport.moveIfExists(
@@ -58,12 +58,12 @@ public abstract class AbstractRepositoryFolderCleaner
       );
       // move to trash
       DirSupport.moveIfExists(
-          file.toPath(),
+          file,
           basketPath
       );
     }
     else {
-      DirSupport.deleteIfExists(file.toPath());
+      DirSupport.deleteIfExists(file);
     }
   }
 }

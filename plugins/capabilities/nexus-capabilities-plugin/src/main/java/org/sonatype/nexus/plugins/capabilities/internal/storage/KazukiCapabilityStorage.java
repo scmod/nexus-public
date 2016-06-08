@@ -94,7 +94,7 @@ public class KazukiCapabilityStorage
   public void drop() {
     File dir = applicationDirectories.getWorkDirectory("db/capabilities", false);
     try {
-      DirSupport.deleteIfExists(dir.toPath());
+      DirSupport.deleteIfExists(dir);
     }
     catch (IOException e) {
       throw Throwables.propagate(e);

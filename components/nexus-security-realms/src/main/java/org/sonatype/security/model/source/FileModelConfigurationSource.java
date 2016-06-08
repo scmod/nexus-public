@@ -233,7 +233,7 @@ public class FileModelConfigurationSource
     // Create the dir if doesn't exist, throw runtime exception on failure
     // bad bad bad
     try {
-      mkdir(file.getParentFile().toPath());
+      mkdir(file.getParentFile());
     }
     catch (IOException e) {
       final String message =

@@ -48,12 +48,12 @@ public class FileSupportTest
   @Before
   public void prepare() throws IOException {
     root = util.createTempDir();
-    createFile(root.toPath());
+    createFile(root);
   }
 
   @After
   public void cleanup() throws IOException {
-    Files.walkFileTree(root.toPath(), new SimpleFileVisitor<Path>()
+    Files.walkFileTree(root, new SimpleFileVisitor<Path>()
     {
       @Override
       public FileVisitResult visitFile(final Path file, final BasicFileAttributes attrs) throws IOException {
@@ -73,7 +73,7 @@ public class FileSupportTest
   public void copy() throws IOException {
     final String baz = "BAZ";
     final File target = new File(root, "baz.txt");
-    FileSupport.copy(new ByteArrayInputStream(baz.getBytes(Charsets.UTF_8)), target.toPath());
+    FileSupport.copy(new ByteArrayInputStream(baz.getBytes(Charsets.UTF_8)), target);
     assertThat(target, FileMatchers.isFile());
     assertThat(target, FileMatchers.containsOnly(baz));
   }
@@ -83,8 +83,8 @@ public class FileSupportTest
     final String baz1 = "BAZ1";
     final String baz2 = "BAZ2";
     final File target = new File(root, "baz.txt");
-    FileSupport.copy(new ByteArrayInputStream(baz1.getBytes(Charsets.UTF_8)), target.toPath());
-    FileSupport.copy(new ByteArrayInputStream(baz2.getBytes(Charsets.UTF_8)), target.toPath());
+    FileSupport.copy(new ByteArrayInputStream(baz1.getBytes(Charsets.UTF_8)), target);
+    FileSupport.copy(new ByteArrayInputStream(baz2.getBytes(Charsets.UTF_8)), target);
     assertThat(target, FileMatchers.isFile());
     assertThat(target, FileMatchers.containsOnly(baz2));
   }
@@ -94,13 +94,13 @@ public class FileSupportTest
     final String baz1 = "BAZ1";
     final File target = new File(root, "baz.txt");
     FileSupport
-        .copy(new ByteArrayInputStream(baz1.getBytes(Charsets.UTF_8)), target.toPath(), StandardCopyOption.ATOMIC_MOVE);
+        .copy(new ByteArrayInputStream(baz1.getBytes(Charsets.UTF_8)), target, StandardCopyOption.ATOMIC_MOVE);
   }
 
   @Test(expected = IllegalArgumentException.class)
   public void readFileNonExistent() throws IOException {
     final File target = new File(root, "baz.txt");
-    FileSupport.readFile(target.toPath());
+    FileSupport.readFile(target);
   }
 
   @Test
@@ -109,12 +109,12 @@ public class FileSupportTest
     final String baz2 = "BAZ2";
     final String baz3 = "BAZ3";
     final File target = new File(root, "baz.txt");
-    FileSupport.writeFile(target.toPath(), baz1);
-    final String readBaz1 = FileSupport.readFile(target.toPath());
-    FileSupport.writeFile(target.toPath(), baz2);
-    final String readBaz2 = FileSupport.readFile(target.toPath());
-    FileSupport.writeFile(target.toPath(), baz3);
-    final String readBaz3 = FileSupport.readFile(target.toPath());
+    FileSupport.writeFile(target, baz1);
+    final String readBaz1 = FileSupport.readFile(target);
+    FileSupport.writeFile(target, baz2);
+    final String readBaz2 = FileSupport.readFile(target);
+    FileSupport.writeFile(target, baz3);
+    final String readBaz3 = FileSupport.readFile(target);
 
     assertThat(readBaz1, equalTo(baz1));
     assertThat(readBaz2, equalTo(baz2));
@@ -127,12 +127,12 @@ public class FileSupportTest
     final String baz2 = "erste\nzweite\ndritte";
     final String baz3 = "első\nmásodik\nharmadik";
     final File target = new File(root, "baz.txt");
-    FileSupport.writeFile(target.toPath(), baz1);
-    final String readBaz1 = FileSupport.readFile(target.toPath());
-    FileSupport.writeFile(target.toPath(), baz2);
-    final String readBaz2 = FileSupport.readFile(target.toPath());
-    FileSupport.writeFile(target.toPath(), baz3);
-    final String readBaz3 = FileSupport.readFile(target.toPath());
+    FileSupport.writeFile(target, baz1);
+    final String readBaz1 = FileSupport.readFile(target);
+    FileSupport.writeFile(target, baz2);
+    final String readBaz2 = FileSupport.readFile(target);
+    FileSupport.writeFile(target, baz3);
+    final String readBaz3 = FileSupport.readFile(target);
 
     assertThat(readBaz1, equalTo(baz1));
     assertThat(readBaz2, equalTo(baz2));

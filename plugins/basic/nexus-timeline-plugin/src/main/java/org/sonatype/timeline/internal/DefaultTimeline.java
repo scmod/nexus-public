@@ -96,7 +96,7 @@ public class DefaultTimeline
           // stopping it cleanly
           indexer.stop();
           // deleting index files
-          DirSupport.empty(configuration.getIndexDirectory().toPath());
+          DirSupport.empty(configuration.getIndexDirectory());
           try {
             // creating new index from scratch
             indexer.start(configuration);

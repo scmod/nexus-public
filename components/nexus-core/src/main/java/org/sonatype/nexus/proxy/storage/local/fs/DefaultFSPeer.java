@@ -15,23 +15,20 @@ package org.sonatype.nexus.proxy.storage.local.fs;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static org.sonatype.nexus.proxy.ItemNotFoundException.reasonFor;
 
-import java.io.BufferedOutputStream;
 import java.io.EOFException;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.StandardCopyOption;
 import java.util.Collection;
 import java.util.List;
 
 import javax.inject.Named;
 import javax.inject.Singleton;
 
+import org.codehaus.plexus.util.FileUtils;
+import org.codehaus.plexus.util.IOUtil;
 import org.sonatype.nexus.proxy.ItemNotFoundException;
 import org.sonatype.nexus.proxy.LocalStorageEOFException;
 import org.sonatype.nexus.proxy.LocalStorageException;
@@ -46,13 +43,8 @@ import org.sonatype.nexus.proxy.repository.Repository;
 import org.sonatype.nexus.proxy.storage.UnsupportedStorageOperationException;
 import org.sonatype.nexus.proxy.utils.RepositoryStringUtils;
 import org.sonatype.nexus.util.SystemPropertiesHelper;
-import org.sonatype.nexus.util.file.DirSupport;
-import org.sonatype.nexus.util.io.StreamSupport;
 import org.sonatype.sisu.goodies.common.ComponentSupport;
-import org.sonatype.sisu.goodies.common.Throwables2;
 
-import com.google.common.base.Predicate;
-import com.google.common.base.Throwables;
 import com.google.common.collect.Lists;
 
 /**
@@ -72,12 +64,6 @@ public class DefaultFSPeer
    * like ".meta" and ".nexus", with latter causing endless recursion
    * and IOException when deleting "/" folder.
    */
-  private static final Predicate<Path> DOTTED_FILE_FILTER = new Predicate<Path>() {
-    @Override
-    public boolean apply(final Path input) {
-      return input.getFileName().toString().startsWith(".");
-    }
-  };
 
   private static final String HIDDEN_TARGET_SUFFIX = ".nx-upload";
 
@@ -110,177 +96,235 @@ public class DefaultFSPeer
   }
 
   @Override
-  public void storeItem(final Repository repository, final File repositoryBaseDir, final StorageItem item,
-                        final File target, final ContentLocator cl)
+  public void storeItem( final Repository repository, final File repositoryBaseDir, final StorageItem item,
+                         final File target, final ContentLocator cl )
       throws UnsupportedStorageOperationException, LocalStorageException
   {
-    if (log.isDebugEnabled()) {
-      log.debug("Storing file to {}", target.getAbsolutePath());
-    }
+      // create parents down to the file itself (this will make those if needed, otherwise return silently)
+      mkParentDirs( repository, target );
 
-    // create parents down to the file itself (this will make those if needed, otherwise return silently)
-    mkDirs(repository, target.getParentFile());
-
-    if (cl != null) {
-      // we have _content_ (content or link), hence we store a file
-      final File hiddenTarget = getHiddenTarget(repository, repositoryBaseDir, target, item);
-
-      // NEXUS-4550: Part One, saving to "hidden" (temp) file
-      // In case of error cleaning up only what needed
-      // No locking needed, AbstractRepository took care of that
-      InputStream is = null;
-      OutputStream os = null;
-      try {
-    	is = cl.getContent(); 
-    	os = new BufferedOutputStream(
-                new FileOutputStream(hiddenTarget), getCopyStreamBufferSize());
-        StreamSupport.copy(is, os, getCopyStreamBufferSize());
-        os.flush();
-      }
-      catch (EOFException e)
-      // NXCM-4852: Upload premature end (thrown by Jetty org.eclipse.jetty.io.EofException)
-      // NXCM-4852: Proxy remote peer response premature end (should be translated by RRS)
+      if ( cl != null )
       {
-        try {
-          Files.deleteIfExists(hiddenTarget.toPath());
-        }
-        catch (IOException e1) {
-          // best effort to delete, we already have what to throw
-        }
-        throw new LocalStorageEOFException(String.format(
-            "EOF during storing on path \"%s\" (while writing to hiddenTarget: \"%s\")",
-            item.getRepositoryItemUid().toString(), hiddenTarget.getAbsolutePath()), e);
-      }
-      catch (RemoteStorageEOFException e) {
-    	  try {
-              Files.deleteIfExists(hiddenTarget.toPath());
-            }
-            catch (IOException e1) {
-              // best effort to delete, we already have what to throw
-            }
-            throw new LocalStorageEOFException(String.format(
-                "EOF during storing on path \"%s\" (while writing to hiddenTarget: \"%s\")",
-                item.getRepositoryItemUid().toString(), hiddenTarget.getAbsolutePath()), e);
-      }
-      catch (IOException e) {
-        try {
-          Files.deleteIfExists(hiddenTarget.toPath());
-        }
-        catch (IOException e1) {
-          // best effort to delete, we already have what to throw
-        }
-        throw new LocalStorageException(String.format(
-            "Got exception during storing on path \"%s\" (while writing to hiddenTarget: \"%s\")",
-            item.getRepositoryItemUid().toString(), hiddenTarget.getAbsolutePath()), e);
-      }
+          // we have _content_ (content or link), hence we store a file
+          final File hiddenTarget = getHiddenTarget( repository, repositoryBaseDir, target, item );
 
-      // NEXUS-4550: Part Two, moving the "hidden" (temp) file to final location
-      // In case of error cleaning up both files
-      // Locking is needed, AbstractRepository got shared lock only for destination
+          // NEXUS-4550: Part One, saving to "hidden" (temp) file
+          // In case of error cleaning up only what needed
+          // No locking needed, AbstractRepository took care of that
+          FileOutputStream os = null;
+          InputStream is = null;
 
-      // NEXUS-4550: FSPeer is the one that handles the rename in case of FS LS,
-      // so we need here to claim exclusive lock on actual UID to perform the rename
-      final RepositoryItemUidLock uidLock = item.getRepositoryItemUid().getLock();
-      uidLock.lock(Action.create);
+          try
+          {
+              os = new FileOutputStream( hiddenTarget );
 
-      try {
-        handleRenameOperation(hiddenTarget, target);
-        target.setLastModified(item.getModified());
-      }
-      catch (IOException e) {
-        // if we ARE NOT handling attributes, do proper cleanup in case of IOEx
-        // if we ARE handling attributes, leave backups in case of IOEx
-        final boolean isCleanupNeeded =
-            !item.getRepositoryItemUid().getBooleanAttributeValue(IsItemAttributeMetacontentAttribute.class);
+              is = cl.getContent();
 
-        if (target != null && (isCleanupNeeded ||
-            // NEXUS-4871 prevent zero length/corrupt files
-            target.length() == 0)) {
-          try {
-            Files.delete(target.toPath());
+              IOUtil.copy( is, os, getCopyStreamBufferSize() );
+
+              os.flush();
           }
-          catch (IOException e1) {
-            log.warn("Could not delete file: " + target.getAbsolutePath(), e);
-          }
-        }
+          catch ( EOFException e ) // NXCM-4852: Upload premature end (thrown by Jetty
+                                   // org.eclipse.jetty.io.EofException)
+          {
+              if ( hiddenTarget != null )
+              {
+                  hiddenTarget.delete();
+              }
 
-        if (hiddenTarget != null && (isCleanupNeeded ||
-            // NEXUS-4871 prevent zero length/corrupt files
-            hiddenTarget.length() == 0)) {
-          try {
-            Files.delete(hiddenTarget.toPath());
+              throw new LocalStorageEOFException( String.format(
+                  "EOF during storing on path \"%s\" (while writing to hiddenTarget: \"%s\")",
+                  item.getRepositoryItemUid().toString(), hiddenTarget.getAbsolutePath() ), e );
           }
-          catch (IOException e1) {
-            log.warn("Could not delete file: " + target.getAbsolutePath(), e);
+          catch ( RemoteStorageEOFException e ) // NXCM-4852: Proxy remote peer response premature end (should be
+                                                // translated by RRS)
+          {
+              if ( hiddenTarget != null )
+              {
+                  hiddenTarget.delete();
+              }
+
+              throw new LocalStorageEOFException( String.format(
+                  "EOF during caching on path \"%s\" (while writing to hiddenTarget: \"%s\")",
+                  item.getRepositoryItemUid().toString(), hiddenTarget.getAbsolutePath() ), e );
           }
-        }
+          catch ( IOException e )
+          {
+              if ( hiddenTarget != null )
+              {
+                  hiddenTarget.delete();
+              }
 
-        if (!isCleanupNeeded) {
-          log.warn(
-              "No cleanup done for error that happened while trying to save attibutes of item {}, the backup is left as {}!",
-              item.getRepositoryItemUid().toString(), hiddenTarget.getAbsolutePath());
-        }
+              throw new LocalStorageException( String.format(
+                  "Got exception during storing on path \"%s\" (while writing to hiddenTarget: \"%s\")",
+                  item.getRepositoryItemUid().toString(), hiddenTarget.getAbsolutePath() ), e );
+          }
+          finally
+          {
+              IOUtil.close( is );
 
-        throw new LocalStorageException(String.format(
-            "Got exception during storing on path \"%s\" (while moving to final destination)",
-            item.getRepositoryItemUid().toString()), e);
+              IOUtil.close( os );
+          }
+
+          // NEXUS-4550: Part Two, moving the "hidden" (temp) file to final location
+          // In case of error cleaning up both files
+          // Locking is needed, AbstractRepository got shared lock only for destination
+
+          // NEXUS-4550: FSPeer is the one that handles the rename in case of FS LS,
+          // so we need here to claim exclusive lock on actual UID to perform the rename
+          final RepositoryItemUidLock uidLock = item.getRepositoryItemUid().getLock();
+          uidLock.lock( Action.create );
+
+          try
+          {
+              handleRenameOperation( hiddenTarget, target );
+
+              target.setLastModified( item.getModified() );
+          }
+          catch ( IOException e )
+          {
+              // if we ARE NOT handling attributes, do proper cleanup in case of IOEx
+              // if we ARE handling attributes, leave backups in case of IOEx
+              final boolean isCleanupNeeded =
+                  !item.getRepositoryItemUid().getBooleanAttributeValue( IsItemAttributeMetacontentAttribute.class );
+
+              if ( target != null && ( isCleanupNeeded ||
+              // NEXUS-4871 prevent zero length/corrupt files
+                  target.length() == 0 ) )
+              {
+                  target.delete();
+              }
+
+              if ( hiddenTarget != null && ( isCleanupNeeded ||
+              // NEXUS-4871 prevent zero length/corrupt files
+                  hiddenTarget.length() == 0 ) )
+              {
+                  hiddenTarget.delete();
+              }
+
+              if ( !isCleanupNeeded )
+              {
+                  log.warn(
+                      "No cleanup done for error that happened while trying to save attibutes of item {}, the backup is left as {}!",
+                      item.getRepositoryItemUid().toString(), hiddenTarget.getAbsolutePath() );
+              }
+
+              throw new LocalStorageException( String.format(
+                  "Got exception during storing on path \"%s\" (while moving to final destination)",
+                  item.getRepositoryItemUid().toString() ), e );
+          }
+          finally
+          {
+              uidLock.unlock();
+          }
       }
-      finally {
-        uidLock.unlock();
+      else
+      {
+          // we have no content, we talk about directory
+          target.mkdir();
+
+          target.setLastModified( item.getModified() );
       }
-    }
-    else {
-      // we have no content, we talk about directory
-      try {
-        DirSupport.mkdir(target.toPath());
-      }
-      catch (IOException e) {
-        Throwables.propagate(e);
-      }
-      target.setLastModified(item.getModified());
-    }
   }
 
   @Override
-  public void shredItem(final Repository repository, final File repositoryBaseDir,
-                        final ResourceStoreRequest request, final File target)
+  public void shredItem( final Repository repository, final File repositoryBaseDir,
+                         final ResourceStoreRequest request, final File target )
       throws ItemNotFoundException, UnsupportedStorageOperationException, LocalStorageException
   {
-    if (log.isDebugEnabled()) {
-      log.debug("Deleting file: {}", target.getAbsolutePath());
-    }
-    try {
-      if (!DirSupport.deleteIfExists(target.toPath(), DOTTED_FILE_FILTER)) {
-        throw new ItemNotFoundException(reasonFor(request, repository,
-            "Path %s not found in local storage of repository %s", request.getRequestPath(),
-            RepositoryStringUtils.getHumanizedNameString(repository)));
+      if ( log.isDebugEnabled() )
+      {
+          log.debug( "Deleting file: " + target.getAbsolutePath() );
       }
-    }
-    catch (IOException e) {
-      throw new LocalStorageException(String.format(
-          "Could not delete file in repository %s from path \"%s\"",
-          RepositoryStringUtils.getHumanizedNameString(repository), target.getAbsolutePath()), e);
-    }
+      if ( target.isDirectory() )
+      {
+          try
+          {
+              FileUtils.deleteDirectory( target );
+          }
+          catch ( IOException ex )
+          {
+              throw new LocalStorageException( String.format(
+                  "Could not delete directory in repository %s from path \"%s\"",
+                  RepositoryStringUtils.getHumanizedNameString( repository ), target.getAbsolutePath() ), ex );
+          }
+      }
+      else if ( target.isFile() )
+      {
+          try
+          {
+              FileUtils.forceDelete( target );
+          }
+          catch ( IOException ex )
+          {
+              throw new LocalStorageException( String.format(
+                  "Could not delete file in repository %s from path \"%s\"",
+                  RepositoryStringUtils.getHumanizedNameString( repository ), target.getAbsolutePath() ) );
+          }
+      }
+      else
+      {
+          throw new ItemNotFoundException( reasonFor( request, repository,
+              "Path %s not found in local storage of repository %s", request.getRequestPath(),
+              RepositoryStringUtils.getHumanizedNameString( repository ) ) );
+      }
   }
 
   @Override
-  public void moveItem(final Repository repository, final File repositoryBaseDir, final ResourceStoreRequest from,
-                       final File fromTarget, final ResourceStoreRequest to, final File toTarget)
+  public void moveItem( final Repository repository, final File repositoryBaseDir, final ResourceStoreRequest from,
+                        final File fromTarget, final ResourceStoreRequest to, final File toTarget )
       throws ItemNotFoundException, UnsupportedStorageOperationException, LocalStorageException
   {
-    if (log.isDebugEnabled()) {
-      log.debug("Moving file from {} to {}", fromTarget.getAbsolutePath(), toTarget.getAbsolutePath());
-    }
-    try {
-      if (!DirSupport.copyDeleteMoveIfExists(fromTarget.toPath(), toTarget.toPath(), DOTTED_FILE_FILTER)) {
-        throw new ItemNotFoundException(reasonFor(from, repository,
-            "Path %s not found in local storage of repository %s", from.getRequestPath(),
-            RepositoryStringUtils.getHumanizedNameString(repository)));
+      if ( fromTarget.exists() )
+      {
+          // create parents down to the file itself (this will make those if needed, otherwise return silently)
+          mkParentDirs( repository, toTarget );
+
+          try
+          {
+              org.sonatype.nexus.util.FileUtils.move( fromTarget, toTarget );
+          }
+          catch ( IOException e )
+          {
+              log.warn( "Unable to move item, falling back to copy+delete: " + toTarget.getPath(),
+                  log.isDebugEnabled() ? e : null );
+
+              if ( fromTarget.isDirectory() )
+              {
+                  try
+                  {
+                      FileUtils.copyDirectoryStructure( fromTarget, toTarget );
+                  }
+                  catch ( IOException ioe )
+                  {
+                      throw new LocalStorageException( "Error during moveItem", ioe );
+                  }
+              }
+              else if ( fromTarget.isFile() )
+              {
+                  try
+                  {
+                      FileUtils.copyFile( fromTarget, toTarget );
+                  }
+                  catch ( IOException ioe )
+                  {
+                      throw new LocalStorageException( "Error during moveItem", ioe );
+                  }
+              }
+              else
+              {
+                  // TODO throw exception?
+                  log.error( "Unexpected item kind: " + toTarget.getClass() );
+              }
+              shredItem( repository, repositoryBaseDir, from, fromTarget );
+          }
       }
-    }
-    catch (IOException e) {
-      throw new LocalStorageException("Error during moveItem", e);
-    }
+      else
+      {
+          throw new ItemNotFoundException( reasonFor( from, repository,
+              "Path %s not found in local storage of repository %s", from.getRequestPath(),
+              RepositoryStringUtils.getHumanizedNameString( repository ) ) );
+      }
   }
 
   @Override
@@ -348,18 +392,26 @@ public class DefaultFSPeer
     }
   }
 
-  protected void mkDirs(final Repository repository, final File target)
-      throws LocalStorageException
-  {
-    try {
-      DirSupport.mkdir(target.toPath());
-    }
-    catch (IOException e) {
-      throw new LocalStorageException(String.format(
-          "Could not create the directory hierarchy in repository %s to write \"%s\"",
-          RepositoryStringUtils.getHumanizedNameString(repository), target.getAbsolutePath()), e);
-    }
-  }
+  protected void mkParentDirs( Repository repository, File target )
+	        throws LocalStorageException
+	    {
+	        mkDirs( repository, target.getParentFile() );
+	    }
+
+	    protected void mkDirs( final Repository repository, final File target )
+	        throws LocalStorageException
+	    {
+	        if ( !target.exists() && !target.mkdirs() )
+	        {
+	            // re-check is it really a "good" parent?
+	            if ( !target.isDirectory() )
+	            {
+	                throw new LocalStorageException( String.format(
+	                    "Could not create the directory hiearchy in repository %s to write \"%s\"",
+	                    RepositoryStringUtils.getHumanizedNameString( repository ), target.getAbsolutePath() ) );
+	            }
+	        }
+	    }
   
   // ==
 
@@ -376,42 +428,89 @@ public class DefaultFSPeer
 
   public static final String RENAME_RETRY_COUNT_KEY = "rename.retry.count";
 
-  public static final int RENAME_RETRY_COUNT = SystemPropertiesHelper.getInteger(RENAME_RETRY_COUNT_KEY, 0);
-
   public static final String RENAME_RETRY_DELAY_KEY = "rename.retry.delay";
 
-  public static final long RENAME_RETRY_DELAY = SystemPropertiesHelper.getLong(RENAME_RETRY_DELAY_KEY, 0L);
+  private int renameRetryCount = -1;
 
-  protected void handleRenameOperation(final File hiddenTarget, final File target)
-      throws IOException
+  private int renameRetryDelay = -1;
+  
+  protected int getRenameRetryCount()
   {
-    if (RENAME_RETRY_COUNT == 0) {
-      // just do it once, no retries, no fuss
-      Files.move(hiddenTarget.toPath(), target.toPath(), StandardCopyOption.REPLACE_EXISTING);
-    }
-    else {
-      // do it 1 + retries needed, record problems
-      final List<IOException> exceptions = Lists.newArrayListWithCapacity(1 + RENAME_RETRY_COUNT);
-      boolean success = false;
-      for (int i = 1; i <= (RENAME_RETRY_COUNT + 1); i++) {
-        try {
-          Files.move(hiddenTarget.toPath(), target.toPath(), StandardCopyOption.REPLACE_EXISTING);
-          success = true;
-          break;
-        }
-        catch (IOException e) {
-          exceptions.add(e);
-          try {
-            Thread.sleep(RENAME_RETRY_DELAY);
-          }
-          catch (InterruptedException e1) {
-            // ignore
-          }
-        }
+      if ( renameRetryCount == -1 )
+      {
+          renameRetryCount = SystemPropertiesHelper.getInteger( RENAME_RETRY_COUNT_KEY, 0 );
       }
-      if (!success) {
-        throw Throwables2.composite(new IOException("Rename operation failed"), exceptions);
-      }
-    }
+
+      return renameRetryCount;
   }
+
+  protected int getRenameRetryDelay()
+  {
+      if ( renameRetryDelay == -1 )
+      {
+          renameRetryDelay = SystemPropertiesHelper.getInteger( RENAME_RETRY_DELAY_KEY, 0 );
+      }
+
+      return renameRetryDelay;
+  }
+  
+  protected void handleRenameOperation( File hiddenTarget, File target )
+	        throws IOException
+	    {
+	        // delete the target, this is required on windows
+	        if ( target.exists() )
+	        {
+	            target.delete();
+	        }
+
+	        // first try
+	        boolean success = hiddenTarget.renameTo( target );
+
+	        // if retries enabled go ahead and start the retry process
+	        for ( int i = 1; success == false && i <= getRenameRetryCount(); i++ )
+	        {
+	            log.debug( "Rename operation attempt {} failed on {} --> {}, will wait {} ms and try again", i,
+	                hiddenTarget.getAbsolutePath(), target.getAbsolutePath(), getRenameRetryDelay() );
+
+	            try
+	            {
+	                Thread.sleep( getRenameRetryDelay() );
+	            }
+	            catch ( InterruptedException e )
+	            {
+	            }
+
+	            // try to delete again...
+	            if ( target.exists() )
+	            {
+	                target.delete();
+	            }
+
+	            // and rename again...
+	            success = hiddenTarget.renameTo( target );
+
+	            if ( success )
+	            {
+	                log.info( "Rename operation succeeded after {} retries on {} --> {}", i,
+	                    hiddenTarget.getAbsolutePath(), target.getAbsolutePath() );
+	            }
+	        }
+
+	        if ( !success )
+	        {
+	            try
+	            {
+	                FileUtils.rename( hiddenTarget, target );
+	            }
+	            catch ( IOException e )
+	            {
+	                log.error( "Rename operation failed after {} retries in {} ms intervals {} --> {}",
+	                    getRenameRetryCount(), getRenameRetryDelay(), hiddenTarget.getAbsolutePath(),
+	                    target.getAbsolutePath() );
+
+	                throw new IOException( String.format( "Cannot rename file \"%s\" to \"%s\"! Message: %s",
+	                    hiddenTarget.getAbsolutePath(), target.getAbsolutePath(), e.getMessage() ), e );
+	            }
+	        }
+	    }
 }

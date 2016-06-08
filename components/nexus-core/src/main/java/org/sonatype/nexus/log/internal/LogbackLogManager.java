@@ -427,7 +427,7 @@ public class LogbackLogManager
         URL configUrl = this.getClass().getResource(LOG_CONF_PROPS_RESOURCE);
         final InputStream is = configUrl.openStream();
         try {
-          FileSupport.copy(is, logConfigPropsFile.toPath());
+          FileSupport.copy(is, logConfigPropsFile);
         } finally {
         	try {
         		if(is != null)

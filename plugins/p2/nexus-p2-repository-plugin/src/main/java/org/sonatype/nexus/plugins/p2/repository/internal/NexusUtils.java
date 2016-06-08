@@ -162,8 +162,8 @@ public class NexusUtils
   {
     File tempP2Repository;
     tempP2Repository = File.createTempFile("nexus-p2-repository-plugin", "");
-    DirSupport.delete(tempP2Repository.toPath());
-    DirSupport.mkdir(tempP2Repository.toPath());
+    DirSupport.delete(tempP2Repository);
+    DirSupport.mkdir(tempP2Repository);
     return tempP2Repository;
   }
 
