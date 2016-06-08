@@ -20,6 +20,7 @@ import org.sonatype.nexus.proxy.maven.metadata.operations.MetadataBuilder;
 import org.sonatype.nexus.test.utils.GavUtil;
 
 import com.thoughtworks.xstream.XStream;
+
 import org.apache.maven.artifact.repository.metadata.Metadata;
 import org.apache.maven.index.artifact.Gav;
 import org.junit.Assert;
@@ -46,14 +47,20 @@ public class Nexus1646DeployArtifactsIT
     File metadataFile =
         new File(nexusWorkDir, "storage/nexus-test-harness-release-repo/nexus1646/artifact/maven-metadata.xml");
     Assert.assertTrue("Metadata file not found " + metadataFile.getAbsolutePath(), metadataFile.isFile());
-
-    try (FileInputStream input = new FileInputStream(metadataFile)) {
+	FileInputStream input = new FileInputStream(metadataFile);
+    try {
       Metadata md = MetadataBuilder.read(input);
 
       Assert.assertEquals(md.getVersioning().getLatest(), gav.getVersion());
       Assert.assertEquals(md.getVersioning().getRelease(), gav.getVersion());
       Assert.assertEquals(1, md.getVersioning().getVersions().size());
       Assert.assertEquals(md.getVersioning().getVersions().get(0), gav.getVersion());
+    }finally {
+    	try {
+    		if(input != null)
+    			input.close();
+		} catch (Exception e) {
+		}
     }
   }
 
@@ -102,8 +109,8 @@ public class Nexus1646DeployArtifactsIT
         new File(nexusWorkDir, "storage/" + REPO_TEST_HARNESS_RELEASE_REPO
             + "/org/codehaus/mojo/changelog-maven-plugin/maven-metadata.xml");
     Assert.assertTrue("Metadata file not found " + metadataFile.getAbsolutePath(), metadataFile.isFile());
-
-    try (FileInputStream input = new FileInputStream(metadataFile)) {
+	FileInputStream input = new FileInputStream(metadataFile);
+    try {
       Metadata md = MetadataBuilder.read(input);
 
       logger.info(new XStream().toXML(md));
@@ -112,6 +119,12 @@ public class Nexus1646DeployArtifactsIT
       Assert.assertEquals(md.getVersioning().getRelease(), "2.0-beta-1");
       Assert.assertEquals(1, md.getVersioning().getVersions().size());
       Assert.assertEquals(md.getVersioning().getVersions().get(0), "2.0-beta-1");
+    }finally {
+    	try {
+    		if(input != null)
+    			input.close();
+		} catch (Exception e) {
+		}
     }
   }
 

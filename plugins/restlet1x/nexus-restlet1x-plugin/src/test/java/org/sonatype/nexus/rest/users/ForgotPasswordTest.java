@@ -31,7 +31,9 @@ import org.sonatype.security.rest.users.UserResetPlexusResource;
 import com.icegreen.greenmail.util.GreenMail;
 import com.icegreen.greenmail.util.GreenMailUtil;
 import com.icegreen.greenmail.util.ServerSetup;
+
 import junit.framework.Assert;
+
 import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -90,7 +92,8 @@ public class ForgotPasswordTest
   private void setupEmailConfig()
       throws IOException, XmlPullParserException
   {
-    try (FileInputStream fis = new FileInputStream(this.getNexusConfiguration())) {
+	FileInputStream fis = new FileInputStream(this.getNexusConfiguration());
+    try {
       NexusConfigurationXpp3Reader reader = new NexusConfigurationXpp3Reader();
       Configuration config = reader.read(fis);
 
@@ -99,9 +102,22 @@ public class ForgotPasswordTest
       // config.getSmtpConfiguration().setDebugMode( true );
 
       // now write it back out
-      try (FileWriter writer = new FileWriter(this.getNexusConfiguration())) {
+      FileWriter writer = new FileWriter(this.getNexusConfiguration());
+      try {
         new NexusConfigurationXpp3Writer().write(writer, config);
-      }
+      }finally {
+    	try {
+    		if(writer != null)
+    			writer.close();
+		} catch (Exception e) {
+		}
+    }
+    }finally {
+    	try {
+    		if(fis != null)
+    			fis.close();
+		} catch (Exception e) {
+		}
     }
   }
 

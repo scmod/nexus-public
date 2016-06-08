@@ -568,12 +568,23 @@ public class NexusRestClient
       if (downloadedFile.getParentFile() != null) {
         downloadedFile.getParentFile().mkdirs();
       }
-
-      try (InputStream in = response.getEntity().getStream();
-           OutputStream out = new BufferedOutputStream(new FileOutputStream(downloadedFile))) {
+      InputStream in = response.getEntity().getStream();
+	  OutputStream out = new BufferedOutputStream(new FileOutputStream(downloadedFile));
+      try {
         checkState(in != null, "null entity input-stream");
         IOUtils.copy(in, out);
-      }
+      }finally {
+    	try {
+    		if(out != null)
+    			out.close();
+		} catch (Exception e) {
+		}
+    	try {
+    		if(in != null)
+    			in.close();
+		} catch (Exception e) {
+		}
+    }
     }
     finally {
       releaseResponse(response);
@@ -680,7 +691,8 @@ public class NexusRestClient
       else {
         b = new byte[1024];
       }
-      try (InputStream in = response.getEntity().getContent()) {
+      InputStream in = response.getEntity().getContent();
+      try {
         while (in.read(b) != -1) {
           if (speedLimit != -1) {
             try {
@@ -691,7 +703,13 @@ public class NexusRestClient
             }
           }
         }
-      }
+      }finally {
+    	try {
+    		if(in != null)
+    			in.close();
+		} catch (Exception e) {
+		}
+    }
     }
     finally {
       if (get != null) {

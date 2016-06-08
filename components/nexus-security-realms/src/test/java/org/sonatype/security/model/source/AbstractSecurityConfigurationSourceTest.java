@@ -39,10 +39,21 @@ public abstract class AbstractSecurityConfigurationSourceTest
     // not using load here since File config would load it and store it
     // thus changing it (but no content change!)
     copyDefaultSecurityConfigToPlace();
-
-    try (InputStream configStream = configurationSource.getConfigurationAsStream();
-         InputStream origStream = getOriginatingConfigurationInputStream()) {
+	InputStream configStream = configurationSource.getConfigurationAsStream();
+	InputStream origStream = getOriginatingConfigurationInputStream();
+    try {
       assertTrue(IOUtils.contentEquals(configStream, origStream));
+    }finally {
+    	try {
+    		if(origStream != null)
+    			origStream.close();
+		} catch (Exception e) {
+		}
+    	try {
+    		if(configStream != null)
+    			configStream.close();
+		} catch (Exception e) {
+		}
     }
   }
 

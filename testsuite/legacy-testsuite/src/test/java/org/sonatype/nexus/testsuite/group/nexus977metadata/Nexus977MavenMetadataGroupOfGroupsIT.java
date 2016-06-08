@@ -63,11 +63,17 @@ public class Nexus977MavenMetadataGroupOfGroupsIT
     File metadataFile =
         downloadFile(new URL(nexusBaseUrl + "content/repositories/g4/"
             + "nexus977metadata/project/maven-metadata.xml"), "target/downloads/nexus977");
-
-    try (FileInputStream in = new FileInputStream(metadataFile)) {
+	FileInputStream in = new FileInputStream(metadataFile);
+    try {
       Metadata metadata = MetadataBuilder.read(in);
       List<String> versions = metadata.getVersioning().getVersions();
       MatcherAssert.assertThat(versions, hasItems("1.5", "1.0.1", "1.0-SNAPSHOT", "0.8", "2.1"));
+    }finally {
+    	try {
+    		if(in != null)
+    			in.close();
+		} catch (Exception e) {
+		}
     }
   }
 }

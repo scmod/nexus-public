@@ -83,13 +83,19 @@ public class NexusConfigUtil
   {
     final File nexusConfigFile = getNexusConfigurationFile();
     final NexusConfigurationXpp3Reader reader = new NexusConfigurationXpp3Reader();
-
-    try (FileInputStream in = new FileInputStream(nexusConfigFile)) {
+	FileInputStream in = new FileInputStream(nexusConfigFile);
+    try {
       return reader.read(in, false);
     }
     catch (XmlPullParserException e) {
       log.error(e.getMessage(), e);
       throw new RuntimeException(e);
+    }finally {
+    	try {
+    		if(in != null)
+    			in.close();
+		} catch (Exception e) {
+		}
     }
   }
 
@@ -98,9 +104,17 @@ public class NexusConfigUtil
   {
     // save it
     final NexusConfigurationXpp3Writer writer = new NexusConfigurationXpp3Writer();
-    try (FileWriter fos = new FileWriter(getSecurityConfigurationFile())) {
+    
+    FileWriter fos = new FileWriter(getSecurityConfigurationFile());
+    try {
       writer.write(fos, config);
       Flushables.flushQuietly(fos);
+    }finally {
+    	try {
+    		if(fos != null)
+    			fos.close();
+		} catch (Exception e) {
+		}
     }
   }
 

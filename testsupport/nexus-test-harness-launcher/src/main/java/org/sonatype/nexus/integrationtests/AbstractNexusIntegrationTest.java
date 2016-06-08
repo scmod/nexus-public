@@ -539,9 +539,16 @@ public abstract class AbstractNexusIntegrationTest
 
       MavenXpp3Reader reader = new MavenXpp3Reader();
       Model model;
-      try (FileInputStream fis = new FileInputStream(pom)) {
+      FileInputStream fis = new FileInputStream(pom);
+      try {
         model = reader.read(fis);
-      }
+      }finally {
+    	try {
+    		if(fis != null)
+    			fis.close();
+		} catch (Exception e) {
+		}
+    }
 
       // a helpful note so you don't need to dig into the code to much.
       if (model.getDistributionManagement() == null || model.getDistributionManagement().getRepository() == null) {
@@ -889,10 +896,17 @@ public abstract class AbstractNexusIntegrationTest
       if (response.getStatus().isError()) {
         return null;
       }
-      try (InputStream stream = response.getEntity().getStream()) {
+      InputStream stream = response.getEntity().getStream();
+      try {
         MetadataXpp3Reader metadataReader = new MetadataXpp3Reader();
         return metadataReader.read(stream);
-      }
+      }finally {
+    	try {
+    		if(stream != null)
+    			stream.close();
+		} catch (Exception e) {
+		}
+    }
     }
     finally {
       RequestFacade.releaseResponse(response);

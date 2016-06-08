@@ -60,9 +60,15 @@ public class DefaultApplicationConfigurationValidatorTest
       throws Exception
   {
     NexusConfigurationXpp3Reader reader = new NexusConfigurationXpp3Reader();
-
-    try (Reader fr = new FileReader(configFile)) {
+	Reader fr = new FileReader(configFile);
+    try {
       return reader.read(fr);
+    }finally {
+    	try {
+    		if(fr != null)
+    			fr.close();
+		} catch (Exception e) {
+		}
     }
 
   }

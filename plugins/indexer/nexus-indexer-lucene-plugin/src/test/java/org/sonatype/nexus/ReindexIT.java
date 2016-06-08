@@ -17,11 +17,6 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.Date;
 
-import org.sonatype.jettytestsuite.ServletServer;
-import org.sonatype.nexus.index.DefaultIndexerManager;
-import org.sonatype.nexus.index.IndexerManager;
-import org.sonatype.nexus.proxy.maven.MavenProxyRepository;
-
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.index.IndexReader;
@@ -38,6 +33,10 @@ import org.apache.maven.index.packer.IndexPacker;
 import org.apache.maven.index.packer.IndexPackingRequest;
 import org.codehaus.plexus.component.repository.exception.ComponentLookupException;
 import org.junit.Test;
+import org.sonatype.jettytestsuite.ServletServer;
+import org.sonatype.nexus.index.DefaultIndexerManager;
+import org.sonatype.nexus.index.IndexerManager;
+import org.sonatype.nexus.proxy.maven.MavenProxyRepository;
 
 // This is an IT just because it runs longer then 15 seconds
 public class ReindexIT
@@ -160,7 +159,8 @@ public class ReindexIT
   /**
    * Will reindex, shift if needed and publish indexes for a "remote" repository (published over jetty component).
    */
-  protected void reindexRemoteRepositoryAndPublish(File repositoryRoot, String repositoryId,
+  @SuppressWarnings("deprecation")
+protected void reindexRemoteRepositoryAndPublish(File repositoryRoot, String repositoryId,
                                                    boolean deleteIndexFiles, int shiftDays)
       throws IOException, ComponentLookupException
   {
@@ -168,7 +168,7 @@ public class ReindexIT
 
     Directory directory = FSDirectory.open(indexDirectory);
 
-    IndexingContext ctx =
+	IndexingContext ctx =
         nexusIndexer.addIndexingContextForced(repositoryId + "-temp", repositoryId, repositoryRoot, directory,
             null, null, new IndexCreatorHelper(getContainer()).getFullCreators());
 

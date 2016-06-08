@@ -77,40 +77,68 @@ public class Nexus5772MimeTest
     {
       final StorageFileItem fileItem = mock(StorageFileItem.class);
       final File file = util.resolveFile("src/test/resources/mime/file.gif");
-      try (final InputStream is = new FileInputStream(file)) {
+      final InputStream is = new FileInputStream(file);
+      try {
         when(fileItem.getInputStream()).thenReturn(is);
         when(fileItem.getName()).thenReturn(file.getName());
         assertThat(mimeSupport.detectMimeTypesFromContent(fileItem), equalTo("image/gif"));
-      }
+      }finally {
+    	try {
+    		if(is != null)
+    			is.close();
+		} catch (Exception e) {
+		}
+    }
     }
     {
       final StorageFileItem fileItem = mock(StorageFileItem.class);
       final File file = util.resolveFile("src/test/resources/mime/file.zip");
-      try (final InputStream is = new FileInputStream(file)) {
+      final InputStream is = new FileInputStream(file);
+      try {
         when(fileItem.getInputStream()).thenReturn(is);
         when(fileItem.getName()).thenReturn(file.getName());
         assertThat(mimeSupport.detectMimeTypesFromContent(fileItem), equalTo("application/zip"));
-      }
+      }finally {
+    	try {
+    		if(is != null)
+    			is.close();
+		} catch (Exception e) {
+		}
+    }
     }
     {
       final StorageFileItem fileItem = mock(StorageFileItem.class);
       final File file = util.resolveFile("src/test/resources/mime/empty.zip");
-      try (final InputStream is = new FileInputStream(file)) {
+      final InputStream is = new FileInputStream(file);
+      try {
         when(fileItem.getInputStream()).thenReturn(is);
         when(fileItem.getName()).thenReturn(file.getName());
         assertThat(mimeSupport.detectMimeTypesFromContent(fileItem), equalTo("application/zip"));
-      }
+      }finally {
+    	try {
+    		if(is != null)
+    			is.close();
+		} catch (Exception e) {
+		}
+    }
     }
     {
       final StorageFileItem fileItem = mock(StorageFileItem.class);
       final File file = util.resolveFile("src/test/resources/mime/file.jar");
-      try (final InputStream is = new FileInputStream(file)) {
+      final InputStream is = new FileInputStream(file);
+      try {
         when(fileItem.getInputStream()).thenReturn(is);
         when(fileItem.getName()).thenReturn(file.getName());
         // NOTE: by content, this is application/zip (JAR file is a Zip file with some extra spice)
         // But here, as we provide file, MimeSupport uses content AND filename to guess
         assertThat(mimeSupport.detectMimeTypesFromContent(fileItem), equalTo("application/java-archive"));
-      }
+      }finally {
+    	try {
+    		if(is != null)
+    			is.close();
+		} catch (Exception e) {
+		}
+    }
     }
   }
 

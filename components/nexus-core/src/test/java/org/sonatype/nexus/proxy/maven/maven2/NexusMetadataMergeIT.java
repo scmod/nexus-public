@@ -55,9 +55,16 @@ public class NexusMetadataMergeIT
 
   public Metadata parseMetadata(InputStream inputStream)
       throws IOException
-  {
-    try (InputStream in = inputStream) {
+  {	
+	InputStream in = inputStream;
+    try {
       return MetadataBuilder.read(in);
+    }finally {
+    	try {
+    		if(in != null)
+    			in.close();
+		} catch (Exception e) {
+		}
     }
   }
 

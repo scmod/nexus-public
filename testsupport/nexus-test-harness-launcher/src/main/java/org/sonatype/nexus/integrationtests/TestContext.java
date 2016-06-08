@@ -33,7 +33,7 @@ public class TestContext
   private final HashMap<String, Object> map;
 
   public TestContext() {
-    map = new HashMap<>();
+    map = new HashMap<String, Object>();
     // nexusUrl is set only once, it does not change (for now)
     nexusUrl = null;
     reset();

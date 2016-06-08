@@ -492,13 +492,26 @@ public class AbstractEnvironmentMojo
 
         File outFile = new File(outputDir, name.substring(10));
         getLog().debug("Extracting " + name + " to " + outFile);
-
-        try (InputStream in = file.getInputStream(entry);
-             FileOutputStream out = new FileOutputStream(outFile)) {
+		InputStream in = null;
+		FileOutputStream out = null;
+        try {
+        	in = file.getInputStream(entry);
+        	out = new FileOutputStream(outFile);
           IOUtils.copy(in, out);
         }
         catch (IOException e) {
           throw new MojoExecutionException(e.getMessage(), e);
+        }finally {
+        	try {
+        		if(out != null)
+        			out.close();
+    		} catch (Exception e) {
+    		}
+        	try {
+        		if(in != null)
+        			in.close();
+    		} catch (Exception e) {
+    		}
         }
       }
     }
@@ -510,16 +523,30 @@ public class AbstractEnvironmentMojo
     try {
       Properties original = new Properties();
 
-      try (InputStream input = new FileInputStream(baseTestProperties)) {
+      InputStream input = new FileInputStream(baseTestProperties);
+      try {
         original.load(input);
-      }
+      }finally {
+    	try {
+    		if(input != null)
+    			input.close();
+		} catch (Exception e) {
+		}
+    }
 
       original.putAll(this.project.getProperties());
       original.putAll(this.session.getExecutionProperties());
-
-      try (OutputStream output = new FileOutputStream(baseTestProperties)) {
+      
+      OutputStream output = new FileOutputStream(baseTestProperties);
+      try {
         original.store(output, "Updated by EnvironmentMojo");
-      }
+      }finally {
+    	try {
+    		if(output != null)
+    			output.close();
+		} catch (Exception e) {
+		}
+    }
     }
     catch (Exception e) {
       throw new MojoExecutionException(
@@ -654,21 +681,41 @@ public class AbstractEnvironmentMojo
         mavenFileFilter.copyFile(extraContentFile, tempFile, true, project, null, true, "UTF-8", session);
 
         Properties original = new Properties();
-        try (InputStream originalReader = new FileInputStream(originalFile)) {
+        InputStream originalReader = new FileInputStream(originalFile);
+        try {
           original.load(originalReader);
+        }finally {
+        	try {
+        		if(originalReader != null)
+        			originalReader.close();
+    		} catch (Exception e) {
+    		}
         }
 
         Properties extra = new Properties();
-        try (InputStream extraContentReader = new FileInputStream(tempFile)) {
+        InputStream extraContentReader = new FileInputStream(tempFile);
+        try {
           extra.load(extraContentReader);
+        }finally {
+        	try {
+        		if(extraContentReader != null)
+        			extraContentReader.close();
+    		} catch (Exception e) {
+    		}
         }
 
         for (Object key : extra.keySet()) {
           original.put(key, extra.get(key));
         }
-
-        try (OutputStream originalWriter = new FileOutputStream(originalFile)) {
+		OutputStream originalWriter = new FileOutputStream(originalFile);
+        try {
           original.store(originalWriter, "Updated by EnvironmentMojo");
+        }finally {
+        	try {
+        		if(originalWriter != null)
+        			originalWriter.close();
+    		} catch (Exception e) {
+    		}
         }
       }
       else {

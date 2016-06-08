@@ -74,9 +74,16 @@ public class RemoteErrorPageWith200Test
         (DefaultStorageFileItem) remoteStorage.retrieveItem(aProxyRepository, storeRequest, this.baseUrl);
 
     // result should be HTML
-    try (InputStream io = item.getInputStream()) {
+    InputStream io = item.getInputStream();
+    try  {
       String content = IOUtils.toString(io);
       Assert.assertEquals(expectedContent, content);
+    }finally {
+    	try {
+    		if(io != null)
+    			io.close();
+		} catch (Exception e) {
+		}
     }
   }
 

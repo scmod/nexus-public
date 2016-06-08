@@ -38,17 +38,35 @@ public class ChecksummingContentLocatorTest
     final RequestContext context = new RequestContext();
 
     ContentLocator contentLocator = new ChecksummingContentLocator(content, messageDigest, contextKey, context);
-
-    try (InputStream is = contentLocator.getContent()) {
+	InputStream is = contentLocator.getContent();
+    try {
       is.read(new byte[8]); // partial read
+    }finally {
+    	try {
+    		if(is != null)
+    			is.close();
+		} catch (Exception e) {
+		}
     }
-
-    try (InputStream is = contentLocator.getContent()) {
+	is = contentLocator.getContent();
+    try {
       is.read(new byte[8]); // partial read
+    }finally {
+    	try {
+    		if(is != null)
+    			is.close();
+		} catch (Exception e) {
+		}
     }
-
-    try (InputStream is = contentLocator.getContent()) {
+	is = contentLocator.getContent();
+    try {
       ByteStreams.copy(is, ByteStreams.nullOutputStream());
+    }finally {
+    	try {
+    		if(is != null)
+    			is.close();
+		} catch (Exception e) {
+		}
     }
 
     assertThat(context.get(contextKey), equalTo(DIGEST));

@@ -21,7 +21,6 @@ import java.util.Properties;
 
 import org.sonatype.security.configuration.model.SecurityConfiguration;
 import org.sonatype.security.configuration.model.io.xpp3.SecurityConfigurationXpp3Writer;
-
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.eclipse.sisu.launch.InjectedTestCase;
@@ -113,9 +112,21 @@ public class DefaultSecurityConfigurationUpgraderTest
   private void copyFromStreamToFile(InputStream is, File output)
       throws IOException
   {
-    try (InputStream in = is;
-         FileOutputStream fos = new FileOutputStream(output);) {
+	InputStream in = is;
+    FileOutputStream fos = new FileOutputStream(output);
+    try {
       IOUtils.copy(is, fos);
+    }finally {
+    	try {
+    		if(fos != null)
+    			fos.close();
+		} catch (Exception e) {
+		}
+    	try {
+    		if(in != null)
+    			in.close();
+		} catch (Exception e) {
+		}
     }
   }
 

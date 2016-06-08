@@ -31,7 +31,9 @@ import org.sonatype.security.model.Configuration;
 import org.sonatype.security.model.io.xpp3.SecurityConfigurationXpp3Reader;
 
 import com.google.inject.Binder;
+
 import net.sf.ehcache.CacheManager;
+
 import org.apache.commons.io.FileUtils;
 import org.apache.shiro.realm.Realm;
 import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
@@ -117,8 +119,15 @@ public abstract class AbstractSecurityTestCase
   {
     // now lets check the XML file for the user and the role mapping
     SecurityConfigurationXpp3Reader secReader = new SecurityConfigurationXpp3Reader();
-    try (FileReader fileReader = new FileReader(new File(CONFIG_DIR, "security.xml"))) {
+    FileReader fileReader = new FileReader(new File(CONFIG_DIR, "security.xml"));
+    try {
       return secReader.read(fileReader);
+    }finally {
+    	try {
+    		if(fileReader != null)
+    			fileReader.close();
+		} catch (Exception e) {
+		}
     }
   }
 }

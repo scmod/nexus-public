@@ -27,6 +27,7 @@ import java.util.Map.Entry;
 import org.sonatype.nexus.proxy.maven.routing.internal.ConfigImpl;
 
 import com.google.common.base.Throwables;
+
 import org.apache.commons.io.FileUtils;
 import org.codehaus.plexus.classworlds.ClassWorld;
 import org.codehaus.plexus.classworlds.realm.ClassRealm;
@@ -79,7 +80,7 @@ public class EmbeddedNexusBooter
     checkArgument(port > 1024);
     log.info("Port: {}", port);
 
-    overrides = new HashMap<>();
+    overrides = new HashMap<String, String>();
     overrides.put("application-port", String.valueOf(port));
     overrides.put("bundleBasedir", installDir.getPath());
     overrides.put("nexus-work", workDir.getPath());
@@ -138,7 +139,7 @@ public class EmbeddedNexusBooter
   }
 
   private ClassRealm createBootRealm() throws Exception {
-    List<URL> classpath = new ArrayList<>() ;
+    List<URL> classpath = new ArrayList<URL>() ;
 
     File confDir = new File(installDir, "conf");
     log.info("Boot conf dir: {}", confDir);

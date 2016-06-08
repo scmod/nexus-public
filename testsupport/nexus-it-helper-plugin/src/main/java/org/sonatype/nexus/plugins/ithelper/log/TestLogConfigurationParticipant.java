@@ -41,10 +41,17 @@ public class TestLogConfigurationParticipant
   @Override
   public InputStream getConfiguration() {
     final ByteArrayOutputStream baos = new ByteArrayOutputStream();
-    try (PrintWriter writer = new PrintWriter(baos)) {
+    PrintWriter writer = new PrintWriter(baos);
+    try {
       writer.println("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
       writer.println();
       writer.println("<included/>");
+    }finally {
+    	try {
+    		if(writer != null)
+    			writer.close();
+		} catch (Exception e) {
+		}
     }
     return new ByteArrayInputStream(baos.toByteArray());
   }

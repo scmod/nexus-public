@@ -211,10 +211,22 @@ public class FileTestingUtils
         FileUtils.copyFile(sourceFile, destFile);
       }
       else {
-        try (FileReader reader = new FileReader(sourceFile);
-             FileWriter writer = new FileWriter(destFile)) {
+    	FileReader reader = new FileReader(sourceFile);
+        FileWriter writer = new FileWriter(destFile);
+        try {
           InterpolationFilterReader filterReader = new InterpolationFilterReader(reader, variables);
           IOUtils.copy(filterReader, writer);
+        }finally {
+        	try {
+        		if(writer != null)
+        			writer.close();
+    		} catch (Exception e) {
+    		}
+        	try {
+        		if(reader != null)
+        			reader.close();
+    		} catch (Exception e) {
+    		}
         }
       }
     }

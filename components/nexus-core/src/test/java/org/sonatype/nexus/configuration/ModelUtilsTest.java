@@ -125,8 +125,15 @@ public class ModelUtilsTest
     FileSupport.writeFile(file.toPath(), payload);
 
     final String version;
-    try(final InputStream input = Files.newInputStream(file.toPath())) {
+    final InputStream input = Files.newInputStream(file.toPath());
+    try {
       version = DOM_READER.readVersion(input);
+    }finally {
+    	try {
+    		if(input != null)
+    			input.close();
+		} catch (Exception e) {
+		}
     }
     assertThat(version, equalTo("1"));
   }
@@ -138,8 +145,15 @@ public class ModelUtilsTest
     FileSupport.writeFile(file.toPath(), payload);
 
     final String version;
-    try(final InputStream input = Files.newInputStream(file.toPath())) {
+    final InputStream input = Files.newInputStream(file.toPath());
+    try {
       version = DOM_READER.readVersion(input);
+    }finally {
+    	try {
+    		if(input != null)
+    			input.close();
+		} catch (Exception e) {
+		}
     }
   }
 

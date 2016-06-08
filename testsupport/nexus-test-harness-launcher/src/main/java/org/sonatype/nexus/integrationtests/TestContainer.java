@@ -21,6 +21,7 @@ import java.util.concurrent.Callable;
 import org.sonatype.nexus.test.utils.TestProperties;
 
 import com.google.inject.Module;
+
 import org.codehaus.plexus.ContainerConfiguration;
 import org.codehaus.plexus.DefaultContainerConfiguration;
 import org.codehaus.plexus.DefaultPlexusContainer;
@@ -117,7 +118,7 @@ public class TestContainer
   private PlexusContainer createContainer(Class<?> baseClass, Module... modules) {
     log.info("Creating container; baseClass: {}, modules: {}", baseClass, modules);
 
-    Map<Object, Object> context = new HashMap<>();
+    Map<Object, Object> context = new HashMap<Object, Object>();
     context.put("basedir", getBasedir());
     context.putAll(getTestProperties());
 

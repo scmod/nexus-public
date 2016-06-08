@@ -251,10 +251,22 @@ public abstract class AbstractProxyTestEnvironment
   protected void saveItemToFile(StorageFileItem item, File file)
       throws IOException
   {
-    try (InputStream is = item.getInputStream();
-         FileOutputStream fos = new FileOutputStream(file)) {
+	InputStream is = item.getInputStream();
+    FileOutputStream fos = new FileOutputStream(file);
+    try {
       IOUtils.copy(is, fos);
       fos.flush();
+    }finally {
+    	try {
+    		if(fos != null)
+    			fos.close();
+		} catch (Exception e) {
+		}
+    	try {
+    		if(is != null)
+    			is.close();
+		} catch (Exception e) {
+		}
     }
   }
 
@@ -302,16 +314,30 @@ public abstract class AbstractProxyTestEnvironment
       throws Exception
   {
     MetadataXpp3Reader metadataReader = new MetadataXpp3Reader();
-    try (InputStreamReader isr = new InputStreamReader(new FileInputStream(mdf))) {
+    InputStreamReader isr = new InputStreamReader(new FileInputStream(mdf));
+    try {
       return metadataReader.read(isr);
+    }finally {
+    	try {
+    		if(isr != null)
+    			isr.close();
+		} catch (Exception e) {
+		}
     }
   }
 
   protected String contentAsString(StorageItem item)
       throws IOException
   {
-    try (InputStream is = ((StorageFileItem) item).getInputStream()) {
+	InputStream is = ((StorageFileItem) item).getInputStream();
+    try {
       return IOUtils.toString(is, "UTF-8");
+    }finally {
+    	try {
+    		if(is != null)
+    			is.close();
+		} catch (Exception e) {
+		}
     }
   }
 

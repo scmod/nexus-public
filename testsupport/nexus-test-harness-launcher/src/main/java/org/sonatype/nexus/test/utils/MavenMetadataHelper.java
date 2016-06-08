@@ -80,8 +80,15 @@ public class MavenMetadataHelper
   public static Metadata getMetadata(File metadata)
       throws Exception
   {
-    try (FileInputStream in = new FileInputStream(metadata)) {
+	FileInputStream in = new FileInputStream(metadata);
+    try {
       return MetadataBuilder.read(in);
+    }finally {
+    	try {
+    		if(in != null)
+    			in.close();
+		} catch (Exception e) {
+		}
     }
   }
 }

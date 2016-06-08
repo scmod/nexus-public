@@ -87,7 +87,9 @@ public class ConfigurableInjectedTest
 
   private void load(final Properties properties, final URL url) {
     if (url != null) {
-      try (InputStream in = url.openStream()) {
+      InputStream in = null;
+      try {
+    	in = url.openStream();
         if (in != null) {
           properties.load(in);
         }
@@ -95,7 +97,13 @@ public class ConfigurableInjectedTest
       }
       catch (final IOException e) {
         throw new IllegalStateException("Failed to load " + url.toExternalForm(), e);
-      }
+      }finally {
+    	try {
+    		if(in != null)
+    			in.close();
+		} catch (Exception e) {
+		}
+    }
     }
   }
 

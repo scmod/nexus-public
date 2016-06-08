@@ -63,17 +63,48 @@ public class SimpleRealmTest
       throws IOException
   {
     ClassLoader ccl = Thread.currentThread().getContextClassLoader();
-    try (InputStream nexusConf = ccl.getResourceAsStream("nexus.xml");
+    InputStream nexusConf = ccl.getResourceAsStream("nexus.xml");
          InputStream security = ccl.getResourceAsStream("security.xml");
          InputStream securityConf = ccl.getResourceAsStream("security-configuration.xml");
 
          OutputStream nexusOut = new FileOutputStream(new File(confdir, "nexus.xml"));
          OutputStream securityOut = new FileOutputStream(new File(confdir, "security.xml"));
-         OutputStream securityConfOut = new FileOutputStream(new File(confdir, "security-configuration.xml"))) {
-
+         OutputStream securityConfOut = new FileOutputStream(new File(confdir, "security-configuration.xml"));
+    try {
       IOUtils.copy(nexusConf, nexusOut);
       IOUtils.copy(security, securityOut);
       IOUtils.copy(securityConf, securityConfOut);
+    }finally {
+    	try {
+    		if(nexusConf != null)
+    			nexusConf.close();
+		} catch (Exception e) {
+		}
+    	try {
+    		if(security != null)
+    			security.close();
+		} catch (Exception e) {
+		}
+    	try {
+    		if(securityConf != null)
+    			securityConf.close();
+		} catch (Exception e) {
+		}
+		try {
+    		if(nexusOut != null)
+    			nexusOut.close();
+		} catch (Exception e) {
+		}
+		try {
+    		if(securityOut != null)
+    			securityOut.close();
+		} catch (Exception e) {
+		}
+		try {
+    		if(securityConfOut != null)
+    			securityConfOut.close();
+		} catch (Exception e) {
+		}
     }
   }
 

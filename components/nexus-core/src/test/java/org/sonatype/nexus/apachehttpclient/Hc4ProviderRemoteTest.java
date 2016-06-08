@@ -88,8 +88,15 @@ public class Hc4ProviderRemoteTest
   public void prepare() throws Exception {
     userAgentChecker = new UserAgentChecker();
     final int port;
-    try (final ServerSocket ss = new ServerSocket(0)) {
+    final ServerSocket ss = new ServerSocket(0);
+    try {
       port = ss.getLocalPort();
+    }finally {
+    	try {
+    		if(ss != null)
+    			ss.close();
+		} catch (Exception e) {
+		}
     }
     server = new Server(port);
     server.setHandler(userAgentChecker);

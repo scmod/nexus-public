@@ -424,9 +424,21 @@ public abstract class PlexusTestCaseSupport
    * Both s1 and s2 will be closed.
    */
   protected boolean contentEquals(InputStream s1, InputStream s2) throws IOException {
-    try (InputStream in1 = s1;
-         InputStream in2 = s2) {
+	  InputStream in1 = s1;
+      InputStream in2 = s2;
+    try {
       return IOUtils.contentEquals(in1, in2);
+    }finally {
+    	try {
+    		if(in1 != null)
+    			in1.close();
+		} catch (Exception e) {
+		}
+    	try {
+    		if(in2 != null)
+    			in2.close();
+		} catch (Exception e) {
+		}
     }
   }
 }

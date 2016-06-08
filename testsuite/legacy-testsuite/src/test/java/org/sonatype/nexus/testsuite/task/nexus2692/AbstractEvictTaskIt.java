@@ -41,6 +41,7 @@ import org.sonatype.nexus.test.utils.TaskScheduleUtil;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.FalseFileFilter;
 import org.apache.commons.io.filefilter.TrueFileFilter;
@@ -77,8 +78,8 @@ public class AbstractEvictTaskIt
     final Marshaller marshaller = new JacksonJSONMarshaller();
 
     final long now = System.currentTimeMillis();
-
-    try (BufferedReader reader = new BufferedReader(new FileReader(attributesInfo))) {
+	BufferedReader reader = new BufferedReader(new FileReader(attributesInfo));
+    try {
 
       String line = reader.readLine();
       while (line != null) {
@@ -106,21 +107,41 @@ public class AbstractEvictTaskIt
           // modify the file corresponding attribute
           final File attributeFile = new File(new File(new File(storageWorkDir, repoId), ".nexus/attributes"), filePart);
           Attributes attributes;
-          try (FileInputStream in = new FileInputStream(attributeFile)) {
+          FileInputStream in = new FileInputStream(attributeFile);
+          try {
             attributes = marshaller.unmarshal(in);
-          }
+          }finally {
+          	try {
+        		if(in != null)
+        			in.close();
+    		} catch (Exception e) {
+    		}
+        }
 
           // set new value
           attributes.setLastRequested(now + offset);
 
           // write it out
-          try (FileOutputStream out = new FileOutputStream(attributeFile)) {
+          FileOutputStream out = new FileOutputStream(attributeFile);
+          try {
             marshaller.marshal(attributes, out);
-          }
+          }finally {
+          	try {
+        		if(out != null)
+        			out.close();
+    		} catch (Exception e) {
+    		}
+        }
         }
 
         line = reader.readLine();
       }
+    }finally {
+    	try {
+    		if(reader != null)
+    			reader.close();
+		} catch (Exception e) {
+		}
     }
   }
 

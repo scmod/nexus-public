@@ -55,9 +55,21 @@ public abstract class AbstractSecurityConfigTest
   protected void copyResource(String resource, String dest)
       throws IOException
   {
-    try (InputStream in = getClass().getResourceAsStream(resource);
-         FileOutputStream out = new FileOutputStream(dest)) {
+	InputStream in = getClass().getResourceAsStream(resource);
+    FileOutputStream out = new FileOutputStream(dest);
+    try {
       IOUtils.copy(in, out);
+    }finally {
+    	try {
+    		if(in != null)
+    			in.close();
+		} catch (Exception e) {
+		}
+    	try {
+    		if(out != null)
+    			out.close();
+		} catch (Exception e) {
+		}
     }
   }
 
@@ -77,9 +89,20 @@ public abstract class AbstractSecurityConfigTest
   public static void copyFromStreamToFile(InputStream is, File output)
       throws IOException
   {
-    try (InputStream in = is;
-         FileOutputStream fos = new FileOutputStream(output)) {
+      FileOutputStream fos = new FileOutputStream(output);
+    try {
       IOUtils.copy(is, fos);
+    }finally {
+    	try {
+    		if(fos != null)
+    			fos.close();
+		} catch (Exception e) {
+		}
+    	try {
+    		if(is != null)
+    			is.close();
+		} catch (Exception e) {
+		}
     }
   }
 

@@ -167,9 +167,21 @@ public abstract class NexusTestSupport
   protected void copyResource(String resource, String dest)
       throws IOException
   {
-    try (InputStream in = getClass().getResourceAsStream(resource);
-         FileOutputStream out = new FileOutputStream(dest)) {
+	InputStream in = getClass().getResourceAsStream(resource);
+    FileOutputStream out = new FileOutputStream(dest);
+    try {
       IOUtils.copy(in, out);
+    }finally {
+    	try {
+    		if(out != null)
+    			out.close();
+		} catch (Exception e) {
+		}
+    	try {
+    		if(in != null)
+    			in.close();
+		} catch (Exception e) {
+		}
     }
   }
 

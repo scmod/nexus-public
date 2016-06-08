@@ -22,7 +22,6 @@ import org.sonatype.nexus.rest.model.NexusArtifact;
 import org.sonatype.nexus.test.utils.GroupMessageUtil;
 import org.sonatype.nexus.test.utils.RepositoryMessageUtil;
 import org.sonatype.nexus.test.utils.TaskScheduleUtil;
-
 import org.apache.maven.index.SearchType;
 import org.apache.maven.index.artifact.Gav;
 import org.apache.maven.model.Model;
@@ -237,8 +236,15 @@ public class Nexus383SearchIT
 
     MavenXpp3Reader reader = new MavenXpp3Reader();
     Model model = null;
-    try (FileInputStream fis = new FileInputStream(pomFile)) {
+    FileInputStream fis = new FileInputStream(pomFile);
+    try {
       model = reader.read(fis, true);
+    }finally {
+    	try {
+    		if(fis != null)
+    			fis.close();
+		} catch (Exception e) {
+		}
     }
 
     String deployUrl = model.getDistributionManagement().getRepository().getUrl();

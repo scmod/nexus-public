@@ -49,10 +49,21 @@ public abstract class AbstractApplicationConfigurationSourceTest
     // not using load here since File config would load it and store it
     // thus changing it (but no content change!)
     copyDefaultConfigToPlace();
-
-    try (InputStream configStream = configurationSource.getConfigurationAsStream();
-         InputStream originalStream = getOriginatingConfigurationInputStream()) {
+	InputStream configStream = configurationSource.getConfigurationAsStream();
+	InputStream originalStream = getOriginatingConfigurationInputStream();
+    try {
       assertTrue(IOUtils.contentEquals(configStream, originalStream));
+    }finally {
+    	try {
+    		if(configStream != null)
+    			configStream.close();
+		} catch (Exception e) {
+		}
+    	try {
+    		if(originalStream != null)
+    			originalStream.close();
+		} catch (Exception e) {
+		}
     }
   }
 

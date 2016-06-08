@@ -30,7 +30,6 @@ import org.sonatype.nexus.test.utils.NexusStatusUtil;
 import org.sonatype.nexus.test.utils.TestProperties;
 import org.sonatype.nexus.testsuite.plugin.nexus2810.PluginConsoleMessageUtil;
 import org.sonatype.sisu.litmus.testsupport.TestSupport;
-
 import org.apache.commons.io.FileUtils;
 import org.codehaus.cargo.container.ContainerType;
 import org.codehaus.cargo.container.InstalledLocalContainer;
@@ -130,15 +129,24 @@ public abstract class AbstractCargoIT
 
     // now load the prop file and change the root.level to DEBUG
     Properties p = new Properties();
-    try (FileReader r = new FileReader(file)) {
+    FileReader r = new FileReader(file);
+    try {
       p.load(r);
+    }finally {
+    	try {
+    		if(r != null)
+    			r.close();
+		} catch (Exception e) {
+		}
     }
     assertThat(p.getProperty("root.level"), is("INFO")); // sanity
 
     // reset it
     p.setProperty("root.level", "DEBUG");
-
-    try (Writer w = new FileWriter(file)) {
+    
+	Writer w = null;
+    try {
+      w = new FileWriter(file);
       p.store(w, null);
     }
     catch (IOException e) {
@@ -152,12 +160,26 @@ public abstract class AbstractCargoIT
   private void fixNexusProperties() throws Exception {
     File file = new File(getWarFile(), "WEB-INF/classes/nexus.properties");
     Properties p = new Properties();
-    try (FileReader r = new FileReader(file)) {
+    FileReader r = new FileReader(file);
+    try {
       p.load(r);
+    }finally {
+    	try {
+    		if(r != null)
+    			r.close();
+		} catch (Exception e) {
+		}
     }
     p.setProperty("nexus-work", getITNexusWorkDirPath());
-    try (Writer w = new FileWriter(file)) {
+    Writer w = new FileWriter(file);
+    try {
       p.store(w, null);
+    }finally {
+    	try {
+    		if(w != null)
+    			w.close();
+		} catch (Exception e) {
+		}
     }
   }
 
