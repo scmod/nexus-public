@@ -28,16 +28,10 @@ import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 
-import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
 
-import org.eclipse.jgit.api.Git;
-import org.eclipse.jgit.api.errors.GitAPIException;
-import org.eclipse.jgit.lib.Constants;
-import org.eclipse.sisu.Parameters;
 import org.sonatype.nexus.proxy.ItemNotFoundException;
 import org.sonatype.nexus.proxy.LocalStorageEOFException;
 import org.sonatype.nexus.proxy.LocalStorageException;
@@ -90,19 +84,6 @@ public class DefaultFSPeer
   private static final String APPENDIX = "nx-tmp";
 
   private static final String REPO_TMP_FOLDER = ".nexus/tmp";
-  
-  private static Git git;
-  
-  @Inject
-  public DefaultFSPeer(@Parameters Map<String, String> properties) {
-	  File gitDir = new File(new File(properties.get("nexus-work"), "storage"), Constants.DOT_GIT);
-	  try {
-		git = Git.open(gitDir);
-	} catch (IOException e) {
-		log.error("gitDir open error");
-		throw Throwables.propagate(e);
-	}
-  }
   
   @Override
   public boolean isReachable(final Repository repository, final File repositoryBaseDir,
@@ -205,7 +186,6 @@ public class DefaultFSPeer
       try {
         handleRenameOperation(hiddenTarget, target);
         target.setLastModified(item.getModified());
-        gitCommit(repository, item.getResourceStoreRequest());
       }
       catch (IOException e) {
         // if we ARE NOT handling attributes, do proper cleanup in case of IOEx
@@ -297,7 +277,6 @@ public class DefaultFSPeer
             "Path %s not found in local storage of repository %s", from.getRequestPath(),
             RepositoryStringUtils.getHumanizedNameString(repository)));
       }
-      gitCommit(repository, from);
     }
     catch (IOException e) {
       throw new LocalStorageException("Error during moveItem", e);
@@ -382,18 +361,6 @@ public class DefaultFSPeer
     }
   }
   
-  private void gitCommit(Repository repository, ResourceStoreRequest rsr) throws IOException {
-	  String path = rsr.getRequestPath();
-      if(repository.isGitlabbbbb() && path.charAt(1) != '.') {
-      	try {
-      		git.add().addFilepattern(repository.getId() + path).call();
-			git.commit().setMessage(path).call();
-		} catch (GitAPIException e) {
-			throw new IOException(e);
-		}
-      }
-  }
-
   // ==
 
   private static final String FILE_COPY_STREAM_BUFFER_SIZE_KEY = "upload.stream.bufferSize";

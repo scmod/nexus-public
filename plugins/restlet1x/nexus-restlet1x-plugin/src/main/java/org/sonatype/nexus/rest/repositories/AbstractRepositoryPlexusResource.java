@@ -282,8 +282,6 @@ public abstract class AbstractRepositoryPlexusResource
 
     resource.setBrowseable(repository.isBrowseable());
 
-    resource.setGitlabbbbb(repository.isGitlabbbbb());
-    
     resource.setIndexable(repository.isSearchable());
 
     resource.setExposed(repository.isExposed());

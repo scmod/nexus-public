@@ -183,7 +183,6 @@ public class RepositoryPlexusResource
 
             repository.setIndexable(model.isIndexable());
             repository.setSearchable(model.isIndexable());
-            repository.setGitlabbbbb(model.isGitlabbbbb());
 
             repository.setNotFoundCacheTimeToLive(model.getNotFoundCacheTTL());
 

@@ -87,12 +87,6 @@
       <artifactId>nexus-oss-edition</artifactId>
     </dependency>
     
-    <dependency>
-		<groupId>org.eclipse.jgit</groupId>
-		<artifactId>org.eclipse.jgit</artifactId>
-		<version>${jgit.version}</version>
-	</dependency>
-
     <!--
     HACK: Using nexus.version since DM not in scope.
     -->

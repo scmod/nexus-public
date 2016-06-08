@@ -388,10 +388,6 @@ public interface Repository
    * "non targeted searches", otherwise not.
    */
   void setSearchable(boolean val);
-
-  boolean isGitlabbbbb();
-  
-  void setGitlabbbbb(boolean gitlabbbbb);
   
   // ==================================================
   // Maintenance

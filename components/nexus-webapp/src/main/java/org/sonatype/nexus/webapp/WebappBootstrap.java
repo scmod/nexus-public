@@ -12,6 +12,8 @@
  */
 package org.sonatype.nexus.webapp;
 
+import static com.google.common.base.Preconditions.checkState;
+
 import java.io.File;
 import java.util.Map;
 import java.util.ServiceLoader;
@@ -20,6 +22,20 @@ import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
+import org.codehaus.plexus.PlexusConstants;
+import org.codehaus.plexus.PlexusContainer;
+import org.codehaus.plexus.context.Context;
+import org.eclipse.sisu.plexus.PlexusSpaceModule;
+import org.eclipse.sisu.space.BeanScanning;
+import org.eclipse.sisu.space.ClassSpace;
+import org.eclipse.sisu.space.URLClassSpace;
+import org.eclipse.sisu.wire.WireModule;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.Constants;
+import org.osgi.framework.launch.Framework;
+import org.osgi.framework.launch.FrameworkFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.sonatype.nexus.NxApplication;
 import org.sonatype.nexus.bootstrap.ConfigurationBuilder;
 import org.sonatype.nexus.bootstrap.ConfigurationHolder;
@@ -33,24 +49,6 @@ import com.google.common.base.Throwables;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.servlet.GuiceServletContextListener;
-
-import org.codehaus.plexus.PlexusConstants;
-import org.codehaus.plexus.PlexusContainer;
-import org.codehaus.plexus.context.Context;
-import org.eclipse.jgit.api.Git;
-import org.eclipse.sisu.plexus.PlexusSpaceModule;
-import org.eclipse.sisu.space.BeanScanning;
-import org.eclipse.sisu.space.ClassSpace;
-import org.eclipse.sisu.space.URLClassSpace;
-import org.eclipse.sisu.wire.WireModule;
-import org.osgi.framework.BundleContext;
-import org.osgi.framework.Constants;
-import org.osgi.framework.launch.Framework;
-import org.osgi.framework.launch.FrameworkFactory;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import static com.google.common.base.Preconditions.checkState;
 
 /**
  * Web application bootstrap {@link ServletContextListener}.
@@ -74,8 +72,6 @@ public class WebappBootstrap
 
   private LogManager logManager;
   
-  private Git git;
-
   @Override
   public void contextInitialized(final ServletContextEvent event) {
     log.info("Initializing");
@@ -120,13 +116,6 @@ public class WebappBootstrap
       lockFile = new LockFile(new File(workDir, "nexus.lock"));
       checkState(lockFile.lock(), "Nexus work directory already in use: %s", workDir);
       
-      /**
-       * AbstractRepositoryConfigurator.doApplyConfiguration
-       * File defaultStorageFile = new File(new File(configuration.getWorkingDirectory(), "storage"), repo.getId());
-       * 默认就把git直接建立在storage里面好了,去掉自定义仓库保存路径,不然要分开来一个个git检出
-      */
-      git = Git.init().setDirectory(new File(properties.get("nexus-work"), "storage")).call();
-
       properties.put(Constants.FRAMEWORK_STORAGE, workDir + "/felix-cache");
       properties.put(Constants.FRAMEWORK_STORAGE_CLEAN, Constants.FRAMEWORK_STORAGE_CLEAN_ONFIRSTINIT);
       properties.put(Constants.FRAMEWORK_BUNDLE_PARENT, Constants.FRAMEWORK_BUNDLE_PARENT_FRAMEWORK);
@@ -242,10 +231,6 @@ public class WebappBootstrap
     if (lockFile != null) {
       lockFile.release();
       lockFile = null;
-    }
-    
-    if(git != null) {
-    	git.close();
     }
 
     log.info("Destroyed");

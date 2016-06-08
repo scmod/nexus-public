@@ -128,14 +128,6 @@ public class ConfigurableRepository extends
 		getCurrentConfiguration(true).setSearchable(searchable);
 	}
 
-	public boolean isGitlabbbbb() {
-		return getCurrentConfiguration(false).isGitlabbbbb();
-	}
-
-	public void setGitlabbbbb(boolean gitlabbbbb) {
-		getCurrentConfiguration(true).setGitlabbbbb(gitlabbbbb);
-	}
-
 	public String getLocalUrl() {
 		// see NEXUS-2482
 		if (getCurrentConfiguration(false).getLocalStorage() == null

@@ -352,15 +352,13 @@ Sonatype.repoServer.HostedRepositoryEditor = function(config) {
         repoPolicy : Strings.upperFirstCharLowerRest,
         browseable : Strings.capitalize,
         indexable : Strings.capitalize,
-        exposed : Strings.capitalize,
-        gitlabbbbb : Strings.capitalize
+        exposed : Strings.capitalize
       },
       submit : {
         repoPolicy : Strings.uppercase,
         browseable : Strings.convert.stringContextToBool,
         indexable : Strings.convert.stringContextToBool,
         exposed : Strings.convert.stringContextToBool,
-        gitlabbbbb : Strings.convert.stringContextToBool,
         downloadRemoteIndexes : function() {
           return false;
         },
@@ -549,10 +547,6 @@ Sonatype.repoServer.HostedRepositoryEditor = function(config) {
                     fieldLabel : 'Allow File Browsing',
                     helpText : ht.browseable,
                     name : 'browseable'
-                  }, {
-                      fieldLabel : 'Allow File Auto Git Commiting',
-                      helpText : ht.gitlabbbbb,
-                      name : 'gitlabbbbb'
                   }, {
                     fieldLabel : 'Include in Search',
                     helpText : ht.indexable,

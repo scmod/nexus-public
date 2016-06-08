@@ -98,7 +98,6 @@ NX.define('Sonatype.repoServer.referenceData', {
       browseable : true,
       indexable : true,
       exposed : true,
-      gitlabbbbb : false,
       notFoundCacheTTL : 0,
       repoPolicy : "",
       provider : "",
