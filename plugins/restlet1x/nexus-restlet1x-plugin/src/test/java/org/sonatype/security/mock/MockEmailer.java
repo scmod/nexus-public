@@ -21,23 +21,21 @@ import org.sonatype.security.email.SecurityEmailer;
 
 @Named
 @Singleton
-public class MockEmailer
-    implements SecurityEmailer
-{
+public class MockEmailer implements SecurityEmailer {
 
-  public void sendForgotUsername(String arg0, List<String> arg1) {
-    // TODO Auto-generated method stub
+	public void sendForgotUsername(String arg0, List<String> arg1) {
+		// TODO Auto-generated method stub
 
-  }
+	}
 
-  public void sendNewUserCreated(String arg0, String arg1, String arg2) {
-    // TODO Auto-generated method stub
+	public void sendNewUserCreated(String arg0, String arg1, String arg2) {
+		// TODO Auto-generated method stub
 
-  }
+	}
 
-  public void sendResetPassword(String arg0, String arg1) {
-    // TODO Auto-generated method stub
+	public void sendResetPassword(String arg0, String arg1) {
+		// TODO Auto-generated method stub
 
-  }
+	}
 
 }

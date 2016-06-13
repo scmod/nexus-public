@@ -20,22 +20,19 @@ import javax.inject.Named;
 import javax.inject.Singleton;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 
-import org.sonatype.nexus.index.IndexerManager;
-import org.sonatype.nexus.rest.index.AbstractIndexerNexusPlexusResource;
-import org.sonatype.nexus.rest.model.NexusArtifact;
-import org.sonatype.plexus.rest.resource.PathProtectionDescriptor;
-
 import org.apache.maven.index.MAVEN;
-import org.codehaus.enunciate.contract.jaxrs.ResourceMethodSignature;
 import org.restlet.Context;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
 import org.restlet.resource.ResourceException;
 import org.restlet.resource.Variant;
+import org.sonatype.nexus.index.IndexerManager;
+import org.sonatype.nexus.rest.index.AbstractIndexerNexusPlexusResource;
+import org.sonatype.nexus.rest.model.NexusArtifact;
+import org.sonatype.plexus.rest.resource.PathProtectionDescriptor;
 
 /**
  * Resource that is able to fetch the identified Nexus Artifact. The used hash algorithm and hash key are coming from
@@ -86,10 +83,7 @@ public class IdentifyHashPlexusResource
    */
   @Override
   @GET
-  @ResourceMethodSignature(pathParams = {
-      @PathParam(IdentifyHashPlexusResource.ALGORITHM_KEY),
-      @PathParam(IdentifyHashPlexusResource.HASH_KEY)
-  }, output = NexusArtifact.class)
+  
   public Object get(Context context, Request request, Response response, Variant variant)
       throws ResourceException
   {

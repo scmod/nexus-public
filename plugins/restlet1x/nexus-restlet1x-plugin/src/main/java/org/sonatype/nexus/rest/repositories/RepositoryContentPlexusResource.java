@@ -15,14 +15,13 @@ package org.sonatype.nexus.rest.repositories;
 import javax.inject.Named;
 import javax.inject.Singleton;
 
+import org.restlet.data.Request;
+import org.restlet.resource.ResourceException;
 import org.sonatype.nexus.proxy.NoSuchRepositoryException;
 import org.sonatype.nexus.proxy.ResourceStore;
 import org.sonatype.nexus.proxy.ResourceStoreRequest;
 import org.sonatype.nexus.rest.AbstractResourceStoreContentPlexusResource;
 import org.sonatype.plexus.rest.resource.PathProtectionDescriptor;
-
-import org.restlet.data.Request;
-import org.restlet.resource.ResourceException;
 
 /**
  * Resource handler for Repository content resource.
@@ -31,52 +30,58 @@ import org.restlet.resource.ResourceException;
  */
 @Named
 @Singleton
-public class RepositoryContentPlexusResource
-    extends AbstractResourceStoreContentPlexusResource
-{
-  private static final String USE_WELCOME_FILES = "useWelcomeFiles";
+public class RepositoryContentPlexusResource extends
+		AbstractResourceStoreContentPlexusResource {
+	private static final String USE_WELCOME_FILES = "useWelcomeFiles";
 
-  public RepositoryContentPlexusResource() {
-    this.setModifiable(true);
-    this.setRequireStrictChecking(false);
-  }
+	public RepositoryContentPlexusResource() {
+		this.setModifiable(true);
+		this.setRequireStrictChecking(false);
+	}
 
-  @Override
-  public Object getPayloadInstance() {
-    return null;
-  }
+	@Override
+	public Object getPayloadInstance() {
+		return null;
+	}
 
-  @Override
-  public String getResourceUri() {
-    return "/repositories/{" + AbstractRepositoryPlexusResource.REPOSITORY_ID_KEY + "}/content";
-  }
+	@Override
+	public String getResourceUri() {
+		return "/repositories/{"
+				+ AbstractRepositoryPlexusResource.REPOSITORY_ID_KEY
+				+ "}/content";
+	}
 
-  @Override
-  public PathProtectionDescriptor getResourceProtection() {
-    return new PathProtectionDescriptor("/repositories/*/content/**", "authcBasic,trperms");
-  }
+	@Override
+	public PathProtectionDescriptor getResourceProtection() {
+		return new PathProtectionDescriptor("/repositories/*/content/**",
+				"authcBasic,trperms");
+	}
 
-  public boolean acceptsUpload() {
-    return true;
-  }
+	public boolean acceptsUpload() {
+		return true;
+	}
 
-  @Override
-  protected ResourceStore getResourceStore(final Request request)
-      throws NoSuchRepositoryException,
-             ResourceException
-  {
-    return getUnprotectedRepositoryRegistry().getRepository(
-        request.getAttributes().get(AbstractRepositoryPlexusResource.REPOSITORY_ID_KEY).toString());
-  }
+	@Override
+	protected ResourceStore getResourceStore(final Request request)
+			throws NoSuchRepositoryException, ResourceException {
+		return getUnprotectedRepositoryRegistry()
+				.getRepository(
+						request.getAttributes()
+								.get(AbstractRepositoryPlexusResource.REPOSITORY_ID_KEY)
+								.toString());
+	}
 
-  @Override
-  protected ResourceStoreRequest getResourceStoreRequest(Request request, String resourceStorePath) {
-    ResourceStoreRequest resourceStoreRequest = super.getResourceStoreRequest(request, resourceStorePath);
+	@Override
+	protected ResourceStoreRequest getResourceStoreRequest(Request request,
+			String resourceStorePath) {
+		ResourceStoreRequest resourceStoreRequest = super
+				.getResourceStoreRequest(request, resourceStorePath);
 
-    // welcome files should not be used with this resource.
-    resourceStoreRequest.getRequestContext().put(USE_WELCOME_FILES, Boolean.FALSE);
+		// welcome files should not be used with this resource.
+		resourceStoreRequest.getRequestContext().put(USE_WELCOME_FILES,
+				Boolean.FALSE);
 
-    return resourceStoreRequest;
-  }
+		return resourceStoreRequest;
+	}
 
 }

@@ -28,11 +28,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.sonatype.jettytestsuite.BlockingServer;
-import org.sonatype.nexus.proxy.NoSuchRepositoryException;
-import org.sonatype.nexus.proxy.maven.RepositoryPolicy;
-import org.sonatype.nexus.proxy.repository.ProxyMode;
-
 import org.apache.commons.io.FileUtils;
 import org.apache.maven.index.context.IndexingContext;
 import org.apache.maven.index.treeview.DefaultTreeNodeFactory;
@@ -46,6 +41,10 @@ import org.eclipse.jetty.server.handler.HandlerList;
 import org.eclipse.jetty.server.handler.ResourceHandler;
 import org.junit.Assert;
 import org.junit.Test;
+import org.sonatype.jettytestsuite.BlockingServer;
+import org.sonatype.nexus.proxy.NoSuchRepositoryException;
+import org.sonatype.nexus.proxy.maven.RepositoryPolicy;
+import org.sonatype.nexus.proxy.repository.ProxyMode;
 
 // This is an IT just because it runs longer then 15 seconds
 public class DownloadRemoteIndexerManagerIT

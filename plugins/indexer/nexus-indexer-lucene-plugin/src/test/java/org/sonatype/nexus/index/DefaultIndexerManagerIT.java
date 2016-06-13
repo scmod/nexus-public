@@ -14,14 +14,8 @@ package org.sonatype.nexus.index;
 
 import java.util.Collection;
 
-import org.sonatype.nexus.proxy.RemoteStorageException;
-import org.sonatype.nexus.proxy.maven.MavenProxyRepository;
-import org.sonatype.nexus.proxy.repository.ProxyRepository;
-import org.sonatype.nexus.templates.TemplateManager;
-import org.sonatype.nexus.templates.repository.RepositoryTemplate;
-import org.sonatype.nexus.templates.repository.maven.Maven2ProxyRepositoryTemplate;
-
 import junit.framework.Assert;
+
 import org.apache.maven.index.ArtifactInfo;
 import org.apache.maven.index.IteratorSearchResponse;
 import org.apache.maven.index.MAVEN;
@@ -29,6 +23,12 @@ import org.apache.maven.index.context.IndexingContext;
 import org.apache.maven.index.treeview.DefaultTreeNodeFactory;
 import org.apache.maven.index.treeview.TreeNode;
 import org.junit.Test;
+import org.sonatype.nexus.proxy.RemoteStorageException;
+import org.sonatype.nexus.proxy.maven.MavenProxyRepository;
+import org.sonatype.nexus.proxy.repository.ProxyRepository;
+import org.sonatype.nexus.templates.TemplateManager;
+import org.sonatype.nexus.templates.repository.RepositoryTemplate;
+import org.sonatype.nexus.templates.repository.maven.Maven2ProxyRepositoryTemplate;
 
 // This is an IT just because it runs longer then 15 seconds
 public class DefaultIndexerManagerIT

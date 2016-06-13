@@ -21,51 +21,53 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.shiro.web.servlet.AdviceFilter;
+
 import com.google.common.net.HttpHeaders;
 import com.noelios.restlet.Engine;
-import org.apache.shiro.web.servlet.AdviceFilter;
 
 /**
  * HTTP Header handling for Restlet.
  *
- * The main purpose is to sanitize the Server header in the response to include any existing Server header
- * value and finally the Restlet version header value at the end.
+ * The main purpose is to sanitize the Server header in the response to include
+ * any existing Server header value and finally the Restlet version header value
+ * at the end.
  *
  * @see NexusHttpServerConverter
  * @since 2.11.2
  */
 @Named
 @Singleton
-public class RestletHeaderFilter
-    extends AdviceFilter
-{
-  private static final String SP = " ";
+public class RestletHeaderFilter extends AdviceFilter {
+	private static final String SP = " ";
 
-  /**
-   * Join any already set Server headers and append the Restlet Server header value to a single Server header.
-   */
-  @Override
-  protected boolean preHandle(final ServletRequest request, final ServletResponse response) throws Exception {
-    if (response instanceof HttpServletResponse) {
-     HttpServletResponse r = (HttpServletResponse) response;
-      final Collection<String> serverHeaders = r.getHeaders(HttpHeaders.SERVER);
-      int numHeaders = serverHeaders.size();
-      if (numHeaders == 1) {
-        r.setHeader(HttpHeaders.SERVER, serverHeaders.iterator().next() + SP + Engine.VERSION_HEADER);
-      }
-      else if (numHeaders == 0) {
-        r.setHeader(HttpHeaders.SERVER, Engine.VERSION_HEADER);
-      }
-      else {
-        Iterator<String> it = serverHeaders.iterator();
-        StringBuilder sb = new StringBuilder(it.next());
-        while (it.hasNext()) {
-          sb.append(SP).append(it.next());
-        }
-        sb.append(SP).append(Engine.VERSION_HEADER);
-        r.setHeader(HttpHeaders.SERVER, sb.toString());
-      }
-    }
-    return true;
-  }
+	/**
+	 * Join any already set Server headers and append the Restlet Server header
+	 * value to a single Server header.
+	 */
+	@Override
+	protected boolean preHandle(final ServletRequest request,
+			final ServletResponse response) throws Exception {
+		if (response instanceof HttpServletResponse) {
+			HttpServletResponse r = (HttpServletResponse) response;
+			final Collection<String> serverHeaders = r
+					.getHeaders(HttpHeaders.SERVER);
+			int numHeaders = serverHeaders.size();
+			if (numHeaders == 1) {
+				r.setHeader(HttpHeaders.SERVER, serverHeaders.iterator().next()
+						+ SP + Engine.VERSION_HEADER);
+			} else if (numHeaders == 0) {
+				r.setHeader(HttpHeaders.SERVER, Engine.VERSION_HEADER);
+			} else {
+				Iterator<String> it = serverHeaders.iterator();
+				StringBuilder sb = new StringBuilder(it.next());
+				while (it.hasNext()) {
+					sb.append(SP).append(it.next());
+				}
+				sb.append(SP).append(Engine.VERSION_HEADER);
+				r.setHeader(HttpHeaders.SERVER, sb.toString());
+			}
+		}
+		return true;
+	}
 }

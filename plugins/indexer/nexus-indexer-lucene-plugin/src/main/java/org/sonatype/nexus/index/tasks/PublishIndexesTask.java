@@ -12,6 +12,8 @@
  */
 package org.sonatype.nexus.index.tasks;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import java.io.IOException;
 
 import javax.inject.Inject;
@@ -20,8 +22,6 @@ import javax.inject.Named;
 import org.sonatype.nexus.index.IndexerManager;
 import org.sonatype.nexus.index.tasks.descriptors.PublishIndexesTaskDescriptor;
 import org.sonatype.nexus.scheduling.AbstractNexusRepositoriesTask;
-
-import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Publish indexes task.

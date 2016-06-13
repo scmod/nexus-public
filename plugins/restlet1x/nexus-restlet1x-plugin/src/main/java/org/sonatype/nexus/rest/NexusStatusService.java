@@ -18,11 +18,6 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
 
-import org.sonatype.nexus.ApplicationStatusSource;
-import org.sonatype.nexus.SystemStatus;
-import org.sonatype.nexus.web.BaseUrlHolder;
-import org.sonatype.plexus.rest.representation.VelocityRepresentation;
-
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.restlet.Context;
@@ -32,51 +27,58 @@ import org.restlet.data.Response;
 import org.restlet.data.Status;
 import org.restlet.resource.Representation;
 import org.restlet.service.StatusService;
+import org.sonatype.nexus.ApplicationStatusSource;
+import org.sonatype.nexus.SystemStatus;
+import org.sonatype.nexus.web.BaseUrlHolder;
+import org.sonatype.plexus.rest.representation.VelocityRepresentation;
 
 //
 // FIXME: This is duplicated error-page handling, which will go away once restlet is removed.
 //
 
 /**
- * Nexus specific status service that simply assembles an "error page" out of a Velocity template but watching to HTML
- * escape any content that might come from external (ie. query param).
+ * Nexus specific status service that simply assembles an "error page" out of a
+ * Velocity template but watching to HTML escape any content that might come
+ * from external (ie. query param).
  *
  * @author cstamas
  */
 @Named
 @Singleton
-public class NexusStatusService
-    extends StatusService
-{
-  private final ApplicationStatusSource applicationStatusSource;
+public class NexusStatusService extends StatusService {
+	private final ApplicationStatusSource applicationStatusSource;
 
-  @Inject
-  public NexusStatusService(final ApplicationStatusSource applicationStatusSource)
-  {
-    this.applicationStatusSource = applicationStatusSource;
-  }
+	@Inject
+	public NexusStatusService(
+			final ApplicationStatusSource applicationStatusSource) {
+		this.applicationStatusSource = applicationStatusSource;
+	}
 
-  public Representation getRepresentation(final Status status, final Request request, final Response response) {
-    final HashMap<String, Object> dataModel = new HashMap<String, Object>();
+	public Representation getRepresentation(final Status status,
+			final Request request, final Response response) {
+		final HashMap<String, Object> dataModel = new HashMap<String, Object>();
 
-    final SystemStatus systemStatus = applicationStatusSource.getSystemStatus();
-    dataModel.put("request", request);
-    dataModel.put("nexusVersion", systemStatus.getVersion());
-    dataModel.put("nexusRoot", BaseUrlHolder.get());
+		final SystemStatus systemStatus = applicationStatusSource
+				.getSystemStatus();
+		dataModel.put("request", request);
+		dataModel.put("nexusVersion", systemStatus.getVersion());
+		dataModel.put("nexusRoot", BaseUrlHolder.get());
 
-    dataModel.put("statusCode", status.getCode());
-    dataModel.put("statusName", status.getName());
-    dataModel.put("errorDescription", StringEscapeUtils.escapeHtml(status.getDescription()));
+		dataModel.put("statusCode", status.getCode());
+		dataModel.put("statusName", status.getName());
+		dataModel.put("errorDescription",
+				StringEscapeUtils.escapeHtml(status.getDescription()));
 
-    if (null != status.getThrowable()) {
-      dataModel.put("errorStackTrace",
-          StringEscapeUtils.escapeHtml(ExceptionUtils.getStackTrace(status.getThrowable())));
-    }
+		if (null != status.getThrowable()) {
+			dataModel.put("errorStackTrace", StringEscapeUtils
+					.escapeHtml(ExceptionUtils.getStackTrace(status
+							.getThrowable())));
+		}
 
-    final VelocityRepresentation representation =
-        new VelocityRepresentation(Context.getCurrent(), "/templates/errorPageContentHtml.vm",
-            getClass().getClassLoader(), dataModel, MediaType.TEXT_HTML);
+		final VelocityRepresentation representation = new VelocityRepresentation(
+				Context.getCurrent(), "/templates/errorPageContentHtml.vm",
+				getClass().getClassLoader(), dataModel, MediaType.TEXT_HTML);
 
-    return representation;
-  }
+		return representation;
+	}
 }

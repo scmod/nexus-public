@@ -17,10 +17,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-import org.sonatype.nexus.proxy.NoSuchRepositoryException;
-import org.sonatype.nexus.proxy.item.StorageItem;
-import org.sonatype.nexus.proxy.repository.Repository;
-
 import org.apache.lucene.search.Query;
 import org.apache.maven.index.ArtifactInfo;
 import org.apache.maven.index.ArtifactInfoFilter;
@@ -31,6 +27,9 @@ import org.apache.maven.index.SearchType;
 import org.apache.maven.index.expr.SearchExpression;
 import org.apache.maven.index.treeview.TreeNode;
 import org.apache.maven.index.treeview.TreeNodeFactory;
+import org.sonatype.nexus.proxy.NoSuchRepositoryException;
+import org.sonatype.nexus.proxy.item.StorageItem;
+import org.sonatype.nexus.proxy.repository.Repository;
 
 /**
  * Nexus facade for NexusIndexer operations.

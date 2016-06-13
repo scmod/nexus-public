@@ -12,6 +12,14 @@
  */
 package org.sonatype.nexus.index.treeview;
 
+import org.apache.commons.lang.StringUtils;
+import org.apache.maven.index.ArtifactInfo;
+import org.apache.maven.index.treeview.DefaultTreeNodeFactory;
+import org.apache.maven.index.treeview.IndexTreeView;
+import org.apache.maven.index.treeview.TreeNode;
+import org.apache.maven.index.treeview.TreeNode.Type;
+import org.apache.maven.index.treeview.TreeViewRequest;
+import org.slf4j.Logger;
 import org.sonatype.nexus.proxy.AccessDeniedException;
 import org.sonatype.nexus.proxy.IllegalOperationException;
 import org.sonatype.nexus.proxy.ItemNotFoundException;
@@ -25,15 +33,6 @@ import org.sonatype.nexus.proxy.repository.Repository;
 import org.sonatype.nexus.proxy.utils.RepositoryStringUtils;
 import org.sonatype.nexus.util.SystemPropertiesHelper;
 import org.sonatype.sisu.goodies.common.Loggers;
-
-import org.apache.commons.lang.StringUtils;
-import org.apache.maven.index.ArtifactInfo;
-import org.apache.maven.index.treeview.DefaultTreeNodeFactory;
-import org.apache.maven.index.treeview.IndexTreeView;
-import org.apache.maven.index.treeview.TreeNode;
-import org.apache.maven.index.treeview.TreeNode.Type;
-import org.apache.maven.index.treeview.TreeViewRequest;
-import org.slf4j.Logger;
 
 /**
  * A default implementation of merged TreeNodeFactory, that is failry simple to extend. Note: this implementation

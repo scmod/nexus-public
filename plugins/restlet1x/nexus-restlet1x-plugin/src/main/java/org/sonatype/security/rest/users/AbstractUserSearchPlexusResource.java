@@ -14,35 +14,33 @@ package org.sonatype.security.rest.users;
 
 import java.util.Set;
 
+import org.restlet.data.Request;
 import org.sonatype.security.rest.AbstractSecurityPlexusResource;
 import org.sonatype.security.rest.model.PlexusUserListResourceResponse;
 import org.sonatype.security.usermanagement.User;
 import org.sonatype.security.usermanagement.UserSearchCriteria;
 
-import org.restlet.data.Request;
+public abstract class AbstractUserSearchPlexusResource extends
+		AbstractSecurityPlexusResource {
+	public static final String USER_SOURCE_KEY = "userSource";
 
-public abstract class AbstractUserSearchPlexusResource
-    extends AbstractSecurityPlexusResource
-{
-  public static final String USER_SOURCE_KEY = "userSource";
+	protected String getUserSource(Request request) {
+		final String source = getRequestAttribute(request, USER_SOURCE_KEY);
 
-  protected String getUserSource(Request request) {
-    final String source = getRequestAttribute(request, USER_SOURCE_KEY);
+		if ("all".equalsIgnoreCase(source)) {
+			return null;
+		}
 
-    if ("all".equalsIgnoreCase(source)) {
-      return null;
-    }
+		return source;
+	}
 
-    return source;
-  }
+	protected PlexusUserListResourceResponse search(UserSearchCriteria criteria) {
+		PlexusUserListResourceResponse result = new PlexusUserListResourceResponse();
 
-  protected PlexusUserListResourceResponse search(UserSearchCriteria criteria) {
-    PlexusUserListResourceResponse result = new PlexusUserListResourceResponse();
+		Set<User> users = this.getSecuritySystem().searchUsers(criteria);
+		result.setData(this.securityToRestModel(users));
 
-    Set<User> users = this.getSecuritySystem().searchUsers(criteria);
-    result.setData(this.securityToRestModel(users));
-
-    return result;
-  }
+		return result;
+	}
 
 }

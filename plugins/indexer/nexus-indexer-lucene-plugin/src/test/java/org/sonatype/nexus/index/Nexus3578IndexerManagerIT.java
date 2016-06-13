@@ -17,12 +17,6 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.sonatype.nexus.mime.MimeSupport;
-import org.sonatype.nexus.proxy.ResourceStoreRequest;
-import org.sonatype.nexus.proxy.item.DefaultStorageFileItem;
-import org.sonatype.nexus.proxy.item.FileContentLocator;
-import org.sonatype.nexus.proxy.item.StorageFileItem;
-
 import org.apache.maven.index.ArtifactInfo;
 import org.apache.maven.index.IteratorSearchResponse;
 import org.apache.maven.index.SearchType;
@@ -33,6 +27,11 @@ import org.apache.maven.index.creator.MavenArchetypeArtifactInfoIndexCreator;
 import org.apache.maven.index.creator.MavenPluginArtifactInfoIndexCreator;
 import org.apache.maven.index.creator.MinimalArtifactInfoIndexCreator;
 import org.junit.Test;
+import org.sonatype.nexus.mime.MimeSupport;
+import org.sonatype.nexus.proxy.ResourceStoreRequest;
+import org.sonatype.nexus.proxy.item.DefaultStorageFileItem;
+import org.sonatype.nexus.proxy.item.FileContentLocator;
+import org.sonatype.nexus.proxy.item.StorageFileItem;
 
 // This is an IT just because it runs longer then 15 seconds
 public class Nexus3578IndexerManagerIT

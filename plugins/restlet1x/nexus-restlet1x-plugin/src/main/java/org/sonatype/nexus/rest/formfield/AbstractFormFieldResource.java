@@ -20,42 +20,38 @@ import org.sonatype.nexus.formfields.Selectable;
 import org.sonatype.nexus.rest.AbstractNexusPlexusResource;
 import org.sonatype.nexus.rest.model.FormFieldResource;
 
-public abstract class AbstractFormFieldResource
-    extends AbstractNexusPlexusResource
-{
-  protected List<? extends FormFieldResource> formFieldToDTO(List<FormField> fields,
-                                                             Class<? extends FormFieldResource> clazz)
-  {
-    List<FormFieldResource> dtoList = new ArrayList<FormFieldResource>();
+public abstract class AbstractFormFieldResource extends
+		AbstractNexusPlexusResource {
+	protected List<? extends FormFieldResource> formFieldToDTO(
+			List<FormField> fields, Class<? extends FormFieldResource> clazz) {
+		List<FormFieldResource> dtoList = new ArrayList<FormFieldResource>();
 
-    for (FormField field : fields) {
-      try {
-        FormFieldResource dto = clazz.newInstance();
-        dto.setHelpText(field.getHelpText());
-        dto.setId(field.getId());
-        dto.setLabel(field.getLabel());
-        dto.setRegexValidation(field.getRegexValidation());
-        dto.setRequired(field.isRequired());
-        dto.setType(field.getType());
-        if (field.getInitialValue() != null) {
-          dto.setInitialValue(field.getInitialValue().toString());
-        }
-        if (field instanceof Selectable) {
-          dto.setStorePath(((Selectable) field).getStorePath());
-          dto.setStoreRoot(((Selectable) field).getStoreRoot());
-          dto.setIdMapping(((Selectable) field).getIdMapping());
-          dto.setNameMapping(((Selectable) field).getNameMapping());
-        }
-        dtoList.add(dto);
-      }
-      catch (InstantiationException e) {
-        getLogger().error("Unable to properly translate DTO", e);
-      }
-      catch (IllegalAccessException e) {
-    	  getLogger().error("Unable to properly translate DTO", e);
-      }
-    }
+		for (FormField field : fields) {
+			try {
+				FormFieldResource dto = clazz.newInstance();
+				dto.setHelpText(field.getHelpText());
+				dto.setId(field.getId());
+				dto.setLabel(field.getLabel());
+				dto.setRegexValidation(field.getRegexValidation());
+				dto.setRequired(field.isRequired());
+				dto.setType(field.getType());
+				if (field.getInitialValue() != null) {
+					dto.setInitialValue(field.getInitialValue().toString());
+				}
+				if (field instanceof Selectable) {
+					dto.setStorePath(((Selectable) field).getStorePath());
+					dto.setStoreRoot(((Selectable) field).getStoreRoot());
+					dto.setIdMapping(((Selectable) field).getIdMapping());
+					dto.setNameMapping(((Selectable) field).getNameMapping());
+				}
+				dtoList.add(dto);
+			} catch (InstantiationException e) {
+				getLogger().error("Unable to properly translate DTO", e);
+			} catch (IllegalAccessException e) {
+				getLogger().error("Unable to properly translate DTO", e);
+			}
+		}
 
-    return dtoList;
-  }
+		return dtoList;
+	}
 }

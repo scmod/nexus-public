@@ -14,12 +14,12 @@ package org.sonatype.nexus.rest.indextreeview;
 
 import java.util.List;
 
-import org.sonatype.nexus.index.treeview.DefaultMergedTreeNode;
-
-import com.google.common.collect.Lists;
 import org.apache.maven.index.treeview.IndexTreeView;
 import org.apache.maven.index.treeview.TreeNode;
 import org.apache.maven.index.treeview.TreeViewRequest;
+import org.sonatype.nexus.index.treeview.DefaultMergedTreeNode;
+
+import com.google.common.collect.Lists;
 
 /**
  * Adds some more details to the TreeNode, some items that are required for index browsing in the UI

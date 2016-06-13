@@ -16,6 +16,11 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
+import org.apache.maven.index.ArtifactInfo;
+import org.apache.maven.index.IteratorResultSet;
+import org.apache.maven.index.MatchHighlight;
+import org.restlet.data.Request;
 import org.sonatype.nexus.proxy.NoSuchRepositoryException;
 import org.sonatype.nexus.proxy.ResourceStoreRequest;
 import org.sonatype.nexus.proxy.maven.MavenRepository;
@@ -25,11 +30,6 @@ import org.sonatype.nexus.rest.AbstractNexusPlexusResource;
 import org.sonatype.nexus.rest.model.NexusArtifact;
 
 import com.thoughtworks.xstream.XStream;
-import org.apache.commons.lang.StringUtils;
-import org.apache.maven.index.ArtifactInfo;
-import org.apache.maven.index.IteratorResultSet;
-import org.apache.maven.index.MatchHighlight;
-import org.restlet.data.Request;
 
 public abstract class AbstractIndexerNexusPlexusResource
     extends AbstractNexusPlexusResource

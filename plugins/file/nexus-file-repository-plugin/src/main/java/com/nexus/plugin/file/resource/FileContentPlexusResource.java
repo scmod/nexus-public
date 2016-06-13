@@ -17,17 +17,10 @@ import java.util.List;
 
 import javax.inject.Named;
 import javax.inject.Singleton;
-import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
 
-import org.codehaus.enunciate.contract.jaxrs.ResourceMethodSignature;
-import org.restlet.Context;
 import org.restlet.data.MediaType;
-import org.restlet.data.Request;
-import org.restlet.data.Response;
-import org.restlet.resource.ResourceException;
 import org.restlet.resource.Variant;
 import org.sonatype.plexus.rest.resource.PathProtectionDescriptor;
 
@@ -83,10 +76,7 @@ public class FileContentPlexusResource
    */
 //  @Override
 //  @GET
-//  @ResourceMethodSignature(queryParams = {
-//      @QueryParam("g"), @QueryParam("a"), @QueryParam("v"),
-//      @QueryParam("r"), @QueryParam("c"), @QueryParam("e")
-//  }, output = String.class)
+//  
 //  public Object get(Context context, Request request, Response response, Variant variant)
 //      throws ResourceException
 //  {

@@ -15,10 +15,9 @@ package org.sonatype.nexus.restlet1x;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import org.sonatype.nexus.plugin.PluginIdentity;
-
 import org.eclipse.sisu.EagerSingleton;
 import org.jetbrains.annotations.NonNls;
+import org.sonatype.nexus.plugin.PluginIdentity;
 
 /**
  * Restlet-1x plugin.
@@ -27,29 +26,27 @@ import org.jetbrains.annotations.NonNls;
  */
 @Named
 @EagerSingleton
-public class Restlet1xPlugin
-    extends PluginIdentity
-{
-  /**
-   * Prefix for ID-like things.
-   */
-  @NonNls
-  public static final String ID_PREFIX = "restlet1x";
+public class Restlet1xPlugin extends PluginIdentity {
+	/**
+	 * Prefix for ID-like things.
+	 */
+	@NonNls
+	public static final String ID_PREFIX = "restlet1x";
 
-  /**
-   * Expected groupId for plugin artifact.
-   */
-  @NonNls
-  public static final String GROUP_ID = "org.sonatype.nexus.plugins";
+	/**
+	 * Expected groupId for plugin artifact.
+	 */
+	@NonNls
+	public static final String GROUP_ID = "org.sonatype.nexus.plugins";
 
-  /**
-   * Expected artifactId for plugin artifact.
-   */
-  @NonNls
-  public static final String ARTIFACT_ID = "nexus-" + ID_PREFIX + "-plugin";
+	/**
+	 * Expected artifactId for plugin artifact.
+	 */
+	@NonNls
+	public static final String ARTIFACT_ID = "nexus-" + ID_PREFIX + "-plugin";
 
-  @Inject
-  public Restlet1xPlugin() throws Exception {
-    super(GROUP_ID, ARTIFACT_ID);
-  }
+	@Inject
+	public Restlet1xPlugin() throws Exception {
+		super(GROUP_ID, ARTIFACT_ID);
+	}
 }

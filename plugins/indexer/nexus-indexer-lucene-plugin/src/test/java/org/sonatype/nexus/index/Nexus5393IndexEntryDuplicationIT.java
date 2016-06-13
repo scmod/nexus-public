@@ -22,10 +22,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.sonatype.jettytestsuite.BlockingServer;
-import org.sonatype.nexus.proxy.ResourceStoreRequest;
-import org.sonatype.nexus.proxy.maven.RepositoryPolicy;
-
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.search.IndexSearcher;
@@ -39,6 +35,9 @@ import org.eclipse.jetty.server.handler.HandlerList;
 import org.eclipse.jetty.server.handler.ResourceHandler;
 import org.junit.Assert;
 import org.junit.Test;
+import org.sonatype.jettytestsuite.BlockingServer;
+import org.sonatype.nexus.proxy.ResourceStoreRequest;
+import org.sonatype.nexus.proxy.maven.RepositoryPolicy;
 
 /**
  * UT for NEXUS-5393: Proxy repositories are getting duplicate entries for locally cached entries.

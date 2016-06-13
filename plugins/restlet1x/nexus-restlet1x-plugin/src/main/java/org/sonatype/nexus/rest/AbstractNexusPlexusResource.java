@@ -12,9 +12,15 @@
  */
 package org.sonatype.nexus.rest;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.apache.commons.lang.StringEscapeUtils;
+import org.restlet.data.Reference;
+import org.restlet.data.Request;
+import org.restlet.data.Status;
 import org.sonatype.configuration.ConfigurationException;
 import org.sonatype.configuration.validation.InvalidConfigurationException;
 import org.sonatype.configuration.validation.ValidationMessage;
@@ -34,260 +40,273 @@ import org.sonatype.plexus.rest.resource.PlexusResourceException;
 import org.sonatype.plexus.rest.resource.error.ErrorMessage;
 import org.sonatype.plexus.rest.resource.error.ErrorResponse;
 
-import org.apache.commons.lang.StringEscapeUtils;
-import org.restlet.data.Reference;
-import org.restlet.data.Request;
-import org.restlet.data.Status;
+public abstract class AbstractNexusPlexusResource extends
+		AbstractPlexusResource implements PlexusResource {
+	public static final String PASSWORD_PLACE_HOLDER = "|$|N|E|X|U|S|$|";
 
-import static com.google.common.base.Preconditions.checkNotNull;
+	public static final String IS_LOCAL_PARAMETER = "isLocal";
 
-public abstract class AbstractNexusPlexusResource
-    extends AbstractPlexusResource
-    implements PlexusResource
-{
-  public static final String PASSWORD_PLACE_HOLDER = "|$|N|E|X|U|S|$|";
+	public static final String IS_REMOTE_PARAMETER = "isRemote";
 
-  public static final String IS_LOCAL_PARAMETER = "isLocal";
+	public static final String AS_EXPIRED_PARAMETER = "asExpired";
 
-  public static final String IS_REMOTE_PARAMETER = "isRemote";
+	private NexusConfiguration nexusConfiguration;
 
-  public static final String AS_EXPIRED_PARAMETER = "asExpired";
+	private RepositoryRegistry repositoryRegistry;
 
-  private NexusConfiguration nexusConfiguration;
+	private RepositoryRegistry defaultRepositoryRegistry;
 
-  private RepositoryRegistry repositoryRegistry;
+	private ReferenceFactory referenceFactory;
 
-  private RepositoryRegistry defaultRepositoryRegistry;
+	private TemplateManager templateManager;
 
-  private ReferenceFactory referenceFactory;
+	private RepositoryRouter repositoryRouter;
 
-  private TemplateManager templateManager;
+	@Inject
+	public void setNexusConfiguration(
+			final NexusConfiguration nexusConfiguration) {
+		this.nexusConfiguration = checkNotNull(nexusConfiguration);
+	}
 
-  private RepositoryRouter repositoryRouter;
+	@Inject
+	public void setRepositoryRegistry(
+			final @Named("protected") RepositoryRegistry repositoryRegistry) {
+		this.repositoryRegistry = checkNotNull(repositoryRegistry);
+	}
 
-  @Inject
-  public void setNexusConfiguration(final NexusConfiguration nexusConfiguration) {
-    this.nexusConfiguration = checkNotNull(nexusConfiguration);
-  }
+	@Inject
+	public void setDefaultRepositoryRegistry(
+			final @Named("default") RepositoryRegistry repositoryRegistry) {
+		this.defaultRepositoryRegistry = checkNotNull(repositoryRegistry);
+	}
 
-  @Inject
-  public void setRepositoryRegistry(final @Named("protected") RepositoryRegistry repositoryRegistry) {
-    this.repositoryRegistry = checkNotNull(repositoryRegistry);
-  }
+	@Inject
+	public void setReferenceFactory(final ReferenceFactory referenceFactory) {
+		this.referenceFactory = checkNotNull(referenceFactory);
+	}
 
-  @Inject
-  public void setDefaultRepositoryRegistry(final @Named("default") RepositoryRegistry repositoryRegistry) {
-    this.defaultRepositoryRegistry = checkNotNull(repositoryRegistry);
-  }
+	@Inject
+	public void setTemplateManager(final TemplateManager templateManager) {
+		this.templateManager = checkNotNull(templateManager);
+	}
 
-  @Inject
-  public void setReferenceFactory(final ReferenceFactory referenceFactory) {
-    this.referenceFactory = checkNotNull(referenceFactory);
-  }
+	@Inject
+	public void setRepositoryRouter(final RepositoryRouter repositoryRouter) {
+		this.repositoryRouter = checkNotNull(repositoryRouter);
+	}
 
-  @Inject
-  public void setTemplateManager(final TemplateManager templateManager) {
-    this.templateManager = checkNotNull(templateManager);
-  }
-  
-  @Inject
-  public void setRepositoryRouter(final RepositoryRouter repositoryRouter) {
-    this.repositoryRouter = checkNotNull(repositoryRouter);
-  }
+	protected NexusConfiguration getNexusConfiguration() {
+		return nexusConfiguration;
+	}
 
-  protected NexusConfiguration getNexusConfiguration() {
-    return nexusConfiguration;
-  }
+	protected RepositoryRegistry getRepositoryRegistry() {
+		return repositoryRegistry;
+	}
 
-  protected RepositoryRegistry getRepositoryRegistry() {
-    return repositoryRegistry;
-  }
+	protected RepositoryRegistry getUnprotectedRepositoryRegistry() {
+		return defaultRepositoryRegistry;
+	}
 
-  protected RepositoryRegistry getUnprotectedRepositoryRegistry() {
-    return defaultRepositoryRegistry;
-  }
-  
-  protected TemplateManager getTemplateManager() {
-    return templateManager;
-  }
-  
-  protected RepositoryRouter getRepositoryRouter() {
-    return repositoryRouter;
-  }
-  
-  protected TemplateSet getRepositoryTemplates() {
-    return getTemplateManager().getTemplates().getTemplates(RepositoryTemplate.class);
-  }
+	protected TemplateManager getTemplateManager() {
+		return templateManager;
+	}
 
-  protected RepositoryTemplate getRepositoryTemplateById(String id)
-      throws NoSuchTemplateIdException
-  {
-    return (RepositoryTemplate) getTemplateManager().getTemplate(RepositoryTemplate.class, id);
-  }
+	protected RepositoryRouter getRepositoryRouter() {
+		return repositoryRouter;
+	}
 
-  /**
-   * Centralized, since this is the only "dependent" stuff that relies on knowledge where restlet.Application is
-   * mounted (we had a /service => / move).
-   */
-  protected Reference getContextRoot(Request request) {
-    return this.referenceFactory.getContextRoot(request);
-  }
+	protected TemplateSet getRepositoryTemplates() {
+		return getTemplateManager().getTemplates().getTemplates(
+				RepositoryTemplate.class);
+	}
 
-  protected boolean isLocal(Request request, String resourceStorePath) {
-    // check do we need local only access
-    boolean isLocal = request.getResourceRef().getQueryAsForm().getFirst(IS_LOCAL_PARAMETER) != null;
+	protected RepositoryTemplate getRepositoryTemplateById(String id)
+			throws NoSuchTemplateIdException {
+		return (RepositoryTemplate) getTemplateManager().getTemplate(
+				RepositoryTemplate.class, id);
+	}
 
-    if (resourceStorePath != null) {
-      // overriding isLocal is we know it will be a collection
-      isLocal = isLocal || resourceStorePath.endsWith(RepositoryItemUid.PATH_SEPARATOR);
-    }
+	/**
+	 * Centralized, since this is the only "dependent" stuff that relies on
+	 * knowledge where restlet.Application is mounted (we had a /service => /
+	 * move).
+	 */
+	protected Reference getContextRoot(Request request) {
+		return this.referenceFactory.getContextRoot(request);
+	}
 
-    return isLocal;
-  }
+	protected boolean isLocal(Request request, String resourceStorePath) {
+		// check do we need local only access
+		boolean isLocal = request.getResourceRef().getQueryAsForm()
+				.getFirst(IS_LOCAL_PARAMETER) != null;
 
-  protected boolean isRemote(Request request, String resourceStorePath) {
-    // check do we need remote only access
-    return request.getResourceRef().getQueryAsForm().getFirst(IS_REMOTE_PARAMETER) != null;
-  }
+		if (resourceStorePath != null) {
+			// overriding isLocal is we know it will be a collection
+			isLocal = isLocal
+					|| resourceStorePath
+							.endsWith(RepositoryItemUid.PATH_SEPARATOR);
+		}
 
-  protected boolean asExpired(Request request, String resourceStorePath) {
-    // check do we need expired access
-    return request.getResourceRef().getQueryAsForm().getFirst(AS_EXPIRED_PARAMETER) != null;
-  }
+		return isLocal;
+	}
 
-  private Reference updateBaseRefPath(Reference reference) {
-    if (reference.getBaseRef().getPath() == null) {
-      reference.getBaseRef().setPath("/");
-    }
-    else if (!reference.getBaseRef().getPath().endsWith("/")) {
-      reference.getBaseRef().setPath(reference.getBaseRef().getPath() + "/");
-    }
+	protected boolean isRemote(Request request, String resourceStorePath) {
+		// check do we need remote only access
+		return request.getResourceRef().getQueryAsForm()
+				.getFirst(IS_REMOTE_PARAMETER) != null;
+	}
 
-    return reference;
-  }
+	protected boolean asExpired(Request request, String resourceStorePath) {
+		// check do we need expired access
+		return request.getResourceRef().getQueryAsForm()
+				.getFirst(AS_EXPIRED_PARAMETER) != null;
+	}
 
-  protected Reference createReference(Reference base, String relPart) {
-    Reference ref = new Reference(base, relPart);
+	private Reference updateBaseRefPath(Reference reference) {
+		if (reference.getBaseRef().getPath() == null) {
+			reference.getBaseRef().setPath("/");
+		} else if (!reference.getBaseRef().getPath().endsWith("/")) {
+			reference.getBaseRef().setPath(
+					reference.getBaseRef().getPath() + "/");
+		}
 
-    return updateBaseRefPath(ref).getTargetRef();
-  }
+		return reference;
+	}
 
-  protected Reference createChildReference(Request request, PlexusResource resource, String childPath) {
-    return this.referenceFactory.createChildReference(request, childPath);
-  }
+	protected Reference createReference(Reference base, String relPart) {
+		Reference ref = new Reference(base, relPart);
 
-  protected Reference createRootReference(Request request, String relPart) {
-    Reference ref = new Reference(getContextRoot(request), relPart);
+		return updateBaseRefPath(ref).getTargetRef();
+	}
 
-    if (!ref.getBaseRef().getPath().endsWith("/")) {
-      ref.getBaseRef().setPath(ref.getBaseRef().getPath() + "/");
-    }
+	protected Reference createChildReference(Request request,
+			PlexusResource resource, String childPath) {
+		return this.referenceFactory.createChildReference(request, childPath);
+	}
 
-    return ref.getTargetRef();
-  }
+	protected Reference createRootReference(Request request, String relPart) {
+		Reference ref = new Reference(getContextRoot(request), relPart);
 
-  protected Reference createRepositoryReference(Request request, String repoId) {
-    return createReference(getContextRoot(request), "service/local/repositories/" + repoId).getTargetRef();
-  }
+		if (!ref.getBaseRef().getPath().endsWith("/")) {
+			ref.getBaseRef().setPath(ref.getBaseRef().getPath() + "/");
+		}
 
-  protected Reference createRepositoryReference(Request request, String repoId, String repoPath) {
-    Reference repoRootRef = createRepositoryReference(request, repoId);
+		return ref.getTargetRef();
+	}
 
-    if (repoPath.startsWith(RepositoryItemUid.PATH_SEPARATOR)) {
-      repoPath = repoPath.substring(1);
-    }
+	protected Reference createRepositoryReference(Request request, String repoId) {
+		return createReference(getContextRoot(request),
+				"service/local/repositories/" + repoId).getTargetRef();
+	}
 
-    repoPath = "content/" + repoPath;
+	protected Reference createRepositoryReference(Request request,
+			String repoId, String repoPath) {
+		Reference repoRootRef = createRepositoryReference(request, repoId);
 
-    return createReference(repoRootRef, repoPath);
-  }
+		if (repoPath.startsWith(RepositoryItemUid.PATH_SEPARATOR)) {
+			repoPath = repoPath.substring(1);
+		}
 
-  protected Reference createRepositoryGroupReference(Request request, String groupId) {
-    return createReference(getContextRoot(request), "service/local/repo_groups/" + groupId).getTargetRef();
-  }
+		repoPath = "content/" + repoPath;
 
-  protected Reference createRedirectReference(Request request) {
-    String uriPart =
-        request.getResourceRef().getTargetRef().toString().substring(
-            getContextRoot(request).getTargetRef().toString().length());
+		return createReference(repoRootRef, repoPath);
+	}
 
-    // trim leading slash
-    if (uriPart.startsWith("/")) {
-      uriPart = uriPart.substring(1);
-    }
+	protected Reference createRepositoryGroupReference(Request request,
+			String groupId) {
+		return createReference(getContextRoot(request),
+				"service/local/repo_groups/" + groupId).getTargetRef();
+	}
 
-    return updateBaseRefPath(new Reference(getContextRoot(request), uriPart)).getTargetRef();
-  }
+	protected Reference createRedirectReference(Request request) {
+		String uriPart = request
+				.getResourceRef()
+				.getTargetRef()
+				.toString()
+				.substring(
+						getContextRoot(request).getTargetRef().toString()
+								.length());
 
-  // ===
+		// trim leading slash
+		if (uriPart.startsWith("/")) {
+			uriPart = uriPart.substring(1);
+		}
 
-  protected ErrorResponse getNexusErrorResponse(String id, String msg) {
-    ErrorResponse ner = new ErrorResponse();
-    ErrorMessage ne = new ErrorMessage();
-    ne.setId(id);
-    ne.setMsg(StringEscapeUtils.escapeHtml(msg));
-    ner.addError(ne);
-    return ner;
-  }
+		return updateBaseRefPath(
+				new Reference(getContextRoot(request), uriPart)).getTargetRef();
+	}
 
-  protected void handleInvalidConfigurationException(InvalidConfigurationException e)
-      throws PlexusResourceException
-  {
-    getLogger().debug("Configuration error!", e);
+	// ===
 
-    ErrorResponse nexusErrorResponse;
+	protected ErrorResponse getNexusErrorResponse(String id, String msg) {
+		ErrorResponse ner = new ErrorResponse();
+		ErrorMessage ne = new ErrorMessage();
+		ne.setId(id);
+		ne.setMsg(StringEscapeUtils.escapeHtml(msg));
+		ner.addError(ne);
+		return ner;
+	}
 
-    ValidationResponse vr = e.getValidationResponse();
+	protected void handleInvalidConfigurationException(
+			InvalidConfigurationException e) throws PlexusResourceException {
+		getLogger().debug("Configuration error!", e);
 
-    if (vr != null && vr.getValidationErrors().size() > 0) {
-      org.sonatype.configuration.validation.ValidationMessage vm = vr.getValidationErrors().get(0);
-      nexusErrorResponse = getNexusErrorResponse(vm.getKey(), vm.getShortMessage());
-    }
-    else {
-      nexusErrorResponse = getNexusErrorResponse("*", e.getMessage());
-    }
+		ErrorResponse nexusErrorResponse;
 
-    throw new PlexusResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "Configuration error.", nexusErrorResponse);
-  }
+		ValidationResponse vr = e.getValidationResponse();
 
-  protected void handleConfigurationException(ConfigurationException e)
-      throws PlexusResourceException
-  {
-    getLogger().debug("Configuration error!", e);
+		if (vr != null && vr.getValidationErrors().size() > 0) {
+			org.sonatype.configuration.validation.ValidationMessage vm = vr
+					.getValidationErrors().get(0);
+			nexusErrorResponse = getNexusErrorResponse(vm.getKey(),
+					vm.getShortMessage());
+		} else {
+			nexusErrorResponse = getNexusErrorResponse("*", e.getMessage());
+		}
 
-    ErrorResponse nexusErrorResponse;
+		throw new PlexusResourceException(Status.CLIENT_ERROR_BAD_REQUEST,
+				"Configuration error.", nexusErrorResponse);
+	}
 
-    if (InvalidConfigurationException.class.isAssignableFrom(e.getClass())) {
-      ValidationResponse vr = ((InvalidConfigurationException) e).getValidationResponse();
+	protected void handleConfigurationException(ConfigurationException e)
+			throws PlexusResourceException {
+		getLogger().debug("Configuration error!", e);
 
-      if (vr != null && vr.getValidationErrors().size() > 0) {
-        ValidationMessage vm = vr.getValidationErrors().get(0);
-        nexusErrorResponse = getNexusErrorResponse(vm.getKey(), vm.getShortMessage());
-      }
-      else {
-        nexusErrorResponse = getNexusErrorResponse("*", e.getMessage());
-      }
-    }
-    else {
-      nexusErrorResponse = getNexusErrorResponse("*", e.getMessage());
-    }
+		ErrorResponse nexusErrorResponse;
 
-    throw new PlexusResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "Configuration error.", nexusErrorResponse);
-  }
+		if (InvalidConfigurationException.class.isAssignableFrom(e.getClass())) {
+			ValidationResponse vr = ((InvalidConfigurationException) e)
+					.getValidationResponse();
 
-  protected Reference createRedirectBaseRef(Request request) {
-    return createReference(getContextRoot(request), "service/local/artifact/maven/redirect").getTargetRef();
-  }
+			if (vr != null && vr.getValidationErrors().size() > 0) {
+				ValidationMessage vm = vr.getValidationErrors().get(0);
+				nexusErrorResponse = getNexusErrorResponse(vm.getKey(),
+						vm.getShortMessage());
+			} else {
+				nexusErrorResponse = getNexusErrorResponse("*", e.getMessage());
+			}
+		} else {
+			nexusErrorResponse = getNexusErrorResponse("*", e.getMessage());
+		}
 
-  protected String getValidRemoteIPAddress(Request request) {
-    return RemoteIPFinder.findIP(request);
-  }
+		throw new PlexusResourceException(Status.CLIENT_ERROR_BAD_REQUEST,
+				"Configuration error.", nexusErrorResponse);
+	}
 
-  protected String getActualPassword(String newPassword, String oldPassword) {
-    if (PASSWORD_PLACE_HOLDER.equals(newPassword)) {
-      return oldPassword;
-    }
+	protected Reference createRedirectBaseRef(Request request) {
+		return createReference(getContextRoot(request),
+				"service/local/artifact/maven/redirect").getTargetRef();
+	}
 
-    return newPassword;
-  }
+	protected String getValidRemoteIPAddress(Request request) {
+		return RemoteIPFinder.findIP(request);
+	}
+
+	protected String getActualPassword(String newPassword, String oldPassword) {
+		if (PASSWORD_PLACE_HOLDER.equals(newPassword)) {
+			return oldPassword;
+		}
+
+		return newPassword;
+	}
 }

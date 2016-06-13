@@ -12,59 +12,61 @@
  */
 package org.sonatype.nexus.rest;
 
+import org.junit.Before;
+import org.junit.Test;
+import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.sonatype.plexus.rest.resource.PathProtectionDescriptor;
 import org.sonatype.plexus.rest.resource.PlexusResource;
 import org.sonatype.security.web.ProtectedPathManager;
 import org.sonatype.sisu.litmus.testsupport.TestSupport;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.mockito.Mock;
-import org.mockito.Mockito;
+public class NexusApplicationHandlePlexusResourceSecurityTest extends
+		TestSupport {
+	@Mock
+	private PlexusResource mockResource;
 
-public class NexusApplicationHandlePlexusResourceSecurityTest
-    extends TestSupport
-{
-  @Mock
-  private PlexusResource mockResource;
+	@Mock(name = "protectedPathManager")
+	private ProtectedPathManager mockProtectedPathManager;
 
-  @Mock(name = "protectedPathManager")
-  private ProtectedPathManager mockProtectedPathManager;
+	private NexusApplication nexusApplication;
 
-  private NexusApplication nexusApplication;
+	@Before
+	public void setUp() throws Exception {
+		// HACK: we only need the protected path manager for this test
+		nexusApplication = new NexusApplication(null, mockProtectedPathManager,
+				null, null);
+	}
 
-  @Before
-  public void setUp() throws Exception {
-    // HACK: we only need the protected path manager for this test
-    nexusApplication = new NexusApplication(
-        null,
-        mockProtectedPathManager,
-        null,
-        null
-    );
-  }
+	@Test(expected = IllegalStateException.class)
+	public void handlePlexusResourceSecurityWithMismatch() {
+		final PathProtectionDescriptor descriptor = new PathProtectionDescriptor(
+				"/foo/bar/*", "");
+		Mockito.when(mockResource.getResourceProtection()).thenReturn(
+				descriptor);
+		Mockito.when(mockResource.getResourceUri()).thenReturn("/foo/baz");
+		nexusApplication.handlePlexusResourceSecurity(mockResource);
+	}
 
-  @Test(expected = IllegalStateException.class)
-  public void handlePlexusResourceSecurityWithMismatch() {
-    final PathProtectionDescriptor descriptor = new PathProtectionDescriptor("/foo/bar/*", "");
-    Mockito.when(mockResource.getResourceProtection()).thenReturn(descriptor);
-    Mockito.when(mockResource.getResourceUri()).thenReturn("/foo/baz");
-    nexusApplication.handlePlexusResourceSecurity(mockResource);
-  }
+	@Test
+	public void handlePlexusResourceSecurityWithoutMismatch() {
+		final PathProtectionDescriptor descriptor = new PathProtectionDescriptor(
+				"/foo/bar/*", "");
+		Mockito.when(mockResource.getResourceProtection()).thenReturn(
+				descriptor);
+		Mockito.when(mockResource.getResourceUri()).thenReturn(
+				"/foo/bar/{pattern}");
+		nexusApplication.handlePlexusResourceSecurity(mockResource);
+	}
 
-  @Test
-  public void handlePlexusResourceSecurityWithoutMismatch() {
-    final PathProtectionDescriptor descriptor = new PathProtectionDescriptor("/foo/bar/*", "");
-    Mockito.when(mockResource.getResourceProtection()).thenReturn(descriptor);
-    Mockito.when(mockResource.getResourceUri()).thenReturn("/foo/bar/{pattern}");
-    nexusApplication.handlePlexusResourceSecurity(mockResource);
-  }
-
-  @Test
-  public void handlePlexusResourceSecurityWithoutMismatchWithRestletPatterns() {
-    final PathProtectionDescriptor descriptor = new PathProtectionDescriptor("/repositories/*", "");
-    Mockito.when(mockResource.getResourceProtection()).thenReturn(descriptor);
-    Mockito.when(mockResource.getResourceUri()).thenReturn("/repositories/{repoId}");
-    nexusApplication.handlePlexusResourceSecurity(mockResource);
-  }
+	@Test
+	public void handlePlexusResourceSecurityWithoutMismatchWithRestletPatterns() {
+		final PathProtectionDescriptor descriptor = new PathProtectionDescriptor(
+				"/repositories/*", "");
+		Mockito.when(mockResource.getResourceProtection()).thenReturn(
+				descriptor);
+		Mockito.when(mockResource.getResourceUri()).thenReturn(
+				"/repositories/{repoId}");
+		nexusApplication.handlePlexusResourceSecurity(mockResource);
+	}
 }

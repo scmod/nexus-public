@@ -74,7 +74,7 @@ public class PlexusPluginPlexusResource
    */
   @Override
   @GET
-  @ResourceMethodSignature(output = PlexusPluginResponse.class)
+  
   public PlexusPluginResponse get(Context context, Request request, Response response, Variant variant)
       throws ResourceException
   {

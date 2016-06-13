@@ -79,7 +79,7 @@ public class FeedsListPlexusResource
    */
   @Override
   @GET
-  @ResourceMethodSignature(output = FeedListResourceResponse.class)
+  
   public Object get(Context context, Request req, Response res, Variant variant)
       throws ResourceException
   {

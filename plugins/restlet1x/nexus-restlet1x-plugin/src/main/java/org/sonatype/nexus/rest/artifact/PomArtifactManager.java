@@ -20,219 +20,211 @@ import java.io.InputStream;
 import java.io.Reader;
 import java.util.Random;
 
-import org.sonatype.nexus.rest.model.ArtifactCoordinate;
-
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.codehaus.plexus.util.ReaderFactory;
 import org.codehaus.plexus.util.xml.pull.MXParser;
 import org.codehaus.plexus.util.xml.pull.XmlPullParser;
 import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
+import org.sonatype.nexus.rest.model.ArtifactCoordinate;
 
 /**
- * This component simply preserves "state" and gets the needed GAVP values from the POM that it stores temporarily.
+ * This component simply preserves "state" and gets the needed GAVP values from
+ * the POM that it stores temporarily.
  *
  * @author cstamas
  */
-public class PomArtifactManager
-{
-  private File tmpStorage = null;
+public class PomArtifactManager {
+	private File tmpStorage = null;
 
-  private File tmpPomFile = null;
+	private File tmpPomFile = null;
 
-  private int state = 0;
+	private int state = 0;
 
-  private ArtifactCoordinate artifactCoordinate;
+	private ArtifactCoordinate artifactCoordinate;
 
-  private static final int STATE_NONE = 0;
+	private static final int STATE_NONE = 0;
 
-  private static final int STATE_FILE_STORED = 1;
+	private static final int STATE_FILE_STORED = 1;
 
-  private static final int STATE_GAV_PARSED = 2;
+	private static final int STATE_GAV_PARSED = 2;
 
-  private static final Random identifierGenerator = new Random();
+	private static final Random identifierGenerator = new Random();
 
-  public PomArtifactManager(File tmpStorage) {
-    super();
+	public PomArtifactManager(File tmpStorage) {
+		super();
 
-    this.tmpStorage = tmpStorage;
-  }
+		this.tmpStorage = tmpStorage;
+	}
 
-  public void storeTempPomFile(InputStream is)
-      throws IOException
-  {
-    if (STATE_NONE != state) {
-      throw new IllegalStateException("There is already a temporary pom file managed by this PomArtifactManager");
-    }
-
-    tmpPomFile = new File(tmpStorage, getNextIdentifier() + ".xml");
-
-    tmpPomFile.deleteOnExit();
-	InputStream in = is;
-	FileOutputStream out = new FileOutputStream(tmpPomFile);
-    try {
-      IOUtils.copy(is, out);
-      state = STATE_FILE_STORED;
-    }finally {
-    	try {
-    		if(is != null)
-    			is.close();
-		} catch (Exception e) {
+	public void storeTempPomFile(InputStream is) throws IOException {
+		if (STATE_NONE != state) {
+			throw new IllegalStateException(
+					"There is already a temporary pom file managed by this PomArtifactManager");
 		}
-    	try {
-    		if(out != null)
-    		out.close();
-		} catch (Exception e) {
+
+		tmpPomFile = new File(tmpStorage, getNextIdentifier() + ".xml");
+
+		tmpPomFile.deleteOnExit();
+		InputStream in = is;
+		FileOutputStream out = new FileOutputStream(tmpPomFile);
+		try {
+			IOUtils.copy(is, out);
+			state = STATE_FILE_STORED;
+		} finally {
+			try {
+				if (is != null)
+					is.close();
+			} catch (Exception e) {
+			}
+			try {
+				if (out != null)
+					out.close();
+			} catch (Exception e) {
+			}
 		}
-    }
-  }
+	}
 
-  public InputStream getTempPomFileInputStream()
-      throws IOException
-  {
-    if (STATE_FILE_STORED > state) {
-      throw new IllegalStateException("The temporary pom file has not yet been stored");
-    }
-
-    return new FileInputStream(tmpPomFile);
-  }
-
-  public ArtifactCoordinate getArtifactCoordinateFromTempPomFile()
-      throws IOException,
-             XmlPullParserException
-  {
-    if (STATE_FILE_STORED > state) {
-      throw new IllegalStateException("The temporary POM file has not yet been stored");
-    }
-
-    if (STATE_GAV_PARSED == state) {
-      return artifactCoordinate;
-    }
-    
-	Reader reader = ReaderFactory.newXmlReader(tmpPomFile);
-    try {
-      artifactCoordinate = parsePom(reader);
-      state = STATE_GAV_PARSED;
-    }finally {
-    	try {
-    		if(reader != null)
-    			reader.close();
-		} catch (Exception e) {
+	public InputStream getTempPomFileInputStream() throws IOException {
+		if (STATE_FILE_STORED > state) {
+			throw new IllegalStateException(
+					"The temporary pom file has not yet been stored");
 		}
-    }
 
-    return artifactCoordinate;
-  }
+		return new FileInputStream(tmpPomFile);
+	}
 
-  /**
-   * Clean up.
-   */
-  public void removeTempPomFile() {
-    if (STATE_FILE_STORED > state) {
-      throw new IllegalStateException("The temporary pom file has not yet been stored");
-    }
+	public ArtifactCoordinate getArtifactCoordinateFromTempPomFile()
+			throws IOException, XmlPullParserException {
+		if (STATE_FILE_STORED > state) {
+			throw new IllegalStateException(
+					"The temporary POM file has not yet been stored");
+		}
 
-    tmpPomFile.delete();
+		if (STATE_GAV_PARSED == state) {
+			return artifactCoordinate;
+		}
 
-    artifactCoordinate = null;
+		Reader reader = ReaderFactory.newXmlReader(tmpPomFile);
+		try {
+			artifactCoordinate = parsePom(reader);
+			state = STATE_GAV_PARSED;
+		} finally {
+			try {
+				if (reader != null)
+					reader.close();
+			} catch (Exception e) {
+			}
+		}
 
-    state = STATE_NONE;
-  }
+		return artifactCoordinate;
+	}
 
-  // ==
-  // Private
+	/**
+	 * Clean up.
+	 */
+	public void removeTempPomFile() {
+		if (STATE_FILE_STORED > state) {
+			throw new IllegalStateException(
+					"The temporary pom file has not yet been stored");
+		}
 
-  private long getNextIdentifier() {
-    synchronized (identifierGenerator) {
-      return identifierGenerator.nextLong();
-    }
-  }
+		tmpPomFile.delete();
 
-  /**
-   * Pulls out the GAVP by parsing the temporarily stored POM.
-   */
-  private ArtifactCoordinate parsePom(Reader reader)
-      throws IOException,
-             XmlPullParserException
-  {
-    String groupId = null;
+		artifactCoordinate = null;
 
-    String artifactId = null;
+		state = STATE_NONE;
+	}
 
-    String version = null;
+	// ==
+	// Private
 
-    String packaging = "jar";
+	private long getNextIdentifier() {
+		synchronized (identifierGenerator) {
+			return identifierGenerator.nextLong();
+		}
+	}
 
-    XmlPullParser parser = new MXParser();
+	/**
+	 * Pulls out the GAVP by parsing the temporarily stored POM.
+	 */
+	private ArtifactCoordinate parsePom(Reader reader) throws IOException,
+			XmlPullParserException {
+		String groupId = null;
 
-    parser.setInput(reader);
+		String artifactId = null;
 
-    boolean foundRoot = false;
+		String version = null;
 
-    boolean inParent = false;
+		String packaging = "jar";
 
-    int eventType = parser.getEventType();
+		XmlPullParser parser = new MXParser();
 
-    // TODO: we should detect when we got all we need and simply stop parsing further
-    // since we are neglecting other contents anyway
-    while (eventType != XmlPullParser.END_DOCUMENT) {
-      if (eventType == XmlPullParser.START_TAG) {
-        if (parser.getName().equals("project")) {
-          foundRoot = true;
-        }
-        else if (parser.getName().equals("parent")) {
-          inParent = true;
-        }
-        else if (parser.getName().equals("groupId")) {
-          // 1st: if found project/groupId -> overwrite
-          // 2nd: if in parent, and groupId is still null, overwrite
-          if (parser.getDepth() == 2 || (inParent && groupId == null)) {
-            groupId = StringUtils.trim(parser.nextText());
-          }
-        }
-        else if (parser.getName().equals("artifactId")) {
-          // 1st: if found project/artifactId -> overwrite
-          // 2nd: if in parent, and artifactId is still null, overwrite
-          if (parser.getDepth() == 2 || (inParent && artifactId == null)) {
-            artifactId = StringUtils.trim(parser.nextText());
-          }
-        }
-        else if (parser.getName().equals("version")) {
-          // 1st: if found project/version -> overwrite
-          // 2nd: if in parent, and version is still null, overwrite
-          if (parser.getDepth() == 2 || (inParent && version == null)) {
-            version = StringUtils.trim(parser.nextText());
-          }
-        }
-        else if (parser.getName().equals("packaging")) {
-          // 1st: if found project/packaging -> overwrite
-          if (parser.getDepth() == 2) {
-            packaging = StringUtils.trim(parser.nextText());
-          }
-        }
-        else if (!foundRoot) {
-          throw new XmlPullParserException("Unrecognised tag: '" + parser.getName() + "'", parser, null);
-        }
-      }
-      else if (eventType == XmlPullParser.END_TAG) {
-        if (parser.getName().equals("parent")) {
-          inParent = false;
-        }
-      }
+		parser.setInput(reader);
 
-      eventType = parser.next();
-    }
+		boolean foundRoot = false;
 
-    ArtifactCoordinate artifactCoordinates = new ArtifactCoordinate();
+		boolean inParent = false;
 
-    artifactCoordinates.setGroupId(groupId);
+		int eventType = parser.getEventType();
 
-    artifactCoordinates.setArtifactId(artifactId);
+		// TODO: we should detect when we got all we need and simply stop
+		// parsing further
+		// since we are neglecting other contents anyway
+		while (eventType != XmlPullParser.END_DOCUMENT) {
+			if (eventType == XmlPullParser.START_TAG) {
+				if (parser.getName().equals("project")) {
+					foundRoot = true;
+				} else if (parser.getName().equals("parent")) {
+					inParent = true;
+				} else if (parser.getName().equals("groupId")) {
+					// 1st: if found project/groupId -> overwrite
+					// 2nd: if in parent, and groupId is still null, overwrite
+					if (parser.getDepth() == 2 || (inParent && groupId == null)) {
+						groupId = StringUtils.trim(parser.nextText());
+					}
+				} else if (parser.getName().equals("artifactId")) {
+					// 1st: if found project/artifactId -> overwrite
+					// 2nd: if in parent, and artifactId is still null,
+					// overwrite
+					if (parser.getDepth() == 2
+							|| (inParent && artifactId == null)) {
+						artifactId = StringUtils.trim(parser.nextText());
+					}
+				} else if (parser.getName().equals("version")) {
+					// 1st: if found project/version -> overwrite
+					// 2nd: if in parent, and version is still null, overwrite
+					if (parser.getDepth() == 2 || (inParent && version == null)) {
+						version = StringUtils.trim(parser.nextText());
+					}
+				} else if (parser.getName().equals("packaging")) {
+					// 1st: if found project/packaging -> overwrite
+					if (parser.getDepth() == 2) {
+						packaging = StringUtils.trim(parser.nextText());
+					}
+				} else if (!foundRoot) {
+					throw new XmlPullParserException("Unrecognised tag: '"
+							+ parser.getName() + "'", parser, null);
+				}
+			} else if (eventType == XmlPullParser.END_TAG) {
+				if (parser.getName().equals("parent")) {
+					inParent = false;
+				}
+			}
 
-    artifactCoordinates.setVersion(version);
+			eventType = parser.next();
+		}
 
-    artifactCoordinates.setPackaging(packaging);
+		ArtifactCoordinate artifactCoordinates = new ArtifactCoordinate();
 
-    return artifactCoordinates;
-  }
+		artifactCoordinates.setGroupId(groupId);
+
+		artifactCoordinates.setArtifactId(artifactId);
+
+		artifactCoordinates.setVersion(version);
+
+		artifactCoordinates.setPackaging(packaging);
+
+		return artifactCoordinates;
+	}
 }

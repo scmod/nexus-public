@@ -16,15 +16,12 @@ import javax.inject.Named;
 import javax.inject.Singleton;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
 
-import org.sonatype.plexus.rest.resource.PathProtectionDescriptor;
-
-import org.codehaus.enunciate.contract.jaxrs.ResourceMethodSignature;
 import org.restlet.Context;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.resource.ResourceException;
+import org.sonatype.plexus.rest.resource.PathProtectionDescriptor;
 
 @Named("IncrementalIndexContentPlexusResource")
 @Singleton
@@ -60,8 +57,7 @@ public class IncrementalIndexContentPlexusResource
    */
   @Override
   @DELETE
-  @ResourceMethodSignature(
-      pathParams = {@PathParam(AbstractIndexPlexusResource.DOMAIN), @PathParam(AbstractIndexPlexusResource.TARGET_ID)})
+  
   public void delete(Context context, Request request, Response response)
       throws ResourceException
   {

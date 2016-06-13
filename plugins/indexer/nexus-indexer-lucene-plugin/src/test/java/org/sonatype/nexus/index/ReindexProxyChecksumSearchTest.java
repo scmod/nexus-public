@@ -12,18 +12,17 @@
  */
 package org.sonatype.nexus.index;
 
-import java.util.Collection;
-
-import org.sonatype.nexus.proxy.ResourceStoreRequest;
-
-import org.apache.maven.index.ArtifactInfo;
-import org.apache.maven.index.MAVEN;
-import org.junit.Test;
-
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.notNullValue;
+
+import java.util.Collection;
+
+import org.apache.maven.index.ArtifactInfo;
+import org.apache.maven.index.MAVEN;
+import org.junit.Test;
+import org.sonatype.nexus.proxy.ResourceStoreRequest;
 
 /**
  * UT for NEXUS-6246: Checksum search fails after repair index task is run

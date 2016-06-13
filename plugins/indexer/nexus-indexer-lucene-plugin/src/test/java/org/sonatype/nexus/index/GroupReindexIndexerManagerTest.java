@@ -15,9 +15,8 @@ package org.sonatype.nexus.index;
 import java.io.File;
 import java.net.URL;
 
-import org.sonatype.nexus.proxy.repository.GroupRepository;
-
 import org.junit.Test;
+import org.sonatype.nexus.proxy.repository.GroupRepository;
 
 public class GroupReindexIndexerManagerTest
     extends AbstractIndexerManagerTest

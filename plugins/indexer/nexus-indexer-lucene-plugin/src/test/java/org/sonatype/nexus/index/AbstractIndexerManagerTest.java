@@ -17,17 +17,16 @@ import java.io.FilenameFilter;
 import java.io.IOException;
 import java.util.ArrayList;
 
-import org.sonatype.nexus.AbstractMavenRepoContentTests;
-import org.sonatype.nexus.proxy.NoSuchRepositoryException;
-import org.sonatype.nexus.proxy.repository.Repository;
-import org.sonatype.nexus.scheduling.NexusScheduler;
-
 import org.apache.lucene.search.Query;
 import org.apache.maven.index.ArtifactInfo;
 import org.apache.maven.index.IteratorSearchResponse;
 import org.apache.maven.index.MAVEN;
 import org.apache.maven.index.SearchType;
 import org.apache.maven.index.context.IndexingContext;
+import org.sonatype.nexus.AbstractMavenRepoContentTests;
+import org.sonatype.nexus.proxy.NoSuchRepositoryException;
+import org.sonatype.nexus.proxy.repository.Repository;
+import org.sonatype.nexus.scheduling.NexusScheduler;
 
 public abstract class AbstractIndexerManagerTest
     extends AbstractMavenRepoContentTests

@@ -12,12 +12,12 @@
  */
 package org.sonatype.nexus.index;
 
-import org.sonatype.nexus.proxy.repository.GroupRepository;
-import org.sonatype.nexus.proxy.repository.Repository;
-
 import junit.framework.Assert;
+
 import org.apache.maven.index.context.ContextMemberProvider;
 import org.junit.Test;
+import org.sonatype.nexus.proxy.repository.GroupRepository;
+import org.sonatype.nexus.proxy.repository.Repository;
 
 /**
  * IT for Indexer related to Group repositories.

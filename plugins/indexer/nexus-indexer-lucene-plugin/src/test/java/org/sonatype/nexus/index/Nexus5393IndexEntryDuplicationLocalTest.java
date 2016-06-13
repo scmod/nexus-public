@@ -18,8 +18,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
 
-import org.sonatype.nexus.proxy.ResourceStoreRequest;
-
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.search.IndexSearcher;
@@ -27,6 +25,7 @@ import org.apache.maven.index.ArtifactInfo;
 import org.apache.maven.index.context.IndexingContext;
 import org.junit.Assert;
 import org.junit.Test;
+import org.sonatype.nexus.proxy.ResourceStoreRequest;
 
 /**
  * UT for NEXUS-5393: Hosted repositories are getting duplicate entries for locally stored entries.

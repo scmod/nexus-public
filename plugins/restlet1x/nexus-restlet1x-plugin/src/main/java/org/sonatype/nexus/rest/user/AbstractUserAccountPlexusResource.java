@@ -14,6 +14,7 @@ package org.sonatype.nexus.rest.user;
 
 import javax.inject.Inject;
 
+import org.restlet.data.Request;
 import org.sonatype.nexus.rest.model.UserAccount;
 import org.sonatype.nexus.rest.model.UserAccountRequestResponseWrapper;
 import org.sonatype.nexus.user.UserAccountManager;
@@ -23,53 +24,52 @@ import org.sonatype.security.usermanagement.User;
 import org.sonatype.security.usermanagement.UserStatus;
 
 import com.thoughtworks.xstream.XStream;
-import org.restlet.data.Request;
 
-public abstract class AbstractUserAccountPlexusResource
-    extends AbstractSecurityPlexusResource
-{
-  protected UserAccountManager userAccountManager;
+public abstract class AbstractUserAccountPlexusResource extends
+		AbstractSecurityPlexusResource {
+	protected UserAccountManager userAccountManager;
 
-  @Inject
-  public void setUserAccountManager(final UserAccountManager userAccountManager) {
-    this.userAccountManager = userAccountManager;
-  }
+	@Inject
+	public void setUserAccountManager(
+			final UserAccountManager userAccountManager) {
+		this.userAccountManager = userAccountManager;
+	}
 
-  @Override
-  public void configureXStream(XStream xstream) {
-    super.configureXStream(xstream);
+	@Override
+	public void configureXStream(XStream xstream) {
+		super.configureXStream(xstream);
 
-    xstream.processAnnotations(UserAccount.class);
-    xstream.processAnnotations(UserAccountRequestResponseWrapper.class);
-  }
+		xstream.processAnnotations(UserAccount.class);
+		xstream.processAnnotations(UserAccountRequestResponseWrapper.class);
+	}
 
-  protected UserAccount nexusToRestModel(User user, Request request) {
-    UserAccount dto = new UserAccount();
+	protected UserAccount nexusToRestModel(User user, Request request) {
+		UserAccount dto = new UserAccount();
 
-    dto.setUserId(user.getUserId());
+		dto.setUserId(user.getUserId());
 
-    dto.setFirstName(user.getFirstName());
-    dto.setLastName(user.getLastName());
+		dto.setFirstName(user.getFirstName());
+		dto.setLastName(user.getLastName());
 
-    dto.setEmail(user.getEmailAddress());
+		dto.setEmail(user.getEmailAddress());
 
-    return dto;
-  }
+		return dto;
+	}
 
-  protected User restToNexusModel(UserAccount dto) {
-    User user = new DefaultUser();
+	protected User restToNexusModel(UserAccount dto) {
+		User user = new DefaultUser();
 
-    user.setUserId(dto.getUserId());
+		user.setUserId(dto.getUserId());
 
-    user.setFirstName(dto.getFirstName());
-    user.setLastName(dto.getLastName());
+		user.setFirstName(dto.getFirstName());
+		user.setLastName(dto.getLastName());
 
-    user.setEmailAddress(dto.getEmail());
+		user.setEmailAddress(dto.getEmail());
 
-    user.setSource(DEFAULT_SOURCE);
+		user.setSource(DEFAULT_SOURCE);
 
-    user.setStatus(UserStatus.active);
+		user.setStatus(UserStatus.active);
 
-    return user;
-  }
+		return user;
+	}
 }

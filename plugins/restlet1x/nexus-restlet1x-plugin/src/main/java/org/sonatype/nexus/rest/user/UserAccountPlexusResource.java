@@ -18,9 +18,14 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 
+import org.restlet.Context;
+import org.restlet.data.Request;
+import org.restlet.data.Response;
+import org.restlet.data.Status;
+import org.restlet.resource.ResourceException;
+import org.restlet.resource.Variant;
 import org.sonatype.configuration.validation.InvalidConfigurationException;
 import org.sonatype.nexus.rest.model.UserAccount;
 import org.sonatype.nexus.rest.model.UserAccountRequestResponseWrapper;
@@ -32,14 +37,6 @@ import org.sonatype.security.usermanagement.NoSuchUserManagerException;
 import org.sonatype.security.usermanagement.User;
 import org.sonatype.security.usermanagement.UserNotFoundException;
 
-import org.codehaus.enunciate.contract.jaxrs.ResourceMethodSignature;
-import org.restlet.Context;
-import org.restlet.data.Request;
-import org.restlet.data.Response;
-import org.restlet.data.Status;
-import org.restlet.resource.ResourceException;
-import org.restlet.resource.Variant;
-
 /**
  * Resource managing user account details.
  *
@@ -48,119 +45,108 @@ import org.restlet.resource.Variant;
 @Named
 @Singleton
 @Path("/user_account/{" + UserAccountPlexusResource.ACCOUNT_ID_KEY + "}")
-@Produces({"application/xml", "application/json"})
-@Consumes({"application/xml", "application/json"})
-public class UserAccountPlexusResource
-    extends AbstractUserAccountPlexusResource
-{
-  public static final String ACCOUNT_ID_KEY = "accountId";
+@Produces({ "application/xml", "application/json" })
+@Consumes({ "application/xml", "application/json" })
+public class UserAccountPlexusResource extends
+		AbstractUserAccountPlexusResource {
+	public static final String ACCOUNT_ID_KEY = "accountId";
 
-  public UserAccountPlexusResource() {
-    this.setReadable(true);
+	public UserAccountPlexusResource() {
+		this.setReadable(true);
 
-    this.setModifiable(true);
-  }
+		this.setModifiable(true);
+	}
 
-  @Override
-  public Object getPayloadInstance() {
-    return new UserAccountRequestResponseWrapper();
-  }
+	@Override
+	public Object getPayloadInstance() {
+		return new UserAccountRequestResponseWrapper();
+	}
 
-  @Override
-  public PathProtectionDescriptor getResourceProtection() {
-    return new PathProtectionDescriptor("/user_account/*", "authcBasic");
-  }
+	@Override
+	public PathProtectionDescriptor getResourceProtection() {
+		return new PathProtectionDescriptor("/user_account/*", "authcBasic");
+	}
 
-  @Override
-  public String getResourceUri() {
-    return "/user_account/{" + ACCOUNT_ID_KEY + "}";
-  }
+	@Override
+	public String getResourceUri() {
+		return "/user_account/{" + ACCOUNT_ID_KEY + "}";
+	}
 
-  /**
-   * Returns the account information for given accountId.
-   */
-  @Override
-  @GET
-  @ResourceMethodSignature(pathParams = {@PathParam(UserAccountPlexusResource.ACCOUNT_ID_KEY)},
-      output = UserAccountRequestResponseWrapper.class)
-  public Object get(Context context, Request request, Response response, Variant variant)
-      throws ResourceException
-  {
-    UserAccountRequestResponseWrapper result = new UserAccountRequestResponseWrapper();
+	/**
+	 * Returns the account information for given accountId.
+	 */
+	@Override
+	@GET
+	public Object get(Context context, Request request, Response response,
+			Variant variant) throws ResourceException {
+		UserAccountRequestResponseWrapper result = new UserAccountRequestResponseWrapper();
 
-    try {
-      User user = userAccountManager.readAccount(getUserId(request));
+		try {
+			User user = userAccountManager.readAccount(getUserId(request));
 
-      result.setData(nexusToRestModel(user, request));
-    }
-    catch (UserNotFoundException e) {
-      String msg = "User account '" + getUserId(request) + "' not found.";
+			result.setData(nexusToRestModel(user, request));
+		} catch (UserNotFoundException e) {
+			String msg = "User account '" + getUserId(request) + "' not found.";
 
-      getLogger().debug(msg, e);
+			getLogger().debug(msg, e);
 
-      throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND, msg);
-    }
-    catch (AuthorizationException e) {
-      throw new ResourceException(Status.CLIENT_ERROR_FORBIDDEN, "Not allowed to read account '"
-          + getUserId(request) + "'.");
-    }
+			throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND, msg);
+		} catch (AuthorizationException e) {
+			throw new ResourceException(Status.CLIENT_ERROR_FORBIDDEN,
+					"Not allowed to read account '" + getUserId(request) + "'.");
+		}
 
-    return result;
-  }
+		return result;
+	}
 
-  /**
-   * Updates account information for given accountId.
-   */
-  @Override
-  @PUT
-  @ResourceMethodSignature(pathParams = {@PathParam(UserAccountPlexusResource.ACCOUNT_ID_KEY)},
-      input = UserAccountRequestResponseWrapper.class, output = UserAccountRequestResponseWrapper.class)
-  public Object put(Context context, Request request, Response response, Object payload)
-      throws ResourceException
-  {
-    UserAccountRequestResponseWrapper result = new UserAccountRequestResponseWrapper();
+	/**
+	 * Updates account information for given accountId.
+	 */
+	@Override
+	@PUT
+	public Object put(Context context, Request request, Response response,
+			Object payload) throws ResourceException {
+		UserAccountRequestResponseWrapper result = new UserAccountRequestResponseWrapper();
 
-    UserAccount dto = ((UserAccountRequestResponseWrapper) payload).getData();
+		UserAccount dto = ((UserAccountRequestResponseWrapper) payload)
+				.getData();
 
-    try {
-      User user = getSecuritySystem().getUser(getUserId(request));
+		try {
+			User user = getSecuritySystem().getUser(getUserId(request));
 
-      user.setFirstName(dto.getFirstName());
-      user.setLastName(dto.getLastName());
+			user.setFirstName(dto.getFirstName());
+			user.setLastName(dto.getLastName());
 
-      user.setEmailAddress(dto.getEmail());
+			user.setEmailAddress(dto.getEmail());
 
-      userAccountManager.updateAccount(user);
+			userAccountManager.updateAccount(user);
 
-      result.setData(nexusToRestModel(user, request));
-    }
-    catch (InvalidConfigurationException e) {
-      handleInvalidConfigurationException(e);
+			result.setData(nexusToRestModel(user, request));
+		} catch (InvalidConfigurationException e) {
+			handleInvalidConfigurationException(e);
 
-      return null;
-    }
-    catch (UserNotFoundException e) {
-      String msg = "User account '" + getUserId(request) + "' not found.";
+			return null;
+		} catch (UserNotFoundException e) {
+			String msg = "User account '" + getUserId(request) + "' not found.";
 
-      getLogger().debug(msg, e);
+			getLogger().debug(msg, e);
 
-      throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND, msg);
-    }
-    catch (NoSuchUserManagerException e) {
-      ErrorResponse errorResponse = getErrorResponse("*", e.getMessage());
+			throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND, msg);
+		} catch (NoSuchUserManagerException e) {
+			ErrorResponse errorResponse = getErrorResponse("*", e.getMessage());
 
-      throw new PlexusResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "Unable to update account '"
-          + dto.getUserId() + "'.", errorResponse);
-    }
-    catch (AuthorizationException e) {
-      throw new ResourceException(Status.CLIENT_ERROR_FORBIDDEN, "Not allowed to update account '" + dto.getUserId()
-          + "'.");
-    }
+			throw new PlexusResourceException(Status.CLIENT_ERROR_BAD_REQUEST,
+					"Unable to update account '" + dto.getUserId() + "'.",
+					errorResponse);
+		} catch (AuthorizationException e) {
+			throw new ResourceException(Status.CLIENT_ERROR_FORBIDDEN,
+					"Not allowed to update account '" + dto.getUserId() + "'.");
+		}
 
-    return result;
-  }
+		return result;
+	}
 
-  protected String getUserId(Request request) {
-    return request.getAttributes().get(ACCOUNT_ID_KEY).toString();
-  }
+	protected String getUserId(Request request) {
+		return request.getAttributes().get(ACCOUNT_ID_KEY).toString();
+	}
 }

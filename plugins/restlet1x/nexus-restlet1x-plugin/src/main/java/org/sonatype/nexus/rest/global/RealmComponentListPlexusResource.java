@@ -18,17 +18,14 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 
-import org.sonatype.nexus.rest.component.AbstractComponentListPlexusResource;
-import org.sonatype.nexus.rest.model.PlexusComponentListResourceResponse;
-import org.sonatype.plexus.rest.resource.PathProtectionDescriptor;
-
 import org.apache.shiro.realm.Realm;
-import org.codehaus.enunciate.contract.jaxrs.ResourceMethodSignature;
 import org.restlet.Context;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.resource.ResourceException;
 import org.restlet.resource.Variant;
+import org.sonatype.nexus.rest.component.AbstractComponentListPlexusResource;
+import org.sonatype.plexus.rest.resource.PathProtectionDescriptor;
 
 /**
  * Get the list of security realms available.
@@ -36,36 +33,35 @@ import org.restlet.resource.Variant;
 @Named
 @Singleton
 @Path(RealmComponentListPlexusResource.RESOURCE_URI)
-@Produces({"application/xml", "application/json"})
-public class RealmComponentListPlexusResource
-    extends AbstractComponentListPlexusResource
-{
-  public static final String RESOURCE_URI = "/components/realm_types";
+@Produces({ "application/xml", "application/json" })
+public class RealmComponentListPlexusResource extends
+		AbstractComponentListPlexusResource {
+	public static final String RESOURCE_URI = "/components/realm_types";
 
-  @Override
-  public String getResourceUri() {
-    return RESOURCE_URI;
-  }
+	@Override
+	public String getResourceUri() {
+		return RESOURCE_URI;
+	}
 
-  @Override
-  public PathProtectionDescriptor getResourceProtection() {
-    return new PathProtectionDescriptor(getResourceUri(), "authcBasic,perms[nexus:componentrealmtypes]");
-  }
+	@Override
+	public PathProtectionDescriptor getResourceProtection() {
+		return new PathProtectionDescriptor(getResourceUri(),
+				"authcBasic,perms[nexus:componentrealmtypes]");
+	}
 
-  @Override
-  protected String getRole(Request request) {
-    return Realm.class.getName();
-  }
+	@Override
+	protected String getRole(Request request) {
+		return Realm.class.getName();
+	}
 
-  /**
-   * Get the list of security realms available for use in nexus (authentication and authorization).
-   */
-  @Override
-  @GET
-  @ResourceMethodSignature(output = PlexusComponentListResourceResponse.class)
-  public Object get(Context context, Request request, Response response, Variant variant)
-      throws ResourceException
-  {
-    return super.get(context, request, response, variant);
-  }
+	/**
+	 * Get the list of security realms available for use in nexus
+	 * (authentication and authorization).
+	 */
+	@Override
+	@GET
+	public Object get(Context context, Request request, Response response,
+			Variant variant) throws ResourceException {
+		return super.get(context, request, response, variant);
+	}
 }

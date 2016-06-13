@@ -19,14 +19,13 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
 
-import org.sonatype.nexus.proxy.NoSuchRepositoryException;
-
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.index.ArtifactInfoFilter;
 import org.apache.maven.index.IteratorSearchResponse;
 import org.apache.maven.index.MAVEN;
 import org.apache.maven.index.SearchType;
 import org.apache.maven.index.UniqueArtifactFilterPostprocessor;
+import org.sonatype.nexus.proxy.NoSuchRepositoryException;
 
 /**
  * Searches Lucene index for artifacts based on maven artifact coordinates.

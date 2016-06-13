@@ -12,9 +12,16 @@
  */
 package org.sonatype.nexus.rest;
 
-import java.util.concurrent.ConcurrentHashMap;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
+import static org.junit.Assert.fail;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
-import org.sonatype.plexus.rest.resource.PlexusResource;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -27,97 +34,93 @@ import org.restlet.data.Response;
 import org.restlet.data.Status;
 import org.restlet.resource.ResourceException;
 import org.restlet.resource.Variant;
-
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.fail;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import org.sonatype.plexus.rest.resource.PlexusResource;
 
 /**
  * @author plynch
  */
 @RunWith(MockitoJUnitRunner.class)
-public class NexusRestletResourceTest
-{
+public class NexusRestletResourceTest {
 
-  @Mock
-  private Request request;
+	@Mock
+	private Request request;
 
-  @Mock
-  private Response response;
+	@Mock
+	private Response response;
 
-  @Mock
-  private Context context;
+	@Mock
+	private Context context;
 
-  @Mock
-  private PlexusResource plexusResource;
+	@Mock
+	private PlexusResource plexusResource;
 
-  @Mock
-  private Variant variant;
+	@Mock
+	private Variant variant;
 
-  private NexusRestletResource instance;
+	private NexusRestletResource instance;
 
-  @Before
-  public void setup() {
-    // prevent NPE only caused by mocking
-    when(context.getAttributes()).thenReturn(new ConcurrentHashMap<String, Object>());
-    this.instance = spy(new NexusRestletResource(context, request, response, plexusResource));
-  }
+	@Before
+	public void setup() {
+		// prevent NPE only caused by mocking
+		when(context.getAttributes()).thenReturn(
+				new ConcurrentHashMap<String, Object>());
+		this.instance = spy(new NexusRestletResource(context, request,
+				response, plexusResource));
+	}
 
-  @Test
-  public void representResourceExceptionWithStatusNull() throws ResourceException {
+	@Test
+	public void representResourceExceptionWithStatusNull()
+			throws ResourceException {
 
-    // possible that status is null in ResourceException, make sure our status checking does not throw NPE checking status
-    // make the call to super.represent throw ResourceException
-    // fyi there is no way to directly mock a super call, so we have to mock the underlying bits
-    ResourceException expected = new ResourceException((Status) null, new Throwable());
-    doThrow(expected).when(plexusResource).get(context, request, response, variant);
+		// possible that status is null in ResourceException, make sure our
+		// status checking does not throw NPE checking status
+		// make the call to super.represent throw ResourceException
+		// fyi there is no way to directly mock a super call, so we have to mock
+		// the underlying bits
+		ResourceException expected = new ResourceException((Status) null,
+				new Throwable());
+		doThrow(expected).when(plexusResource).get(context, request, response,
+				variant);
 
-    try {
-      instance.represent(variant);
-      fail("ResourceException expected.");
-    }
-    catch (ResourceException actual) {
-      assertThat(actual, equalTo(expected));
-    }
+		try {
+			instance.represent(variant);
+			fail("ResourceException expected.");
+		} catch (ResourceException actual) {
+			assertThat(actual, equalTo(expected));
+		}
 
-    // verify underlying bits - this verifies our assumption that the super implementation calls plexuResource.get()
-    // to protect against changes in super hiding a change in test prepare
-    verify(plexusResource).get(context, request, response, variant);
-    //verify no apr since we don't have a status code
-    verify(instance).handleError(expected);
-  }
+		// verify underlying bits - this verifies our assumption that the super
+		// implementation calls plexuResource.get()
+		// to protect against changes in super hiding a change in test prepare
+		verify(plexusResource).get(context, request, response, variant);
+		// verify no apr since we don't have a status code
+		verify(instance).handleError(expected);
+	}
 
-  @Test
-  public void representResourceExceptionWithStatus5xx() throws ResourceException {
-    // brute force 5xx errors
-    for (int i = 500; i < 600; i++) {
-      ResourceException expected = new ResourceException(i);
-      doThrow(expected).when(plexusResource).get(context, request, response, variant);
+	@Test
+	public void representResourceExceptionWithStatus5xx()
+			throws ResourceException {
+		// brute force 5xx errors
+		for (int i = 500; i < 600; i++) {
+			ResourceException expected = new ResourceException(i);
+			doThrow(expected).when(plexusResource).get(context, request,
+					response, variant);
 
-      try {
-        instance.represent(variant);
-        fail("ResourceException expected.");
-      }
-      catch (ResourceException actual) {
-        assertThat(actual, equalTo(expected));
-      }
+			try {
+				instance.represent(variant);
+				fail("ResourceException expected.");
+			} catch (ResourceException actual) {
+				assertThat(actual, equalTo(expected));
+			}
 
-      // verify when APR is called
-      if (503 == i) {
-        verify(instance, never()).handleError(expected);
-      }
-      else {
-        verify(instance).handleError(expected);
-      }
+			// verify when APR is called
+			if (503 == i) {
+				verify(instance, never()).handleError(expected);
+			} else {
+				verify(instance).handleError(expected);
+			}
 
+		}
 
-    }
-
-
-  }
+	}
 }

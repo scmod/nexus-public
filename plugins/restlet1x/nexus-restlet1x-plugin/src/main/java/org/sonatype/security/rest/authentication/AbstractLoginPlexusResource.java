@@ -12,48 +12,45 @@
  */
 package org.sonatype.security.rest.authentication;
 
-import org.sonatype.security.rest.model.AuthenticationLoginResource;
-import org.sonatype.security.rest.model.AuthenticationLoginResourceResponse;
-
 import org.restlet.Context;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.resource.ResourceException;
 import org.restlet.resource.Variant;
+import org.sonatype.security.rest.model.AuthenticationLoginResource;
+import org.sonatype.security.rest.model.AuthenticationLoginResourceResponse;
 
 /**
  * The login resource handler. It creates a user token.
  *
  * @author cstamas
  */
-public abstract class AbstractLoginPlexusResource
-    extends AbstractUIPermissionCalculatingPlexusResource
-{
-  public static final String RESOURCE_URI = "/authentication/login";
+public abstract class AbstractLoginPlexusResource extends
+		AbstractUIPermissionCalculatingPlexusResource {
+	public static final String RESOURCE_URI = "/authentication/login";
 
-  @Override
-  public Object getPayloadInstance() {
-    return null;
-  }
+	@Override
+	public Object getPayloadInstance() {
+		return null;
+	}
 
-  @Override
-  public String getResourceUri() {
-    return RESOURCE_URI;
-  }
+	@Override
+	public String getResourceUri() {
+		return RESOURCE_URI;
+	}
 
-  @Override
-  public Object get(Context context, Request request, Response response, Variant variant)
-      throws ResourceException
-  {
-    AuthenticationLoginResource resource = new AuthenticationLoginResource();
+	@Override
+	public Object get(Context context, Request request, Response response,
+			Variant variant) throws ResourceException {
+		AuthenticationLoginResource resource = new AuthenticationLoginResource();
 
-    resource.setClientPermissions(getClientPermissionsForCurrentUser(request));
+		resource.setClientPermissions(getClientPermissionsForCurrentUser(request));
 
-    AuthenticationLoginResourceResponse result = new AuthenticationLoginResourceResponse();
+		AuthenticationLoginResourceResponse result = new AuthenticationLoginResourceResponse();
 
-    result.setData(resource);
+		result.setData(resource);
 
-    return result;
-  }
+		return result;
+	}
 
 }

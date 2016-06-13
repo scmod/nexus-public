@@ -107,7 +107,7 @@ public class LdapUserAndGroupConfigTestPlexusResource
    */
   @Override
   @PUT
-  @ResourceMethodSignature(input = LdapUserAndGroupConfigTestRequest.class, output = LdapUserListResponse.class)
+  
   public Object put(Context context, Request request, Response response, Object payload)
       throws ResourceException
   {

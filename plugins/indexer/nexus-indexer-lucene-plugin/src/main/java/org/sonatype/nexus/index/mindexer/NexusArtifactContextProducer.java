@@ -12,6 +12,8 @@
  */
 package org.sonatype.nexus.index.mindexer;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import java.io.File;
 import java.io.IOException;
 
@@ -20,6 +22,11 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
 
+import org.apache.maven.index.ArtifactContext;
+import org.apache.maven.index.DefaultArtifactContextProducer;
+import org.apache.maven.index.context.IndexingContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.sonatype.nexus.proxy.LocalStorageException;
 import org.sonatype.nexus.proxy.NoSuchRepositoryException;
 import org.sonatype.nexus.proxy.ResourceStoreRequest;
@@ -33,13 +40,6 @@ import org.sonatype.nexus.proxy.repository.Repository;
 import org.sonatype.nexus.proxy.storage.local.fs.DefaultFSLocalRepositoryStorage;
 
 import com.google.common.base.Strings;
-import org.apache.maven.index.ArtifactContext;
-import org.apache.maven.index.DefaultArtifactContextProducer;
-import org.apache.maven.index.context.IndexingContext;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * NX enhanced {@link DefaultArtifactContextProducer} that gets missing SHA1 hashes from NX.

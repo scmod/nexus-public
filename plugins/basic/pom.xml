@@ -31,7 +31,6 @@
   <modules>
     <module>nexus-content-plugin</module>
     <module>nexus-logging-plugin</module>
-    <module>nexus-plugin-console-plugin</module>
     <module>nexus-rrb-plugin</module>
     <module>nexus-siesta-plugin</module>
     <module>nexus-ui-extjs3-plugin</module>

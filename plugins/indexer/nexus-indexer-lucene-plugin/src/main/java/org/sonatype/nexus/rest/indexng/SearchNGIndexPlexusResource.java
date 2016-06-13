@@ -25,8 +25,21 @@ import javax.inject.Named;
 import javax.inject.Singleton;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
-import javax.ws.rs.QueryParam;
 
+import org.apache.lucene.queryParser.ParseException;
+import org.apache.maven.index.ArtifactInfo;
+import org.apache.maven.index.IteratorSearchResponse;
+import org.apache.maven.index.SearchType;
+import org.restlet.Context;
+import org.restlet.data.Form;
+import org.restlet.data.Parameter;
+import org.restlet.data.Request;
+import org.restlet.data.Response;
+import org.restlet.data.Status;
+import org.restlet.resource.ResourceException;
+import org.restlet.resource.Variant;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.sonatype.nexus.index.Searcher;
 import org.sonatype.nexus.proxy.NoSuchRepositoryException;
 import org.sonatype.nexus.proxy.maven.MavenRepository;
@@ -47,21 +60,6 @@ import org.sonatype.plexus.rest.resource.PathProtectionDescriptor;
 import org.sonatype.plexus.rest.resource.PlexusResourceException;
 
 import com.google.common.annotations.VisibleForTesting;
-import org.apache.lucene.queryParser.ParseException;
-import org.apache.maven.index.ArtifactInfo;
-import org.apache.maven.index.IteratorSearchResponse;
-import org.apache.maven.index.SearchType;
-import org.codehaus.enunciate.contract.jaxrs.ResourceMethodSignature;
-import org.restlet.Context;
-import org.restlet.data.Form;
-import org.restlet.data.Parameter;
-import org.restlet.data.Request;
-import org.restlet.data.Response;
-import org.restlet.data.Status;
-import org.restlet.resource.ResourceException;
-import org.restlet.resource.Variant;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 @Named(SearchNGIndexPlexusResource.ROLE_HINT)
 @Singleton
@@ -188,11 +186,7 @@ public class SearchNGIndexPlexusResource
    */
   @Override
   @GET
-  @ResourceMethodSignature(queryParams = {
-      @QueryParam("q"), @QueryParam("g"), @QueryParam("a"),
-      @QueryParam("v"), @QueryParam("p"), @QueryParam("c"), @QueryParam("cn"), @QueryParam("sha1"),
-      @QueryParam("from"), @QueryParam("count"), @QueryParam("repositoryId")
-  }, output = SearchNGResponse.class)
+  
   public SearchNGResponse get(Context context, Request request, Response response, Variant variant)
       throws ResourceException
   {

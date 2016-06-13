@@ -12,6 +12,9 @@
  */
 package org.sonatype.nexus.index;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.notNullValue;
+
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.lang.reflect.InvocationHandler;
@@ -21,16 +24,6 @@ import java.util.List;
 
 import javax.annotation.Nullable;
 
-import org.sonatype.nexus.proxy.maven.MavenGroupRepository;
-import org.sonatype.nexus.proxy.maven.MavenProxyRepository;
-import org.sonatype.nexus.proxy.maven.MavenRepository;
-import org.sonatype.nexus.proxy.maven.maven2.M2Repository;
-import org.sonatype.nexus.proxy.repository.GroupRepository;
-import org.sonatype.nexus.proxy.repository.Repository;
-import org.sonatype.nexus.proxy.repository.ShadowRepository;
-
-import com.google.common.base.Predicate;
-import com.google.common.collect.Lists;
 import org.apache.maven.index.ArtifactScanningListener;
 import org.apache.maven.index.NexusIndexer;
 import org.apache.maven.index.Scanner;
@@ -43,10 +36,16 @@ import org.hamcrest.Description;
 import org.hamcrest.TypeSafeMatcher;
 import org.junit.Assert;
 import org.junit.Test;
+import org.sonatype.nexus.proxy.maven.MavenGroupRepository;
+import org.sonatype.nexus.proxy.maven.MavenProxyRepository;
+import org.sonatype.nexus.proxy.maven.MavenRepository;
+import org.sonatype.nexus.proxy.maven.maven2.M2Repository;
+import org.sonatype.nexus.proxy.repository.GroupRepository;
+import org.sonatype.nexus.proxy.repository.Repository;
+import org.sonatype.nexus.proxy.repository.ShadowRepository;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.notNullValue;
+import com.google.common.base.Predicate;
+import com.google.common.collect.Lists;
 
 /**
  * Test for NEXUS-5249 and related ones (see linked issues). In general, we ensure that 404 happened during remote

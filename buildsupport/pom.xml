@@ -29,11 +29,8 @@
   <packaging>pom</packaging>
 
   <modules>
-    <module>bouncycastle</module>
     <module>commons</module>
-    <module>db</module>
     <module>goodies</module>
-    <module>groovy</module>
     <module>guice</module>
     <module>gwt</module>
     <module>httpclient</module>
@@ -42,7 +39,6 @@
     <module>logging</module>
     <module>maven</module>
     <module>messaging</module>
-    <module>metrics</module>
     <module>osgi</module>
     <module>other</module>
     <module>plexus</module>

@@ -12,14 +12,10 @@
  */
 package org.sonatype.nexus.plugin.lucene.ui;
 
-import java.io.IOException;
-import java.util.zip.ZipFile;
-
 import javax.inject.Named;
 import javax.inject.Singleton;
 
 import org.sonatype.nexus.plugin.support.AbstractDocumentationResourceBundle;
-import org.sonatype.nexus.rest.index.AbstractIndexerNexusPlexusResource;
 
 @Named
 @Singleton

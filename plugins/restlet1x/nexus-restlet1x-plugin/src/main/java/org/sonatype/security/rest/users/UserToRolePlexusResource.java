@@ -21,236 +21,129 @@ import javax.enterprise.inject.Typed;
 import javax.inject.Named;
 import javax.inject.Singleton;
 import javax.ws.rs.Consumes;
-import javax.ws.rs.DELETE;
-import javax.ws.rs.GET;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 
-import org.sonatype.configuration.validation.InvalidConfigurationException;
-import org.sonatype.plexus.rest.resource.PathProtectionDescriptor;
-import org.sonatype.plexus.rest.resource.PlexusResource;
-import org.sonatype.plexus.rest.resource.PlexusResourceException;
-import org.sonatype.security.rest.model.UserToRoleResource;
-import org.sonatype.security.rest.model.UserToRoleResourceRequest;
-import org.sonatype.security.usermanagement.NoSuchUserManagerException;
-import org.sonatype.security.usermanagement.RoleIdentifier;
-import org.sonatype.security.usermanagement.UserNotFoundException;
-
-import org.codehaus.enunciate.contract.jaxrs.ResourceMethodSignature;
 import org.restlet.Context;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.data.Status;
 import org.restlet.resource.ResourceException;
-import org.restlet.resource.Variant;
+import org.sonatype.configuration.validation.InvalidConfigurationException;
+import org.sonatype.plexus.rest.resource.PathProtectionDescriptor;
+import org.sonatype.plexus.rest.resource.PlexusResource;
+import org.sonatype.security.rest.model.UserToRoleResource;
+import org.sonatype.security.rest.model.UserToRoleResourceRequest;
+import org.sonatype.security.usermanagement.RoleIdentifier;
+import org.sonatype.security.usermanagement.UserNotFoundException;
 
 /**
- * REST resource to manage a users list of roles. Used when a user belongs to an external source.
+ * REST resource to manage a users list of roles. Used when a user belongs to an
+ * external source.
  *
  * @author bdemers
  */
 @Singleton
 @Typed(PlexusResource.class)
 @Named("UserToRolePlexusResource")
-@Produces({"application/xml", "application/json"})
-@Consumes({"application/xml", "application/json"})
+@Produces({ "application/xml", "application/json" })
+@Consumes({ "application/xml", "application/json" })
 @Path(UserToRolePlexusResource.RESOURCE_URI)
-public class UserToRolePlexusResource
-    extends AbstractUserPlexusResource
-{
+public class UserToRolePlexusResource extends AbstractUserPlexusResource {
 
-  public static final String SOURCE_ID_KEY = "sourceId";
+	public static final String SOURCE_ID_KEY = "sourceId";
 
-  public static final String RESOURCE_URI = "/user_to_roles/{" + SOURCE_ID_KEY + "}/{" + USER_ID_KEY + "}";
+	public static final String RESOURCE_URI = "/user_to_roles/{"
+			+ SOURCE_ID_KEY + "}/{" + USER_ID_KEY + "}";
 
-  public UserToRolePlexusResource() {
-    this.setModifiable(true);
-    this.setReadable(true);
-  }
+	public UserToRolePlexusResource() {
+		this.setModifiable(true);
+		this.setReadable(true);
+	}
 
-  @Override
-  public Object getPayloadInstance() {
-    return new UserToRoleResourceRequest();
-  }
+	@Override
+	public Object getPayloadInstance() {
+		return new UserToRoleResourceRequest();
+	}
 
-  @Override
-  public PathProtectionDescriptor getResourceProtection() {
-    return new PathProtectionDescriptor("/user_to_roles/*/*", "authcBasic,perms[security:users]");
-  }
+	@Override
+	public PathProtectionDescriptor getResourceProtection() {
+		return new PathProtectionDescriptor("/user_to_roles/*/*",
+				"authcBasic,perms[security:users]");
+	}
 
-  @Override
-  public String getResourceUri() {
-    return RESOURCE_URI;
-  }
+	@Override
+	public String getResourceUri() {
+		return RESOURCE_URI;
+	}
 
-  protected String getUserId(Request request) {
-    return getRequestAttribute(request, USER_ID_KEY);
-  }
+	protected String getUserId(Request request) {
+		return getRequestAttribute(request, USER_ID_KEY);
+	}
 
-  protected String getSourceId(Request request) {
-    return getRequestAttribute(request, SOURCE_ID_KEY);
-  }
+	protected String getSourceId(Request request) {
+		return getRequestAttribute(request, SOURCE_ID_KEY);
+	}
 
-  /**
-   * Sets a users roles.
-   *
-   * @param sourceId The Id of the source. A source specifies where the users/roles came from, for example the source
-   *                 Id of 'LDAP' identifies the users/roles as coming from an LDAP source.
-   * @param userId   The Id of the user.
-   */
-  @Override
-  @PUT
-  @ResourceMethodSignature(input = UserToRoleResourceRequest.class, pathParams = {
-      @PathParam("sourceId"),
-      @PathParam("userId")
-  })
-  public Object put(Context context, Request request, Response response, Object payload)
-      throws ResourceException
-  {
-    UserToRoleResourceRequest mappingRequest = (UserToRoleResourceRequest) payload;
+	/**
+	 * Sets a users roles.
+	 *
+	 * @param sourceId
+	 *            The Id of the source. A source specifies where the users/roles
+	 *            came from, for example the source Id of 'LDAP' identifies the
+	 *            users/roles as coming from an LDAP source.
+	 * @param userId
+	 *            The Id of the user.
+	 */
+	@Override
+	@PUT
+	public void delete(Context context, Request request, Response response)
+			throws ResourceException {
+		// get the userId
+		String userId = this.getUserId(request);
+		String source = this.getSourceId(request);
 
-    if (mappingRequest.getData() == null) {
-      throw new ResourceException(Status.CLIENT_ERROR_BAD_REQUEST,
-          "User Role Mapping was not found in the Request.");
-    }
+		try {
+			getSecuritySystem().setUsersRoles(userId, source, null);
+		} catch (InvalidConfigurationException e) {
+			this.handleInvalidConfigurationException(e);
+		} catch (UserNotFoundException e) {
+			throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND,
+					"User with id '" + userId + "' not found.");
+		}
+	}
 
-    String userId = this.getUserId(request);
-    String sourceId = this.getSourceId(request);
+	private Set<RoleIdentifier> restToSecurityModel(
+			UserToRoleResource restRoleMapping) {
+		// FIXME: loss of roles source, currently we only support CRUDS on the
+		// XML realm but, that is temporary.
 
-    // check if the user exists
-    try {
-      if (this.getSecuritySystem().getUser(userId, sourceId) == null) {
-        throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND, "User with id '" + userId + "' not found.");
-      }
-    }
-    catch (UserNotFoundException e) {
-      throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND, "User with id '" + userId + "' not found.");
-    }
-    catch (NoSuchUserManagerException e) {
-      this.getLogger().warn(e.getMessage(), e);
-      throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND, "User with id '" + userId + "' not found.");
-    }
+		Set<RoleIdentifier> roleIdentifiers = new HashSet<RoleIdentifier>();
 
-    // get the dto
-    UserToRoleResource userToRole = mappingRequest.getData();
+		for (String roleId : (List<String>) restRoleMapping.getRoles()) {
+			roleIdentifiers.add(new RoleIdentifier(DEFAULT_SOURCE, roleId));
+		}
 
-    Set<RoleIdentifier> roleIdentifiers = this.restToSecurityModel(userToRole);
+		return roleIdentifiers;
+	}
 
-    if (roleIdentifiers.size() == 0) {
-      throw new PlexusResourceException(Status.CLIENT_ERROR_BAD_REQUEST, "Configuration error.",
-          getErrorResponse("roles", "User requires one or more roles."));
-    }
+	private UserToRoleResource securityToRestModel(String userId,
+			String source, Set<RoleIdentifier> roleIds) {
+		UserToRoleResource resource = new UserToRoleResource();
 
-    try {
-      // this will throw if we cannot find the user, in that case we will create one.
-      getSecuritySystem().setUsersRoles(userToRole.getUserId(), userToRole.getSource(), roleIdentifiers);
-    }
-    catch (InvalidConfigurationException e) {
-      this.handleInvalidConfigurationException(e);
-    }
-    catch (UserNotFoundException e) {
-      throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND, "User with id '" + userId + "' not found.");
-    }
+		resource.setUserId(userId);
 
-    response.setStatus(Status.SUCCESS_NO_CONTENT);
-    return null;
-  }
+		resource.setSource(source);
 
-  /**
-   * Gets a users roles.
-   *
-   * @param sourceId The Id of the source. A source specifies where the users/roles came from, for example the source
-   *                 Id of 'LDAP' identifies the users/roles as coming from an LDAP source.
-   * @param userId   The Id of the user.
-   */
-  @Override
-  @GET
-  @ResourceMethodSignature(output = UserToRoleResourceRequest.class, pathParams = {
-      @PathParam("sourceId"),
-      @PathParam("userId")
-  })
-  public Object get(Context context, Request request, Response response, Variant variant)
-      throws ResourceException
-  {
-    String userId = this.getUserId(request);
+		List<String> roles = new ArrayList<String>();
 
-    String sourceId = this.getSourceId(request);
+		for (RoleIdentifier roleId : roleIds) {
+			roles.add(roleId.getRoleId());
+		}
 
-    try {
-      Set<RoleIdentifier> roleIds = getSecuritySystem().getUsersRoles(userId, sourceId);
+		resource.setRoles(roles);
 
-      UserToRoleResourceRequest resp = new UserToRoleResourceRequest();
-
-      resp.setData(securityToRestModel(userId, sourceId, roleIds));
-
-      return resp;
-    }
-    catch (UserNotFoundException e) {
-      throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND, "Could not find user '" + userId + "'.");
-    }
-    catch (NoSuchUserManagerException e) {
-      throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND, "Could not find user manager for source '"
-          + sourceId + "'.");
-    }
-  }
-
-  /**
-   * Removes all roles from a user.
-   *
-   * @param sourceId The Id of the source. A source specifies where the users/roles came from, for example the source
-   *                 Id of 'LDAP' identifies the users/roles as coming from an LDAP source.
-   * @param userId   The Id of the user.
-   */
-  @Override
-  @DELETE
-  @ResourceMethodSignature(pathParams = {@PathParam("sourceId"), @PathParam("userId")})
-  public void delete(Context context, Request request, Response response)
-      throws ResourceException
-  {
-    // get the userId
-    String userId = this.getUserId(request);
-    String source = this.getSourceId(request);
-
-    try {
-      getSecuritySystem().setUsersRoles(userId, source, null);
-    }
-    catch (InvalidConfigurationException e) {
-      this.handleInvalidConfigurationException(e);
-    }
-    catch (UserNotFoundException e) {
-      throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND, "User with id '" + userId + "' not found.");
-    }
-  }
-
-  private Set<RoleIdentifier> restToSecurityModel(UserToRoleResource restRoleMapping) {
-    // FIXME: loss of roles source, currently we only support CRUDS on the XML realm but, that is temporary.
-
-    Set<RoleIdentifier> roleIdentifiers = new HashSet<RoleIdentifier>();
-
-    for (String roleId : (List<String>) restRoleMapping.getRoles()) {
-      roleIdentifiers.add(new RoleIdentifier(DEFAULT_SOURCE, roleId));
-    }
-
-    return roleIdentifiers;
-  }
-
-  private UserToRoleResource securityToRestModel(String userId, String source, Set<RoleIdentifier> roleIds) {
-    UserToRoleResource resource = new UserToRoleResource();
-
-    resource.setUserId(userId);
-
-    resource.setSource(source);
-
-    List<String> roles = new ArrayList<String>();
-
-    for (RoleIdentifier roleId : roleIds) {
-      roles.add(roleId.getRoleId());
-    }
-
-    resource.setRoles(roles);
-
-    return resource;
-  }
+		return resource;
+	}
 }

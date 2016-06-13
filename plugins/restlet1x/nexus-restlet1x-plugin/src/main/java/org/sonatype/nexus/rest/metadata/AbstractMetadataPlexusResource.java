@@ -12,41 +12,39 @@
  */
 package org.sonatype.nexus.rest.metadata;
 
-import org.sonatype.nexus.maven.tasks.RebuildMavenMetadataTask;
-import org.sonatype.nexus.rest.restore.AbstractRestorePlexusResource;
-
 import org.restlet.Context;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.resource.ResourceException;
+import org.sonatype.nexus.maven.tasks.RebuildMavenMetadataTask;
+import org.sonatype.nexus.rest.restore.AbstractRestorePlexusResource;
 
 /**
  * @author Juven Xu
  */
-public abstract class AbstractMetadataPlexusResource
-    extends AbstractRestorePlexusResource
-{
+public abstract class AbstractMetadataPlexusResource extends
+		AbstractRestorePlexusResource {
 
-  @Override
-  public Object getPayloadInstance() {
-    return null;
-  }
+	@Override
+	public Object getPayloadInstance() {
+		return null;
+	}
 
-  @Override
-  public void delete(Context context, Request request, Response response)
-      throws ResourceException
-  {
-    RebuildMavenMetadataTask task = getNexusScheduler().createTaskInstance(RebuildMavenMetadataTask.class);
+	@Override
+	public void delete(Context context, Request request, Response response)
+			throws ResourceException {
+		RebuildMavenMetadataTask task = getNexusScheduler().createTaskInstance(
+				RebuildMavenMetadataTask.class);
 
-    String repositoryId = getRepositoryId(request);
-    if (repositoryId == null) {
-      repositoryId = getRepositoryGroupId(request);
-    }
-    task.setRepositoryId(repositoryId);
+		String repositoryId = getRepositoryId(request);
+		if (repositoryId == null) {
+			repositoryId = getRepositoryGroupId(request);
+		}
+		task.setRepositoryId(repositoryId);
 
-    task.setResourceStorePath(getResourceStorePath(request));
+		task.setResourceStorePath(getResourceStorePath(request));
 
-    handleDelete(task, request);
-  }
+		handleDelete(task, request);
+	}
 
 }

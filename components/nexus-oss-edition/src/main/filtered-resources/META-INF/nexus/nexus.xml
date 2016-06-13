@@ -61,33 +61,6 @@
       </externalConfiguration>
     </repository>
     <repository>
-      <id>apache-snapshots</id>
-      <name>Apache Snapshots</name>
-      <providerRole>org.sonatype.nexus.proxy.repository.Repository</providerRole>
-      <providerHint>maven2</providerHint>
-      <localStatus>IN_SERVICE</localStatus>
-      <notFoundCacheActive>true</notFoundCacheActive>
-      <notFoundCacheTTL>1440</notFoundCacheTTL>
-      <userManaged>true</userManaged>
-      <exposed>true</exposed>
-      <browseable>true</browseable>
-      <writePolicy>READ_ONLY</writePolicy>
-      <indexable>true</indexable>
-      <searchable>true</searchable>
-      <remoteStorage>
-        <url>https://repository.apache.org/snapshots/</url>
-      </remoteStorage>
-      <externalConfiguration>
-        <proxyMode>ALLOW</proxyMode>
-        <artifactMaxAge>1440</artifactMaxAge>
-        <itemMaxAge>1440</itemMaxAge>
-        <cleanseRepositoryMetadata>false</cleanseRepositoryMetadata>
-        <downloadRemoteIndex>false</downloadRemoteIndex>
-        <checksumPolicy>WARN</checksumPolicy>
-        <repositoryPolicy>SNAPSHOT</repositoryPolicy>
-      </externalConfiguration>
-    </repository>
-    <repository>
       <id>releases</id>
       <name>Releases</name>
       <providerRole>org.sonatype.nexus.proxy.repository.Repository</providerRole>
@@ -160,23 +133,6 @@
       </externalConfiguration>
     </repository>
     <repository>
-      <id>central-m1</id>
-      <name>Central M1 shadow</name>
-      <providerRole>org.sonatype.nexus.proxy.repository.ShadowRepository</providerRole>
-      <providerHint>m2-m1-shadow</providerHint>
-      <localStatus>IN_SERVICE</localStatus>
-      <notFoundCacheActive>false</notFoundCacheActive>
-      <notFoundCacheTTL>15</notFoundCacheTTL>
-      <userManaged>true</userManaged>
-      <exposed>true</exposed>
-      <browseable>true</browseable>
-      <writePolicy>READ_ONLY</writePolicy>
-      <externalConfiguration>
-        <masterRepositoryId>central</masterRepositoryId>
-        <syncAtStartup>false</syncAtStartup>
-      </externalConfiguration>
-    </repository>
-    <repository>
       <id>public</id>
       <name>Public Repositories</name>
       <providerRole>org.sonatype.nexus.proxy.repository.GroupRepository</providerRole>
@@ -200,34 +156,6 @@
       </externalConfiguration>
     </repository>
   </repositories>
-  <repositoryGrouping>
-    <pathMappings>
-      <pathMapping>
-        <id>inhouse-stuff</id>
-        <groupId>*</groupId>
-        <routeType>inclusive</routeType>
-        <routePatterns>
-          <routePattern>^/(com|org)/somecompany/.*</routePattern>
-        </routePatterns>
-        <repositories>
-          <repository>snapshots</repository>
-          <repository>releases</repository>
-        </repositories>
-      </pathMapping>
-      <pathMapping>
-        <id>apache-stuff</id>
-        <groupId>*</groupId>
-        <routeType>exclusive</routeType>
-        <routePatterns>
-          <routePattern>^/org/some-oss/.*</routePattern>
-        </routePatterns>
-        <repositories>
-          <repository>releases</repository>
-          <repository>snapshots</repository>
-        </repositories>
-      </pathMapping>
-    </pathMappings>
-  </repositoryGrouping>
   <repositoryTargets>
     <repositoryTarget>
       <id>1</id>

@@ -18,20 +18,18 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 
-import org.sonatype.nexus.rest.model.GlobalConfigurationListResource;
-import org.sonatype.nexus.rest.model.GlobalConfigurationListResourceResponse;
-import org.sonatype.plexus.rest.resource.PathProtectionDescriptor;
-
-import org.codehaus.enunciate.contract.jaxrs.ResourceMethodSignature;
 import org.restlet.Context;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.resource.ResourceException;
 import org.restlet.resource.Variant;
+import org.sonatype.nexus.rest.model.GlobalConfigurationListResource;
+import org.sonatype.nexus.rest.model.GlobalConfigurationListResourceResponse;
+import org.sonatype.plexus.rest.resource.PathProtectionDescriptor;
 
 /**
- * The GlobalConfigurationList resource. This is a read only resource that simply returns a list of known configuration
- * resources.
+ * The GlobalConfigurationList resource. This is a read only resource that
+ * simply returns a list of known configuration resources.
  *
  * @author cstamas
  * @author tstevens
@@ -39,55 +37,55 @@ import org.restlet.resource.Variant;
 @Named
 @Singleton
 @Path(GlobalConfigurationListPlexusResource.RESOURCE_URI)
-@Produces({"application/xml", "application/json"})
-public class GlobalConfigurationListPlexusResource
-    extends AbstractGlobalConfigurationPlexusResource
-{
-  public static final String RESOURCE_URI = "/global_settings";
+@Produces({ "application/xml", "application/json" })
+public class GlobalConfigurationListPlexusResource extends
+		AbstractGlobalConfigurationPlexusResource {
+	public static final String RESOURCE_URI = "/global_settings";
 
-  @Override
-  public Object getPayloadInstance() {
-    return null;
-  }
+	@Override
+	public Object getPayloadInstance() {
+		return null;
+	}
 
-  @Override
-  public String getResourceUri() {
-    return RESOURCE_URI;
-  }
+	@Override
+	public String getResourceUri() {
+		return RESOURCE_URI;
+	}
 
-  @Override
-  public PathProtectionDescriptor getResourceProtection() {
-    return new PathProtectionDescriptor(getResourceUri(), "authcBasic,perms[nexus:settings]");
-  }
+	@Override
+	public PathProtectionDescriptor getResourceProtection() {
+		return new PathProtectionDescriptor(getResourceUri(),
+				"authcBasic,perms[nexus:settings]");
+	}
 
-  /**
-   * Get the list of global configuration objects in nexus.
-   */
-  @Override
-  @GET
-  @ResourceMethodSignature(output = GlobalConfigurationListResourceResponse.class)
-  public Object get(Context context, Request request, Response response, Variant variant)
-      throws ResourceException
-  {
-    GlobalConfigurationListResourceResponse result = new GlobalConfigurationListResourceResponse();
+	/**
+	 * Get the list of global configuration objects in nexus.
+	 */
+	@Override
+	@GET
+	public Object get(Context context, Request request, Response response,
+			Variant variant) throws ResourceException {
+		GlobalConfigurationListResourceResponse result = new GlobalConfigurationListResourceResponse();
 
-    GlobalConfigurationListResource data = new GlobalConfigurationListResource();
+		GlobalConfigurationListResource data = new GlobalConfigurationListResource();
 
-    data.setName(GlobalConfigurationPlexusResource.DEFAULT_CONFIG_NAME);
+		data.setName(GlobalConfigurationPlexusResource.DEFAULT_CONFIG_NAME);
 
-    data.setResourceURI(createChildReference(request, this, data.getName()).toString());
+		data.setResourceURI(createChildReference(request, this, data.getName())
+				.toString());
 
-    result.addData(data);
+		result.addData(data);
 
-    data = new GlobalConfigurationListResource();
+		data = new GlobalConfigurationListResource();
 
-    data.setName(GlobalConfigurationPlexusResource.CURRENT_CONFIG_NAME);
+		data.setName(GlobalConfigurationPlexusResource.CURRENT_CONFIG_NAME);
 
-    data.setResourceURI(createChildReference(request, this, data.getName()).toString());
+		data.setResourceURI(createChildReference(request, this, data.getName())
+				.toString());
 
-    result.addData(data);
+		result.addData(data);
 
-    return result;
-  }
+		return result;
+	}
 
 }

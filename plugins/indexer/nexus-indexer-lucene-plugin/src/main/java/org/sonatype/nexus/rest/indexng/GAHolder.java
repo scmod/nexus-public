@@ -17,9 +17,8 @@ import java.util.Collections;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
-import org.sonatype.nexus.rest.model.NexusNGArtifact;
-
 import org.apache.maven.index.artifact.VersionUtils;
+import org.sonatype.nexus.rest.model.NexusNGArtifact;
 
 class GAHolder
 {

@@ -15,11 +15,6 @@ package org.sonatype.nexus.rest.component;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import org.sonatype.nexus.rest.AbstractNexusPlexusResource;
-import org.sonatype.nexus.rest.model.PlexusComponentListResource;
-import org.sonatype.nexus.rest.model.PlexusComponentListResourceResponse;
-
-import com.google.inject.Key;
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.sisu.BeanEntry;
 import org.eclipse.sisu.inject.BeanLocator;
@@ -29,72 +24,83 @@ import org.restlet.data.Response;
 import org.restlet.data.Status;
 import org.restlet.resource.ResourceException;
 import org.restlet.resource.Variant;
+import org.sonatype.nexus.rest.AbstractNexusPlexusResource;
+import org.sonatype.nexus.rest.model.PlexusComponentListResource;
+import org.sonatype.nexus.rest.model.PlexusComponentListResourceResponse;
 
-public abstract class AbstractComponentListPlexusResource
-    extends AbstractNexusPlexusResource
-{
-  public static final String ROLE_ID = "role";
+import com.google.inject.Key;
 
-  private BeanLocator beanLocator;
+public abstract class AbstractComponentListPlexusResource extends
+		AbstractNexusPlexusResource {
+	public static final String ROLE_ID = "role";
 
-  private ClassLoader uberClassLoader;
+	private BeanLocator beanLocator;
 
-  @Inject
-  public void setContainer(BeanLocator beanLocator, @Named("nexus-uber") ClassLoader uberClassLoader) {
-    this.beanLocator = beanLocator;
-    this.uberClassLoader = uberClassLoader;
-  }
+	private ClassLoader uberClassLoader;
 
-  @Override
-  public Object getPayloadInstance() {
-    return null;
-  }
+	@Inject
+	public void setContainer(BeanLocator beanLocator,
+			@Named("nexus-uber") ClassLoader uberClassLoader) {
+		this.beanLocator = beanLocator;
+		this.uberClassLoader = uberClassLoader;
+	}
 
-  protected String getRole(Request request) {
-    return request.getAttributes().get(ROLE_ID).toString();
-  }
+	@Override
+	public Object getPayloadInstance() {
+		return null;
+	}
 
-  @Override
-  public Object get(Context context, Request request, Response response, Variant variant) throws ResourceException {
-    PlexusComponentListResourceResponse result = new PlexusComponentListResourceResponse();
+	protected String getRole(Request request) {
+		return request.getAttributes().get(ROLE_ID).toString();
+	}
 
-    // get role from request
-    String role = getRole(request);
+	@Override
+	public Object get(Context context, Request request, Response response,
+			Variant variant) throws ResourceException {
+		PlexusComponentListResourceResponse result = new PlexusComponentListResourceResponse();
 
-    try {
-      Key<?> roleKey = Key.get(uberClassLoader.loadClass(role), Named.class);
-      Iterable<? extends BeanEntry<Named, ?>> components = beanLocator.locate(roleKey);
+		// get role from request
+		String role = getRole(request);
 
-      if (!components.iterator().hasNext()) {
-        throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND);
-      }
+		try {
+			Key<?> roleKey = Key.get(uberClassLoader.loadClass(role),
+					Named.class);
+			Iterable<? extends BeanEntry<Named, ?>> components = beanLocator
+					.locate(roleKey);
 
-      for (BeanEntry<Named, ?> entry : components) {
-        PlexusComponentListResource resource = new PlexusComponentListResource();
+			if (!components.iterator().hasNext()) {
+				throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND);
+			}
 
-        String hint = entry.getKey().value();
-        String description = entry.getDescription();
+			for (BeanEntry<Named, ?> entry : components) {
+				PlexusComponentListResource resource = new PlexusComponentListResource();
 
-        resource.setRoleHint(hint);
-        resource.setDescription(StringUtils.isNotEmpty(description) ? description : hint);
+				String hint = entry.getKey().value();
+				String description = entry.getDescription();
 
-        // add it to the collection
-        result.addData(resource);
-      }
-    }
-    catch (ClassNotFoundException e) {
-      if (this.getLogger().isDebugEnabled()) {
-        getLogger().debug("Unable to look up plexus component with role '" + role + "'.", e);
-      }
-      throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND);
-    }
-    catch(LinkageError e) {
-    	if (this.getLogger().isDebugEnabled()) {
-            getLogger().debug("Unable to look up plexus component with role '" + role + "'.", e);
-          }
-          throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND);
-    }
+				resource.setRoleHint(hint);
+				resource.setDescription(StringUtils.isNotEmpty(description) ? description
+						: hint);
 
-    return result;
-  }
+				// add it to the collection
+				result.addData(resource);
+			}
+		} catch (ClassNotFoundException e) {
+			if (this.getLogger().isDebugEnabled()) {
+				getLogger().debug(
+						"Unable to look up plexus component with role '" + role
+								+ "'.", e);
+			}
+			throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND);
+		} catch (LinkageError e) {
+			if (this.getLogger().isDebugEnabled()) {
+				getLogger().debug(
+						"Unable to look up plexus component with role '" + role
+								+ "'.", e);
+			}
+			throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND);
+		}
+
+		return result;
+	}
 }

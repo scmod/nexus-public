@@ -12,46 +12,48 @@
  */
 package org.sonatype.nexus.rest;
 
+import static org.sonatype.nexus.web.RemoteIPFinder.FORWARD_HEADER;
+
 import java.util.List;
 
 import org.restlet.data.Form;
 import org.restlet.data.Request;
 
-import static org.sonatype.nexus.web.RemoteIPFinder.FORWARD_HEADER;
-
 /**
- * Restlet specific additions to {@link org.sonatype.nexus.web.RemoteIPFinder} helper class.
+ * Restlet specific additions to {@link org.sonatype.nexus.web.RemoteIPFinder}
+ * helper class.
  */
-public class RemoteIPFinder
-{
-  public static String findIP(Request request) {
-    Form form = (Form) request.getAttributes().get("org.restlet.http.headers");
+public class RemoteIPFinder {
+	public static String findIP(Request request) {
+		Form form = (Form) request.getAttributes().get(
+				"org.restlet.http.headers");
 
-    String forwardedIP = org.sonatype.nexus.web.RemoteIPFinder.getFirstForwardedIp(
-        form.getFirstValue(FORWARD_HEADER));
+		String forwardedIP = org.sonatype.nexus.web.RemoteIPFinder
+				.getFirstForwardedIp(form.getFirstValue(FORWARD_HEADER));
 
-    if (forwardedIP != null) {
-      return forwardedIP;
-    }
+		if (forwardedIP != null) {
+			return forwardedIP;
+		}
 
-    List<String> clientAddresses = request.getClientInfo().getAddresses();
+		List<String> clientAddresses = request.getClientInfo().getAddresses();
 
-    if (clientAddresses.size() > 1) {
-      // restlet1x ClientInfo.getAddresses has *reverse* order to XFF
-      // (this has been fixed in restlet2x, along with a clearer API)
+		if (clientAddresses.size() > 1) {
+			// restlet1x ClientInfo.getAddresses has *reverse* order to XFF
+			// (this has been fixed in restlet2x, along with a clearer API)
 
-      String[] ipAddresses = new String[clientAddresses.size()];
-      for (int i = 0, j = ipAddresses.length - 1; j >= 0; i++, j--) {
-        ipAddresses[i] = clientAddresses.get(j);
-      }
+			String[] ipAddresses = new String[clientAddresses.size()];
+			for (int i = 0, j = ipAddresses.length - 1; j >= 0; i++, j--) {
+				ipAddresses[i] = clientAddresses.get(j);
+			}
 
-      forwardedIP = org.sonatype.nexus.web.RemoteIPFinder.resolveIp(ipAddresses);
+			forwardedIP = org.sonatype.nexus.web.RemoteIPFinder
+					.resolveIp(ipAddresses);
 
-      if (forwardedIP != null) {
-        return forwardedIP;
-      }
-    }
+			if (forwardedIP != null) {
+				return forwardedIP;
+			}
+		}
 
-    return request.getClientInfo().getAddress();
-  }
+		return request.getClientInfo().getAddress();
+	}
 }

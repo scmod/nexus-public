@@ -14,6 +14,9 @@ package org.sonatype.nexus.index;
 
 import java.util.concurrent.Semaphore;
 
+import org.junit.Assert;
+import org.junit.Test;
+import org.powermock.reflect.Whitebox;
 import org.sonatype.nexus.ApplicationStatusSource;
 import org.sonatype.nexus.mime.MimeSupport;
 import org.sonatype.nexus.proxy.ItemNotFoundException;
@@ -28,10 +31,6 @@ import org.sonatype.nexus.proxy.storage.UnsupportedStorageOperationException;
 import org.sonatype.nexus.proxy.storage.remote.AbstractRemoteRepositoryStorage;
 import org.sonatype.nexus.proxy.storage.remote.RemoteRepositoryStorage;
 import org.sonatype.nexus.proxy.storage.remote.RemoteStorageContext;
-
-import org.junit.Assert;
-import org.junit.Test;
-import org.powermock.reflect.Whitebox;
 
 public class DeleteRepositoryWhileDownloadingIndexIT
     extends AbstractIndexerManagerTest

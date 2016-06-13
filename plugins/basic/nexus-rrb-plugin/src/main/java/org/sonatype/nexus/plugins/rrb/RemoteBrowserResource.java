@@ -12,6 +12,8 @@
  */
 package org.sonatype.nexus.plugins.rrb;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import java.net.URLDecoder;
 import java.util.List;
 
@@ -23,6 +25,16 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 
+import org.apache.http.client.HttpClient;
+import org.restlet.Context;
+import org.restlet.data.Reference;
+import org.restlet.data.Request;
+import org.restlet.data.Response;
+import org.restlet.data.Status;
+import org.restlet.resource.ResourceException;
+import org.restlet.resource.Variant;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.sonatype.nexus.apachehttpclient.Hc4Provider;
 import org.sonatype.nexus.proxy.NoSuchRepositoryException;
 import org.sonatype.nexus.proxy.NoSuchResourceStoreException;
@@ -36,19 +48,6 @@ import org.sonatype.plexus.rest.resource.PathProtectionDescriptor;
 import org.sonatype.plexus.rest.resource.PlexusResource;
 
 import com.thoughtworks.xstream.XStream;
-import org.apache.http.client.HttpClient;
-import org.codehaus.enunciate.contract.jaxrs.ResourceMethodSignature;
-import org.restlet.Context;
-import org.restlet.data.Reference;
-import org.restlet.data.Request;
-import org.restlet.data.Response;
-import org.restlet.data.Status;
-import org.restlet.resource.ResourceException;
-import org.restlet.resource.Variant;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * A REST resource for retrieving directories from a remote repository.
@@ -110,7 +109,7 @@ public class RemoteBrowserResource
    */
   @Override
   @GET
-  @ResourceMethodSignature(output = MavenRepositoryReaderResponse.class)
+  
   public Object get(Context context, Request request, Response response, Variant variant)
       throws ResourceException
   {

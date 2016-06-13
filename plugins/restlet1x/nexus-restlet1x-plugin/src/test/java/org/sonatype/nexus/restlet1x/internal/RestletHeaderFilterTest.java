@@ -12,76 +12,78 @@
  */
 package org.sonatype.nexus.restlet1x.internal;
 
+import static java.util.Arrays.asList;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.when;
+
 import java.util.Collections;
 
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.sonatype.sisu.litmus.testsupport.TestSupport;
-
-import com.noelios.restlet.Engine;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
+import org.sonatype.sisu.litmus.testsupport.TestSupport;
 
-import static java.util.Arrays.asList;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
-import static org.mockito.Mockito.when;
+import com.noelios.restlet.Engine;
 
-public class RestletHeaderFilterTest
-    extends TestSupport
-{
+public class RestletHeaderFilterTest extends TestSupport {
 
-  @Mock
-  private HttpServletResponse response;
+	@Mock
+	private HttpServletResponse response;
 
-  @Mock
-  private HttpServletRequest request;
+	@Mock
+	private HttpServletRequest request;
 
-  @Mock
-  private ServletResponse notInstanceOfHttpServletResponse;
+	@Mock
+	private ServletResponse notInstanceOfHttpServletResponse;
 
-  private RestletHeaderFilter filter;
+	private RestletHeaderFilter filter;
 
-  @Before
-  public void setUp() throws Exception {
-    this.filter = new RestletHeaderFilter();
-  }
+	@Before
+	public void setUp() throws Exception {
+		this.filter = new RestletHeaderFilter();
+	}
 
-  @Test
-  public void noServerHeader() throws Exception {
-    when(response.getHeaders("Server")).thenReturn(Collections.EMPTY_LIST);
+	@Test
+	public void noServerHeader() throws Exception {
+		when(response.getHeaders("Server")).thenReturn(Collections.EMPTY_LIST);
 
-    filter.preHandle(request, response);
+		filter.preHandle(request, response);
 
-    verify(response).setHeader("Server", Engine.VERSION_HEADER);
-  }
+		verify(response).setHeader("Server", Engine.VERSION_HEADER);
+	}
 
-  @Test
-  public void oneServerHeader() throws Exception {
-    when(response.getHeaders("Server")).thenReturn(asList("special/5.0.0"));
+	@Test
+	public void oneServerHeader() throws Exception {
+		when(response.getHeaders("Server")).thenReturn(asList("special/5.0.0"));
 
-    filter.preHandle(request, response);
+		filter.preHandle(request, response);
 
-    verify(response).setHeader("Server", "special/5.0.0 " + Engine.VERSION_HEADER);
-  }
+		verify(response).setHeader("Server",
+				"special/5.0.0 " + Engine.VERSION_HEADER);
+	}
 
-  @Test
-  public void multipleServerHeaders() throws Exception {
-    when(response.getHeaders("Server")).thenReturn(asList("special/5.0.0", "server2/v1"));
+	@Test
+	public void multipleServerHeaders() throws Exception {
+		when(response.getHeaders("Server")).thenReturn(
+				asList("special/5.0.0", "server2/v1"));
 
-    filter.preHandle(request, response);
+		filter.preHandle(request, response);
 
-    verify(response).setHeader("Server", "special/5.0.0 server2/v1 " + Engine.VERSION_HEADER);
-  }
+		verify(response).setHeader("Server",
+				"special/5.0.0 server2/v1 " + Engine.VERSION_HEADER);
+	}
 
-  @Test
-  public void ifNotInstanceOfHttpServletResponseDoNotProcessResponse() throws Exception {
-    filter.preHandle(request, notInstanceOfHttpServletResponse);
+	@Test
+	public void ifNotInstanceOfHttpServletResponseDoNotProcessResponse()
+			throws Exception {
+		filter.preHandle(request, notInstanceOfHttpServletResponse);
 
-    verifyZeroInteractions(response);
-  }
+		verifyZeroInteractions(response);
+	}
 
 }

@@ -12,76 +12,64 @@
  */
 package org.sonatype.nexus.rest.global;
 
-import org.sonatype.nexus.email.SmtpSettingsValidator;
-import org.sonatype.nexus.rest.model.SmtpSettingsResource;
-import org.sonatype.sisu.litmus.testsupport.TestSupport;
-
-import com.thoughtworks.xstream.XStream;
-import org.junit.Test;
-import org.restlet.resource.ResourceException;
-
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.mock;
 import static org.sonatype.nexus.rest.global.SmtpSettingsValidationPlexusResource.validateEmail;
 
-public class SmtpSettingsValidationPlexusResourceTest
-    extends TestSupport
-{
+import org.junit.Test;
+import org.restlet.resource.ResourceException;
+import org.sonatype.nexus.email.SmtpSettingsValidator;
+import org.sonatype.nexus.rest.model.SmtpSettingsResource;
+import org.sonatype.sisu.litmus.testsupport.TestSupport;
 
-  @Test(expected = ResourceException.class)
-  public void nullEmailShouldNotBeAccepted()
-      throws ResourceException
-  {
-    validateEmail(null);
-  }
+import com.thoughtworks.xstream.XStream;
 
-  @Test(expected = ResourceException.class)
-  public void emptyEmailShouldNotBeAccepted()
-      throws ResourceException
-  {
-    validateEmail(" ");
-  }
+public class SmtpSettingsValidationPlexusResourceTest extends TestSupport {
 
-  @Test
-  public void tldWithUpperCase()
-      throws ResourceException
-  {
-    validateEmail("me@foo.COM");
-  }
+	@Test(expected = ResourceException.class)
+	public void nullEmailShouldNotBeAccepted() throws ResourceException {
+		validateEmail(null);
+	}
 
-  @Test
-  public void tldWithLowerCase()
-      throws ResourceException
-  {
-    validateEmail("me@foo.com");
-  }
+	@Test(expected = ResourceException.class)
+	public void emptyEmailShouldNotBeAccepted() throws ResourceException {
+		validateEmail(" ");
+	}
 
-  @Test
-  public void tldWithMixCase()
-      throws ResourceException
-  {
-    validateEmail("me@foo.CoM");
-  }
+	@Test
+	public void tldWithUpperCase() throws ResourceException {
+		validateEmail("me@foo.COM");
+	}
 
-  @Test
-  public void unescapeHTMLInSMTPPassword() {
-    final SmtpSettingsValidationPlexusResource testSubject =
-        new SmtpSettingsValidationPlexusResource(mock(SmtpSettingsValidator.class));
+	@Test
+	public void tldWithLowerCase() throws ResourceException {
+		validateEmail("me@foo.com");
+	}
 
-    // settings object as it would come in via REST, with escaped HTML
-    SmtpSettingsResource settings = new SmtpSettingsResource();
-    settings.setPassword("asdf&amp;qwer");
-    settings.setUsername("asdf&amp;qwer");
+	@Test
+	public void tldWithMixCase() throws ResourceException {
+		validateEmail("me@foo.CoM");
+	}
 
-    // make sure the configuration resource configures xstream to unescape
-    final XStream xStream = new XStream();
-    testSubject.configureXStream(xStream);
+	@Test
+	public void unescapeHTMLInSMTPPassword() {
+		final SmtpSettingsValidationPlexusResource testSubject = new SmtpSettingsValidationPlexusResource(
+				mock(SmtpSettingsValidator.class));
 
-    final String xml = xStream.toXML(settings);
-    settings = (SmtpSettingsResource) xStream.fromXML(xml);
+		// settings object as it would come in via REST, with escaped HTML
+		SmtpSettingsResource settings = new SmtpSettingsResource();
+		settings.setPassword("asdf&amp;qwer");
+		settings.setUsername("asdf&amp;qwer");
 
-    assertThat(settings.getUsername(), is("asdf&qwer"));
-    assertThat(settings.getPassword(), is("asdf&qwer"));
-  }
+		// make sure the configuration resource configures xstream to unescape
+		final XStream xStream = new XStream();
+		testSubject.configureXStream(xStream);
+
+		final String xml = xStream.toXML(settings);
+		settings = (SmtpSettingsResource) xStream.fromXML(xml);
+
+		assertThat(settings.getUsername(), is("asdf&qwer"));
+		assertThat(settings.getPassword(), is("asdf&qwer"));
+	}
 }

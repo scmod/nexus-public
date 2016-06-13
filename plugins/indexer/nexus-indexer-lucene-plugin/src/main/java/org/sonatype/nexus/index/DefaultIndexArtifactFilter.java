@@ -20,6 +20,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
 
+import org.apache.maven.index.ArtifactInfo;
 import org.sonatype.nexus.proxy.NoSuchRepositoryException;
 import org.sonatype.nexus.proxy.ResourceStoreRequest;
 import org.sonatype.nexus.proxy.access.Action;
@@ -29,8 +30,6 @@ import org.sonatype.nexus.proxy.maven.gav.Gav;
 import org.sonatype.nexus.proxy.registry.RepositoryRegistry;
 import org.sonatype.nexus.proxy.repository.Repository;
 import org.sonatype.sisu.goodies.common.ComponentSupport;
-
-import org.apache.maven.index.ArtifactInfo;
 
 /**
  * Filters artifact info collection, based on user permissions.

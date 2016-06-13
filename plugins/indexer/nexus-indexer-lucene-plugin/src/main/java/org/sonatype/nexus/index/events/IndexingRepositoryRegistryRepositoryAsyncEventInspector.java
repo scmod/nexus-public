@@ -16,6 +16,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
 
+import org.apache.commons.lang.StringUtils;
 import org.sonatype.nexus.ApplicationStatusSource;
 import org.sonatype.nexus.events.Asynchronous;
 import org.sonatype.nexus.events.Event;
@@ -35,7 +36,6 @@ import org.sonatype.sisu.goodies.common.ComponentSupport;
 
 import com.google.common.eventbus.AllowConcurrentEvents;
 import com.google.common.eventbus.Subscribe;
-import org.apache.commons.lang.StringUtils;
 
 /**
  * Listens for events and manages indexes by doing reindexes when needed (on repository configuration updates).

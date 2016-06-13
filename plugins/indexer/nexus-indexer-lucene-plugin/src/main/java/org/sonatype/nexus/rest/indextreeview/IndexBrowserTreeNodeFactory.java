@@ -12,14 +12,13 @@
  */
 package org.sonatype.nexus.rest.indextreeview;
 
-import org.sonatype.nexus.index.treeview.DefaultMergedTreeNodeFactory;
-import org.sonatype.nexus.proxy.repository.Repository;
-
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.index.ArtifactInfo;
 import org.apache.maven.index.treeview.IndexTreeView;
 import org.apache.maven.index.treeview.TreeNode;
 import org.apache.maven.index.treeview.TreeViewRequest;
+import org.sonatype.nexus.index.treeview.DefaultMergedTreeNodeFactory;
+import org.sonatype.nexus.proxy.repository.Repository;
 
 public class IndexBrowserTreeNodeFactory
     extends DefaultMergedTreeNodeFactory

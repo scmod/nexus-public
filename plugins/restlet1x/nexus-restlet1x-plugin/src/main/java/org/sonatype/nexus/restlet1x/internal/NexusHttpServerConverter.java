@@ -12,47 +12,50 @@
  */
 package org.sonatype.nexus.restlet1x.internal;
 
-import com.noelios.restlet.http.HttpResponse;
-import com.noelios.restlet.http.HttpServerConverter;
 import org.restlet.Context;
 import org.restlet.data.Parameter;
 import org.restlet.util.Series;
 
+import com.noelios.restlet.http.HttpResponse;
+import com.noelios.restlet.http.HttpServerConverter;
+
 /**
- * Custom {@link HttpServerConverter} that prevents restlet from adding general headers
- * that would duplicate those added elsewhere.
+ * Custom {@link HttpServerConverter} that prevents restlet from adding general
+ * headers that would duplicate those added elsewhere.
  *
  * @since 2.11.2
  */
-public class NexusHttpServerConverter extends HttpServerConverter
-{
-  /**
-   * Constructor.
-   *
-   * @param context The client context.
-   */
-  public NexusHttpServerConverter(final Context context) {
-    super(context);
-  }
+public class NexusHttpServerConverter extends HttpServerConverter {
+	/**
+	 * Constructor.
+	 *
+	 * @param context
+	 *            The client context.
+	 */
+	public NexusHttpServerConverter(final Context context) {
+		super(context);
+	}
 
-  /**
-   * Manipulate Restlet response headers.
-   *
-   * This implementation removes the Date and Server headers normally added by Restlet.
-   *
-   * @param response
-   */
-  @Override
-  protected void addResponseHeaders(final HttpResponse response) {
-    super.addResponseHeaders(response);
-    final Series<Parameter> responseHeaders = response.getHttpCall()
-        .getResponseHeaders();
-    // our servlet container is adding a Date header for all responses
-    // duplicate Date headers are not allowed by HTTP spec
-    responseHeaders.removeFirst("Date");
-    // Nexus is in charge of setting the main Server header
-    // Restlet would normally add another Server header instead of amending existing one with all products as values
-    responseHeaders.removeFirst("Server");
-  }
+	/**
+	 * Manipulate Restlet response headers.
+	 *
+	 * This implementation removes the Date and Server headers normally added by
+	 * Restlet.
+	 *
+	 * @param response
+	 */
+	@Override
+	protected void addResponseHeaders(final HttpResponse response) {
+		super.addResponseHeaders(response);
+		final Series<Parameter> responseHeaders = response.getHttpCall()
+				.getResponseHeaders();
+		// our servlet container is adding a Date header for all responses
+		// duplicate Date headers are not allowed by HTTP spec
+		responseHeaders.removeFirst("Date");
+		// Nexus is in charge of setting the main Server header
+		// Restlet would normally add another Server header instead of amending
+		// existing one with all products as values
+		responseHeaders.removeFirst("Server");
+	}
 
 }

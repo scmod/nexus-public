@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
 
+import org.apache.commons.io.FileUtils;
 import org.sonatype.sisu.goodies.common.SimpleFormat;
 
 import util.Files;
@@ -57,7 +58,7 @@ public final class FileSupport
    */
   public static void copy(final InputStream from, final File to) throws IOException {
     // "copy": overwrite if exists + make files appear as "new" + copy as link if link
-    copy(from, to);
+    FileUtils.copyInputStreamToFile(from, to);
   }
 
   /**

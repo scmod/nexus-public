@@ -12,12 +12,12 @@
  */
 package org.sonatype.nexus.restlet1x.internal;
 
+import static org.sonatype.nexus.log.LoggerLevel.DEFAULT;
+
 import javax.inject.Named;
 import javax.inject.Singleton;
 
 import org.sonatype.nexus.log.LogConfigurationCustomizer;
-
-import static org.sonatype.nexus.log.LoggerLevel.DEFAULT;
 
 /**
  * Restlet1x {@link LogConfigurationCustomizer}.
@@ -26,12 +26,11 @@ import static org.sonatype.nexus.log.LoggerLevel.DEFAULT;
  */
 @Named
 @Singleton
-public class Restlet1xLogConfigurationCustomizer
-    implements LogConfigurationCustomizer
-{
-  @Override
-  public void customize(final Configuration configuration) {
-    configuration.setLoggerLevel("org.sonatype.plexus.rest", DEFAULT);
-    configuration.setLoggerLevel("org.sonatype.nexus.rest", DEFAULT);
-  }
+public class Restlet1xLogConfigurationCustomizer implements
+		LogConfigurationCustomizer {
+	@Override
+	public void customize(final Configuration configuration) {
+		configuration.setLoggerLevel("org.sonatype.plexus.rest", DEFAULT);
+		configuration.setLoggerLevel("org.sonatype.nexus.rest", DEFAULT);
+	}
 }

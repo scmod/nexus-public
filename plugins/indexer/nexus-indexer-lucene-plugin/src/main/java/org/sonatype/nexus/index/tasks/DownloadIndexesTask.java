@@ -12,14 +12,14 @@
  */
 package org.sonatype.nexus.index.tasks;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.sonatype.nexus.index.IndexerManager;
 import org.sonatype.nexus.index.tasks.descriptors.DownloadIndexesTaskDescriptor;
 import org.sonatype.nexus.scheduling.AbstractNexusRepositoriesTask;
-
-import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Publish indexes task.

@@ -82,10 +82,7 @@ public class FeedPlexusResource
    */
   @Override
   @GET
-  @ResourceMethodSignature(pathParams = {@PathParam("feedKey")}, queryParams = {
-      @QueryParam("from"),
-      @QueryParam("count"), @QueryParam("r")
-  }, output = String.class)
+  
   protected SyndFeed getFeed(Context context, Request request, String channelKey, Integer from, Integer count,
                              Map<String, String> params)
       throws IOException, ComponentLookupException

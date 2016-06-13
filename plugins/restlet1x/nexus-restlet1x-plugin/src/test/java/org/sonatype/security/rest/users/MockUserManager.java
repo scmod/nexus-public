@@ -30,108 +30,106 @@ import org.sonatype.security.usermanagement.UserStatus;
 @Singleton
 @Typed(UserManager.class)
 @Named(MockUserManager.SOURCE)
-public class MockUserManager
-    extends AbstractReadOnlyUserManager
-{
-  public static final String SOURCE = "MockUserManager";
+public class MockUserManager extends AbstractReadOnlyUserManager {
+	public static final String SOURCE = "MockUserManager";
 
-  public String getSource() {
-    return SOURCE;
-  }
+	public String getSource() {
+		return SOURCE;
+	}
 
-  public Set<User> listUsers() {
-    Set<User> users = new HashSet<User>();
+	public Set<User> listUsers() {
+		Set<User> users = new HashSet<User>();
 
-    User a = new DefaultUser();
-    a.setName("Joe Coder");
-    a.setEmailAddress("jcoder@sonatype.org");
-    a.setSource(this.getSource());
-    a.setUserId("jcoder");
-    a.setStatus(UserStatus.active);
-    a.addRole(this.createFakeRole("Role1"));
-    a.addRole(this.createFakeRole("Role2"));
-    a.addRole(this.createFakeRole("Role3"));
+		User a = new DefaultUser();
+		a.setName("Joe Coder");
+		a.setEmailAddress("jcoder@sonatype.org");
+		a.setSource(this.getSource());
+		a.setUserId("jcoder");
+		a.setStatus(UserStatus.active);
+		a.addRole(this.createFakeRole("Role1"));
+		a.addRole(this.createFakeRole("Role2"));
+		a.addRole(this.createFakeRole("Role3"));
 
-    User b = new DefaultUser();
-    b.setName("Christine H. Dugas");
-    b.setEmailAddress("cdugas@sonatype.org");
-    b.setSource(this.getSource());
-    b.setUserId("cdugas");
-    b.setStatus(UserStatus.active);
-    b.addRole(this.createFakeRole("Role2"));
-    b.addRole(this.createFakeRole("Role3"));
+		User b = new DefaultUser();
+		b.setName("Christine H. Dugas");
+		b.setEmailAddress("cdugas@sonatype.org");
+		b.setSource(this.getSource());
+		b.setUserId("cdugas");
+		b.setStatus(UserStatus.active);
+		b.addRole(this.createFakeRole("Role2"));
+		b.addRole(this.createFakeRole("Role3"));
 
-    User c = new DefaultUser();
-    c.setName("Patricia P. Peralez");
-    c.setEmailAddress("pperalez@sonatype.org");
-    c.setSource(this.getSource());
-    c.setUserId("pperalez");
-    c.setStatus(UserStatus.active);
-    c.addRole(this.createFakeRole("Role1"));
-    c.addRole(this.createFakeRole("Role2"));
+		User c = new DefaultUser();
+		c.setName("Patricia P. Peralez");
+		c.setEmailAddress("pperalez@sonatype.org");
+		c.setSource(this.getSource());
+		c.setUserId("pperalez");
+		c.setStatus(UserStatus.active);
+		c.addRole(this.createFakeRole("Role1"));
+		c.addRole(this.createFakeRole("Role2"));
 
-    User d = new DefaultUser();
-    d.setName("Danille S. Knudsen");
-    d.setEmailAddress("dknudsen@sonatype.org");
-    d.setSource(this.getSource());
-    d.setUserId("dknudsen");
-    d.setStatus(UserStatus.active);
-    d.addRole(this.createFakeRole("Role4"));
-    d.addRole(this.createFakeRole("Role2"));
+		User d = new DefaultUser();
+		d.setName("Danille S. Knudsen");
+		d.setEmailAddress("dknudsen@sonatype.org");
+		d.setSource(this.getSource());
+		d.setUserId("dknudsen");
+		d.setStatus(UserStatus.active);
+		d.addRole(this.createFakeRole("Role4"));
+		d.addRole(this.createFakeRole("Role2"));
 
-    users.add(a);
-    users.add(b);
-    users.add(c);
-    users.add(d);
+		users.add(a);
+		users.add(b);
+		users.add(c);
+		users.add(d);
 
-    return users;
-  }
+		return users;
+	}
 
-  public boolean isPrimary() {
-    return true;
-  }
+	public boolean isPrimary() {
+		return true;
+	}
 
-  public User getUser(String userId) {
-    Set<User> users = this.listUsers();
+	public User getUser(String userId) {
+		Set<User> users = this.listUsers();
 
-    for (User User : users) {
-      if (User.getUserId().equals(userId)) {
-        return User;
-      }
-    }
+		for (User User : users) {
+			if (User.getUserId().equals(userId)) {
+				return User;
+			}
+		}
 
-    return null;
-  }
+		return null;
+	}
 
-  public Set<String> listUserIds() {
-    Set<String> result = new HashSet<String>();
-    for (User User : this.listUsers()) {
-      result.add(User.getUserId());
-    }
-    return result;
-  }
+	public Set<String> listUserIds() {
+		Set<String> result = new HashSet<String>();
+		for (User User : this.listUsers()) {
+			result.add(User.getUserId());
+		}
+		return result;
+	}
 
-  public Set<User> searchUsers(UserSearchCriteria criteria) {
+	public Set<User> searchUsers(UserSearchCriteria criteria) {
 
-    Set<User> result = new HashSet<User>();
-    for (User User : this.listUsers()) {
-      if (User.getUserId().toLowerCase().startsWith(criteria.getUserId())) {
-        ;
-      }
-      {
-        result.add(User);
-      }
-    }
-    return result;
-  }
+		Set<User> result = new HashSet<User>();
+		for (User User : this.listUsers()) {
+			if (User.getUserId().toLowerCase().startsWith(criteria.getUserId())) {
+				;
+			}
+			{
+				result.add(User);
+			}
+		}
+		return result;
+	}
 
-  protected RoleIdentifier createFakeRole(String roleId) {
-    RoleIdentifier role = new RoleIdentifier(this.getSource(), roleId);
-    return role;
-  }
+	protected RoleIdentifier createFakeRole(String roleId) {
+		RoleIdentifier role = new RoleIdentifier(this.getSource(), roleId);
+		return role;
+	}
 
-  public String getAuthenticationRealmName() {
-    return null;
-  }
+	public String getAuthenticationRealmName() {
+		return null;
+	}
 
 }

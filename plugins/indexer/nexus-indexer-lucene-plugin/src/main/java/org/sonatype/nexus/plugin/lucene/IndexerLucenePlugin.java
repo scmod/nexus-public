@@ -15,10 +15,9 @@ package org.sonatype.nexus.plugin.lucene;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import org.sonatype.nexus.plugin.PluginIdentity;
-
 import org.eclipse.sisu.EagerSingleton;
 import org.jetbrains.annotations.NonNls;
+import org.sonatype.nexus.plugin.PluginIdentity;
 
 /**
  * Indexer plugin.

@@ -22,11 +22,9 @@ import org.sonatype.security.realms.tools.StaticSecurityResource;
 @Singleton
 @Typed(StaticSecurityResource.class)
 @Named("MockStaticSecurityResource")
-public class MockStaticSecurityResource
-    extends AbstractStaticSecurityResource
-    implements StaticSecurityResource
-{
-  protected String getResourcePath() {
-    return "/META-INF/security/static-security-mock.xml";
-  }
+public class MockStaticSecurityResource extends AbstractStaticSecurityResource
+		implements StaticSecurityResource {
+	protected String getResourcePath() {
+		return "/META-INF/security/static-security-mock.xml";
+	}
 }

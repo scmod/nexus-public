@@ -270,31 +270,6 @@ define('repoServer/RepoServer',['extjs', 'sonatype', 'Sonatype/lib', 'Nexus/conf
                     tabCode : Sonatype.repoServer.SchedulesEditPanel
                   }]
             });
-
-        nexusPanel.add({
-              title : 'Help',
-              id : 'st-nexus-docs',
-              collapsible : true,
-              collapsed : true,
-              items : [{
-                    title : 'Welcome',
-                    tabId : 'welcome',
-                    tabCode : Sonatype.view.welcomePanel
-                  },
-                  {
-                    title : 'About',
-                    tabId : 'AboutNexus',
-                    tabCode : Sonatype.repoServer.HelpAboutPanel
-                  }, {
-                    title : 'Browse Issue Tracker',
-                    href : 'http://links.sonatype.com/products/nexus/oss/issues'
-                  }, {
-                    title : 'Documentation',
-                    tabId : 'Documentation',
-                    tabCode : Sonatype.repoServer.Documentation
-                  }
-              ]
-            });
       },
 
       logout : function() {

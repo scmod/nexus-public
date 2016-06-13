@@ -15,11 +15,10 @@ package org.sonatype.nexus.index;
 import java.util.List;
 import java.util.Map;
 
-import org.sonatype.nexus.proxy.NoSuchRepositoryException;
-
 import org.apache.maven.index.ArtifactInfoFilter;
 import org.apache.maven.index.IteratorSearchResponse;
 import org.apache.maven.index.SearchType;
+import org.sonatype.nexus.proxy.NoSuchRepositoryException;
 
 /**
  * A searcher is able to perform artifact info searches based on key/value search terms. Note that this is an

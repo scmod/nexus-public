@@ -12,6 +12,8 @@
  */
 package org.sonatype.nexus.index.releaseremover;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Collections;
@@ -22,6 +24,14 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
 
+import org.apache.lucene.search.BooleanClause.Occur;
+import org.apache.lucene.search.BooleanQuery;
+import org.apache.lucene.search.Query;
+import org.apache.maven.index.ArtifactInfo;
+import org.apache.maven.index.IteratorSearchResponse;
+import org.apache.maven.index.MAVEN;
+import org.apache.maven.index.context.IndexingContext;
+import org.apache.maven.index.expr.SourcedSearchExpression;
 import org.sonatype.aether.util.version.GenericVersionScheme;
 import org.sonatype.aether.version.InvalidVersionSpecificationException;
 import org.sonatype.aether.version.Version;
@@ -46,16 +56,6 @@ import org.sonatype.sisu.goodies.common.ComponentSupport;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
-import org.apache.lucene.search.BooleanClause.Occur;
-import org.apache.lucene.search.BooleanQuery;
-import org.apache.lucene.search.Query;
-import org.apache.maven.index.ArtifactInfo;
-import org.apache.maven.index.IteratorSearchResponse;
-import org.apache.maven.index.MAVEN;
-import org.apache.maven.index.context.IndexingContext;
-import org.apache.maven.index.expr.SourcedSearchExpression;
-
-import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Release remover based on {@link IndexerManager} and Maven Indexer for collecting items to be inspected for removal.

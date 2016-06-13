@@ -17,77 +17,78 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.SocketException;
 
+import org.restlet.data.MediaType;
+import org.restlet.data.Tag;
 import org.sonatype.nexus.proxy.attributes.inspectors.DigestCalculatingInspector;
 import org.sonatype.nexus.proxy.item.StorageFileItem;
 import org.sonatype.nexus.util.SystemPropertiesHelper;
 import org.sonatype.nexus.util.io.StreamSupport;
 
-import org.restlet.data.MediaType;
-import org.restlet.data.Tag;
+public class StorageFileItemRepresentation extends StorageItemRepresentation {
+	private static final int OUTPUT_BUFFER_SIZE = SystemPropertiesHelper
+			.getInteger(
+					"org.sonatype.nexus.rest.StorageFileItemRepresentation.outputBufferSize",
+					4096);
 
-public class StorageFileItemRepresentation
-    extends StorageItemRepresentation
-{
-  private static final int OUTPUT_BUFFER_SIZE = SystemPropertiesHelper.getInteger("org.sonatype.nexus.rest.StorageFileItemRepresentation.outputBufferSize", 4096);
+	public StorageFileItemRepresentation(StorageFileItem file) {
+		super(MediaType.valueOf(file.getMimeType()), file);
 
-  public StorageFileItemRepresentation(StorageFileItem file) {
-    super(MediaType.valueOf(file.getMimeType()), file);
+		setSize(file.getLength());
 
-    setSize(file.getLength());
-
-    if (file.getRepositoryItemAttributes().containsKey(DigestCalculatingInspector.DIGEST_SHA1_KEY)) {
-      // Shield SHA1
-      // {SHA1{xxxx}}
-      final String tag =
-          String.format("{SHA1{%s}}",
-              file.getRepositoryItemAttributes().get(DigestCalculatingInspector.DIGEST_SHA1_KEY));
-      setTag(new Tag(tag, false));
-    }
-
-    if (file.getItemContext().containsKey(AbstractResourceStoreContentPlexusResource.OVERRIDE_FILENAME_KEY)) {
-      String filename =
-          file.getItemContext().get(AbstractResourceStoreContentPlexusResource.OVERRIDE_FILENAME_KEY).toString();
-
-      setDownloadable(true);
-
-      setDownloadName(filename);
-    }
-  }
-
-  protected StorageFileItem getStorageItem() {
-    return (StorageFileItem) super.getStorageItem();
-  }
-
-  public boolean isTransient() {
-    return !getStorageItem().isReusableStream();
-  }
-
-  @Override
-  public void write(OutputStream outputStream)
-      throws IOException
-  {
-	InputStream is = null;
-    try{
-      is = getStorageItem().getInputStream();
-      StreamSupport.copy(is, outputStream, OUTPUT_BUFFER_SIZE);
-    }
-    catch (IOException e) {
-      if ("EofException".equals(e.getClass().getSimpleName())) {
-        // This is for Jetty's org.eclipse.jetty.io.EofException
-        // https://issues.sonatype.org/browse/NEXUS-217
-      }
-      else if (e instanceof SocketException) {
-        // https://issues.sonatype.org/browse/NEXUS-217
-      }
-      else {
-        throw e;
-      }
-    }finally {
-    	try {
-    		if(is != null)
-    			is.close();
-		} catch (Exception e) {
+		if (file.getRepositoryItemAttributes().containsKey(
+				DigestCalculatingInspector.DIGEST_SHA1_KEY)) {
+			// Shield SHA1
+			// {SHA1{xxxx}}
+			final String tag = String.format(
+					"{SHA1{%s}}",
+					file.getRepositoryItemAttributes().get(
+							DigestCalculatingInspector.DIGEST_SHA1_KEY));
+			setTag(new Tag(tag, false));
 		}
-    }
-  }
+
+		if (file.getItemContext()
+				.containsKey(
+						AbstractResourceStoreContentPlexusResource.OVERRIDE_FILENAME_KEY)) {
+			String filename = file
+					.getItemContext()
+					.get(AbstractResourceStoreContentPlexusResource.OVERRIDE_FILENAME_KEY)
+					.toString();
+
+			setDownloadable(true);
+
+			setDownloadName(filename);
+		}
+	}
+
+	protected StorageFileItem getStorageItem() {
+		return (StorageFileItem) super.getStorageItem();
+	}
+
+	public boolean isTransient() {
+		return !getStorageItem().isReusableStream();
+	}
+
+	@Override
+	public void write(OutputStream outputStream) throws IOException {
+		InputStream is = null;
+		try {
+			is = getStorageItem().getInputStream();
+			StreamSupport.copy(is, outputStream, OUTPUT_BUFFER_SIZE);
+		} catch (IOException e) {
+			if ("EofException".equals(e.getClass().getSimpleName())) {
+				// This is for Jetty's org.eclipse.jetty.io.EofException
+				// https://issues.sonatype.org/browse/NEXUS-217
+			} else if (e instanceof SocketException) {
+				// https://issues.sonatype.org/browse/NEXUS-217
+			} else {
+				throw e;
+			}
+		} finally {
+			try {
+				if (is != null)
+					is.close();
+			} catch (Exception e) {
+			}
+		}
+	}
 }

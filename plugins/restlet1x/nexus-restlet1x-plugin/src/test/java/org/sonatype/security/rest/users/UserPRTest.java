@@ -12,6 +12,10 @@
  */
 package org.sonatype.security.rest.users;
 
+import junit.framework.Assert;
+
+import org.restlet.data.Reference;
+import org.restlet.data.Request;
 import org.sonatype.plexus.rest.resource.PlexusResource;
 import org.sonatype.plexus.rest.resource.PlexusResourceException;
 import org.sonatype.plexus.rest.resource.error.ErrorMessage;
@@ -19,189 +23,178 @@ import org.sonatype.plexus.rest.resource.error.ErrorResponse;
 import org.sonatype.security.rest.model.UserResource;
 import org.sonatype.security.rest.model.UserResourceRequest;
 
-import junit.framework.Assert;
-import org.restlet.data.Reference;
-import org.restlet.data.Request;
+public class UserPRTest extends AbstractSecurityRestTest {
 
-public class UserPRTest
-    extends AbstractSecurityRestTest
-{
+	public void testAddUser() throws Exception {
 
-  public void testAddUser()
-      throws Exception
-  {
+		PlexusResource resource = this.lookup(PlexusResource.class,
+				"UserListPlexusResource");
 
-    PlexusResource resource = this.lookup(PlexusResource.class, "UserListPlexusResource");
+		UserResourceRequest resourceRequest = new UserResourceRequest();
+		UserResource userResource = new UserResource();
+		resourceRequest.setData(userResource);
+		userResource.setEmail("test@test.com");
+		userResource.setFirstName("firstAddUser");
+		userResource.setStatus("active");
+		userResource.setUserId("testAddUser");
+		userResource.addRole("admin");
 
-    UserResourceRequest resourceRequest = new UserResourceRequest();
-    UserResource userResource = new UserResource();
-    resourceRequest.setData(userResource);
-    userResource.setEmail("test@test.com");
-    userResource.setFirstName("firstAddUser");
-    userResource.setStatus("active");
-    userResource.setUserId("testAddUser");
-    userResource.addRole("admin");
+		// try
+		// {
 
-    // try
-    // {
+		resource.post(null, this.buildRequest(), null, resourceRequest);
+		// }
+		// catch ( PlexusResourceException e )
+		// {
+		// ErrorResponse errorResponse = (ErrorResponse) e.getResultObject();
+		// ErrorMessage errorMessage = (ErrorMessage)
+		// errorResponse.getErrors().get( 0 );
+		// Assert.fail( e.getMessage() + ": " + errorMessage.getMsg() );
+		// }
 
-    resource.post(null, this.buildRequest(), null, resourceRequest);
-    // }
-    // catch ( PlexusResourceException e )
-    // {
-    // ErrorResponse errorResponse = (ErrorResponse) e.getResultObject();
-    // ErrorMessage errorMessage = (ErrorMessage) errorResponse.getErrors().get( 0 );
-    // Assert.fail( e.getMessage() + ": " + errorMessage.getMsg() );
-    // }
+		// now list
+		resource.get(null, this.buildRequest(), null, null);
 
-    // now list
-    resource.get(null, this.buildRequest(), null, null);
+	}
 
-  }
+	public void testInvalidEmailAddUser() throws Exception {
 
-  public void testInvalidEmailAddUser()
-      throws Exception
-  {
+		PlexusResource resource = this.lookup(PlexusResource.class,
+				"UserListPlexusResource");
 
-    PlexusResource resource = this.lookup(PlexusResource.class, "UserListPlexusResource");
+		UserResourceRequest resourceRequest = new UserResourceRequest();
+		UserResource userResource = new UserResource();
+		resourceRequest.setData(userResource);
+		userResource.setEmail("testInvalidEmailAddUser");
+		userResource.setFirstName("firstTestInvalidEmailAddUser");
+		userResource.setLastName("firstTestInvalidEmailAddUser");
+		userResource.setStatus("active");
+		userResource.setUserId("testInvalidEmailAddUser");
+		userResource.addRole("admin");
 
-    UserResourceRequest resourceRequest = new UserResourceRequest();
-    UserResource userResource = new UserResource();
-    resourceRequest.setData(userResource);
-    userResource.setEmail("testInvalidEmailAddUser");
-    userResource.setFirstName("firstTestInvalidEmailAddUser");
-    userResource.setLastName("firstTestInvalidEmailAddUser");
-    userResource.setStatus("active");
-    userResource.setUserId("testInvalidEmailAddUser");
-    userResource.addRole("admin");
+		try {
 
-    try {
+			resource.post(null, this.buildRequest(), null, resourceRequest);
+			Assert.fail("expected PlexusResourceException");
+		} catch (PlexusResourceException e) {
+			ErrorResponse errorResponse = (ErrorResponse) e.getResultObject();
+			ErrorMessage errorMessage = (ErrorMessage) errorResponse
+					.getErrors().get(0);
+			Assert.assertTrue(errorMessage.getId().contains("email"));
+		}
 
-      resource.post(null, this.buildRequest(), null, resourceRequest);
-      Assert.fail("expected PlexusResourceException");
-    }
-    catch (PlexusResourceException e) {
-      ErrorResponse errorResponse = (ErrorResponse) e.getResultObject();
-      ErrorMessage errorMessage = (ErrorMessage) errorResponse.getErrors().get(0);
-      Assert.assertTrue(errorMessage.getId().contains("email"));
-    }
+		// now list
+		resource.get(null, this.buildRequest(), null, null);
+	}
 
-    // now list
-    resource.get(null, this.buildRequest(), null, null);
-  }
+	public void testUserIdWithSpace() throws Exception {
 
-  public void testUserIdWithSpace()
-      throws Exception
-  {
+		PlexusResource resource = this.lookup(PlexusResource.class,
+				"UserListPlexusResource");
 
-    PlexusResource resource = this.lookup(PlexusResource.class, "UserListPlexusResource");
+		UserResourceRequest resourceRequest = new UserResourceRequest();
+		UserResource userResource = new UserResource();
+		resourceRequest.setData(userResource);
+		userResource.setEmail("testUserIdWithSpace@testUserIdWithSpace.com");
+		userResource.setFirstName("testUserIdWithSpace");
+		userResource.setLastName("Last Name testUserIdWithSpace");
+		userResource.setStatus("active");
+		userResource.setUserId("test User Id With Space");
+		userResource.addRole("admin");
 
-    UserResourceRequest resourceRequest = new UserResourceRequest();
-    UserResource userResource = new UserResource();
-    resourceRequest.setData(userResource);
-    userResource.setEmail("testUserIdWithSpace@testUserIdWithSpace.com");
-    userResource.setFirstName("testUserIdWithSpace");
-    userResource.setLastName("Last Name testUserIdWithSpace");
-    userResource.setStatus("active");
-    userResource.setUserId("test User Id With Space");
-    userResource.addRole("admin");
+		try {
 
-    try {
+			resource.post(null, this.buildRequest(), null, resourceRequest);
+			Assert.fail("expected PlexusResourceException");
+		} catch (PlexusResourceException e) {
+			ErrorResponse errorResponse = (ErrorResponse) e.getResultObject();
+			ErrorMessage errorMessage = (ErrorMessage) errorResponse
+					.getErrors().get(0);
+			Assert.assertTrue(errorMessage.getId().contains("userId"));
+		}
 
-      resource.post(null, this.buildRequest(), null, resourceRequest);
-      Assert.fail("expected PlexusResourceException");
-    }
-    catch (PlexusResourceException e) {
-      ErrorResponse errorResponse = (ErrorResponse) e.getResultObject();
-      ErrorMessage errorMessage = (ErrorMessage) errorResponse.getErrors().get(0);
-      Assert.assertTrue(errorMessage.getId().contains("userId"));
-    }
+		// fix it
+		userResource.setUserId("testUserIdWithSpace");
+		resource.post(null, this.buildRequest(), null, resourceRequest);
 
-    // fix it
-    userResource.setUserId("testUserIdWithSpace");
-    resource.post(null, this.buildRequest(), null, resourceRequest);
+		// NOTE: update not supported
 
-    // NOTE: update not supported
+	}
 
-  }
+	public void testUpdateUserValidation() throws Exception {
+		// test user creation with NO status
 
-  public void testUpdateUserValidation()
-      throws Exception
-  {
-    // test user creation with NO status
+		// add a user
+		PlexusResource resource = this.lookup(PlexusResource.class,
+				"UserListPlexusResource");
 
-    // add a user
-    PlexusResource resource = this.lookup(PlexusResource.class, "UserListPlexusResource");
+		UserResourceRequest resourceRequest = new UserResourceRequest();
+		UserResource userResource = new UserResource();
+		resourceRequest.setData(userResource);
+		userResource.setEmail("testUpdateUserValidation@test.com");
+		userResource.setLastName("testUpdateUserValidation");
+		userResource.setStatus("active");
+		userResource.setUserId("testUpdateUserValidation");
+		userResource.addRole("admin");
 
-    UserResourceRequest resourceRequest = new UserResourceRequest();
-    UserResource userResource = new UserResource();
-    resourceRequest.setData(userResource);
-    userResource.setEmail("testUpdateUserValidation@test.com");
-    userResource.setLastName("testUpdateUserValidation");
-    userResource.setStatus("active");
-    userResource.setUserId("testUpdateUserValidation");
-    userResource.addRole("admin");
+		resource.post(null, this.buildRequest(), null, resourceRequest);
 
-    resource.post(null, this.buildRequest(), null, resourceRequest);
+		// remove the status
+		userResource.setStatus("");
 
-    // remove the status
-    userResource.setStatus("");
+		resource = this.lookup(PlexusResource.class, "UserPlexusResource");
+		try {
+			resource.put(null, this.buildRequest(), null, resourceRequest);
+			Assert.fail("expected PlexusResourceException");
+		} catch (PlexusResourceException e) {
+			// expected
+		}
 
-    resource = this.lookup(PlexusResource.class, "UserPlexusResource");
-    try {
-      resource.put(null, this.buildRequest(), null, resourceRequest);
-      Assert.fail("expected PlexusResourceException");
-    }
-    catch (PlexusResourceException e) {
-      // expected
-    }
+	}
 
-  }
+	public void testInvalidEmailUpdateUserValidation() throws Exception {
+		// test user creation with NO status
 
-  public void testInvalidEmailUpdateUserValidation()
-      throws Exception
-  {
-    // test user creation with NO status
+		// add a user
+		PlexusResource resource = this.lookup(PlexusResource.class,
+				"UserListPlexusResource");
 
-    // add a user
-    PlexusResource resource = this.lookup(PlexusResource.class, "UserListPlexusResource");
+		UserResourceRequest resourceRequest = new UserResourceRequest();
+		UserResource userResource = new UserResource();
+		resourceRequest.setData(userResource);
+		userResource.setEmail("testInvalidEmailUpdateUserValidation@test.com");
+		userResource.setLastName("testInvalidEmailUpdateUserValidation");
+		userResource.setStatus("active");
+		userResource.setUserId("testInvalidEmailUpdateUserValidation");
+		userResource.addRole("admin");
 
-    UserResourceRequest resourceRequest = new UserResourceRequest();
-    UserResource userResource = new UserResource();
-    resourceRequest.setData(userResource);
-    userResource.setEmail("testInvalidEmailUpdateUserValidation@test.com");
-    userResource.setLastName("testInvalidEmailUpdateUserValidation");
-    userResource.setStatus("active");
-    userResource.setUserId("testInvalidEmailUpdateUserValidation");
-    userResource.addRole("admin");
+		resource.post(null, this.buildRequest(), null, resourceRequest);
 
-    resource.post(null, this.buildRequest(), null, resourceRequest);
+		// remove the status
+		userResource.setEmail("invalidEmailAddress");
 
-    // remove the status
-    userResource.setEmail("invalidEmailAddress");
+		resource = this.lookup(PlexusResource.class, "UserPlexusResource");
+		try {
+			resource.put(null, this.buildRequest(), null, resourceRequest);
+			Assert.fail("expected PlexusResourceException");
+		} catch (PlexusResourceException e) {
+			ErrorResponse errorResponse = (ErrorResponse) e.getResultObject();
+			ErrorMessage errorMessage = (ErrorMessage) errorResponse
+					.getErrors().get(0);
+			Assert.assertTrue(errorMessage.getId().contains("email"));
+		}
 
-    resource = this.lookup(PlexusResource.class, "UserPlexusResource");
-    try {
-      resource.put(null, this.buildRequest(), null, resourceRequest);
-      Assert.fail("expected PlexusResourceException");
-    }
-    catch (PlexusResourceException e) {
-      ErrorResponse errorResponse = (ErrorResponse) e.getResultObject();
-      ErrorMessage errorMessage = (ErrorMessage) errorResponse.getErrors().get(0);
-      Assert.assertTrue(errorMessage.getId().contains("email"));
-    }
+	}
 
-  }
+	private Request buildRequest() {
+		Request request = new Request();
 
-  private Request buildRequest() {
-    Request request = new Request();
+		Reference ref = new Reference("http://localhost:12345/");
 
-    Reference ref = new Reference("http://localhost:12345/");
+		request.setRootRef(ref);
+		request.setResourceRef(new Reference(ref, "users"));
 
-    request.setRootRef(ref);
-    request.setResourceRef(new Reference(ref, "users"));
-
-    return request;
-  }
+		return request;
+	}
 
 }

@@ -18,7 +18,6 @@ import java.util.List;
 
 import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.index.TieredMergePolicy;
-import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.store.Directory;
 import org.apache.maven.index.context.DefaultIndexingContext;
 import org.apache.maven.index.context.ExistingLuceneIndexMismatchException;

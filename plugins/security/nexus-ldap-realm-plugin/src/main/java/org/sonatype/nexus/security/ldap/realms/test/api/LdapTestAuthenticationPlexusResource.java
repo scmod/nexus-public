@@ -84,7 +84,7 @@ public class LdapTestAuthenticationPlexusResource
    */
   @Override
   @PUT
-  @ResourceMethodSignature(input = LdapAuthenticationTestRequest.class)
+  
   public Object put(Context context, Request request, Response response, Object payload)
       throws ResourceException
   {

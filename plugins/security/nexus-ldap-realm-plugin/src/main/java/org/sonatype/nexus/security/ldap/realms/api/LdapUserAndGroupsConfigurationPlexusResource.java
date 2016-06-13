@@ -71,7 +71,7 @@ public class LdapUserAndGroupsConfigurationPlexusResource
    */
   @Override
   @GET
-  @ResourceMethodSignature(output = LdapUserAndGroupConfigurationResponse.class)
+  
   public Object get(Context context, Request request, Response response, Variant variant)
       throws ResourceException
   {
@@ -92,8 +92,7 @@ public class LdapUserAndGroupsConfigurationPlexusResource
    */
   @Override
   @PUT
-  @ResourceMethodSignature(input = LdapUserAndGroupConfigurationResponse.class,
-      output = LdapUserAndGroupConfigurationResponse.class)
+  
   public Object put(Context context, Request request, Response response, Object payload)
       throws ResourceException
   {

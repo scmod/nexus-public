@@ -19,12 +19,11 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
 
-import org.sonatype.nexus.proxy.NoSuchRepositoryException;
-
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.index.ArtifactInfoFilter;
 import org.apache.maven.index.IteratorSearchResponse;
 import org.apache.maven.index.SearchType;
+import org.sonatype.nexus.proxy.NoSuchRepositoryException;
 
 /**
  * Searches Lucene index wor artifacts that matches the provided keyword. This search is wrongly named, it should be

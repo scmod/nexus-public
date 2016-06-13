@@ -18,6 +18,7 @@ import java.util.regex.PatternSyntaxException;
 
 import javax.inject.Inject;
 
+import org.restlet.data.Request;
 import org.sonatype.configuration.ConfigurationException;
 import org.sonatype.nexus.proxy.registry.ContentClass;
 import org.sonatype.nexus.proxy.registry.RepositoryTypeRegistry;
@@ -26,80 +27,80 @@ import org.sonatype.nexus.proxy.targets.TargetRegistry;
 import org.sonatype.nexus.rest.AbstractNexusPlexusResource;
 import org.sonatype.nexus.rest.model.RepositoryTargetResource;
 
-import org.restlet.data.Request;
+public abstract class AbstractRepositoryTargetPlexusResource extends
+		AbstractNexusPlexusResource {
+	private TargetRegistry targetRegistry;
 
-public abstract class AbstractRepositoryTargetPlexusResource
-    extends AbstractNexusPlexusResource
-{
-  private TargetRegistry targetRegistry;
+	private RepositoryTypeRegistry repositoryTypeRegistry;
 
-  private RepositoryTypeRegistry repositoryTypeRegistry;
+	@Inject
+	public void setTargetRegistry(final TargetRegistry targetRegistry) {
+		this.targetRegistry = targetRegistry;
+	}
 
-  @Inject
-  public void setTargetRegistry(final TargetRegistry targetRegistry) {
-    this.targetRegistry = targetRegistry;
-  }
+	@Inject
+	public void setRepositoryTypeRegistry(
+			final RepositoryTypeRegistry repositoryTypeRegistry) {
+		this.repositoryTypeRegistry = repositoryTypeRegistry;
+	}
 
-  @Inject
-  public void setRepositoryTypeRegistry(final RepositoryTypeRegistry repositoryTypeRegistry) {
-    this.repositoryTypeRegistry = repositoryTypeRegistry;
-  }
+	protected TargetRegistry getTargetRegistry() {
+		return targetRegistry;
+	}
 
-  protected TargetRegistry getTargetRegistry() {
-    return targetRegistry;
-  }
+	protected RepositoryTypeRegistry getRepositoryTypeRegistry() {
+		return repositoryTypeRegistry;
+	}
 
-  protected RepositoryTypeRegistry getRepositoryTypeRegistry() {
-    return repositoryTypeRegistry;
-  }
+	protected RepositoryTargetResource getNexusToRestResource(Target target,
+			Request request) {
+		RepositoryTargetResource resource = new RepositoryTargetResource();
 
-  protected RepositoryTargetResource getNexusToRestResource(Target target, Request request) {
-    RepositoryTargetResource resource = new RepositoryTargetResource();
+		resource.setId(target.getId());
 
-    resource.setId(target.getId());
+		resource.setName(target.getName());
 
-    resource.setName(target.getName());
+		resource.setResourceURI(request.getResourceRef().getPath());
 
-    resource.setResourceURI(request.getResourceRef().getPath());
+		resource.setContentClass(target.getContentClass().getId());
 
-    resource.setContentClass(target.getContentClass().getId());
+		List<String> patterns = new ArrayList<String>(target.getPatternTexts());
 
-    List<String> patterns = new ArrayList<String>(target.getPatternTexts());
+		for (String pattern : patterns) {
+			resource.addPattern(pattern);
+		}
 
-    for (String pattern : patterns) {
-      resource.addPattern(pattern);
-    }
+		return resource;
+	}
 
-    return resource;
-  }
+	protected Target getRestToNexusResource(RepositoryTargetResource resource)
+			throws ConfigurationException, PatternSyntaxException {
+		ContentClass cc = getRepositoryTypeRegistry().getContentClasses().get(
+				resource.getContentClass());
 
-  protected Target getRestToNexusResource(RepositoryTargetResource resource)
-      throws ConfigurationException, PatternSyntaxException
-  {
-    ContentClass cc = getRepositoryTypeRegistry().getContentClasses().get(resource.getContentClass());
+		if (cc == null) {
+			throw new ConfigurationException("Content class with ID=\""
+					+ resource.getContentClass() + "\" does not exists!");
+		}
 
-    if (cc == null) {
-      throw new ConfigurationException("Content class with ID=\"" + resource.getContentClass()
-          + "\" does not exists!");
-    }
+		Target target = new Target(resource.getId(), resource.getName(), cc,
+				resource.getPatterns());
 
-    Target target = new Target(resource.getId(), resource.getName(), cc, resource.getPatterns());
+		return target;
+	}
 
-    return target;
-  }
+	protected boolean validate(boolean isNew, RepositoryTargetResource resource) {
+		if (isNew) {
+			if (resource.getId() == null) {
+				resource.setId(Long.toHexString(System.nanoTime()));
+			}
+		}
 
-  protected boolean validate(boolean isNew, RepositoryTargetResource resource) {
-    if (isNew) {
-      if (resource.getId() == null) {
-        resource.setId(Long.toHexString(System.nanoTime()));
-      }
-    }
+		if (resource.getId() == null) {
+			return false;
+		}
 
-    if (resource.getId() == null) {
-      return false;
-    }
-
-    return true;
-  }
+		return true;
+	}
 
 }

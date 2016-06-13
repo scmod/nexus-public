@@ -20,6 +20,12 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 
+import org.restlet.Context;
+import org.restlet.data.Request;
+import org.restlet.data.Response;
+import org.restlet.data.Status;
+import org.restlet.resource.ResourceException;
+import org.restlet.resource.Variant;
 import org.sonatype.nexus.proxy.wastebasket.Wastebasket;
 import org.sonatype.nexus.rest.AbstractNexusPlexusResource;
 import org.sonatype.nexus.rest.model.WastebasketResource;
@@ -28,16 +34,9 @@ import org.sonatype.nexus.scheduling.NexusScheduler;
 import org.sonatype.nexus.tasks.EmptyTrashTask;
 import org.sonatype.plexus.rest.resource.PathProtectionDescriptor;
 
-import org.codehaus.enunciate.contract.jaxrs.ResourceMethodSignature;
-import org.restlet.Context;
-import org.restlet.data.Request;
-import org.restlet.data.Response;
-import org.restlet.data.Status;
-import org.restlet.resource.ResourceException;
-import org.restlet.resource.Variant;
-
 /**
- * The Wastebasket resource handler. It returns the status of the wastebasket, and purges it.
+ * The Wastebasket resource handler. It returns the status of the wastebasket,
+ * and purges it.
  *
  * @author cstamas
  * @author tstevens
@@ -45,85 +44,81 @@ import org.restlet.resource.Variant;
 @Named
 @Singleton
 @Path(WastebasketPlexusResource.RESOURCE_URI)
-@Produces({"application/xml", "application/json"})
-public class WastebasketPlexusResource
-    extends AbstractNexusPlexusResource
-{
-  public static final String RESOURCE_URI = "/wastebasket";
+@Produces({ "application/xml", "application/json" })
+public class WastebasketPlexusResource extends AbstractNexusPlexusResource {
+	public static final String RESOURCE_URI = "/wastebasket";
 
-  private final Wastebasket wastebasket;
+	private final Wastebasket wastebasket;
 
-  private final NexusScheduler nexusScheduler;
+	private final NexusScheduler nexusScheduler;
 
-  @Inject
-  public WastebasketPlexusResource(final Wastebasket wastebasket, final NexusScheduler nexusScheduler) {
-    this.wastebasket = wastebasket;
-    this.nexusScheduler = nexusScheduler;
-  }
+	@Inject
+	public WastebasketPlexusResource(final Wastebasket wastebasket,
+			final NexusScheduler nexusScheduler) {
+		this.wastebasket = wastebasket;
+		this.nexusScheduler = nexusScheduler;
+	}
 
-  @Override
-  public Object getPayloadInstance() {
-    return null;
-  }
+	@Override
+	public Object getPayloadInstance() {
+		return null;
+	}
 
-  @Override
-  public String getResourceUri() {
-    return RESOURCE_URI;
-  }
+	@Override
+	public String getResourceUri() {
+		return RESOURCE_URI;
+	}
 
-  @Override
-  public PathProtectionDescriptor getResourceProtection() {
-    return new PathProtectionDescriptor("/wastebasket**", "authcBasic,perms[nexus:wastebasket]");
-  }
+	@Override
+	public PathProtectionDescriptor getResourceProtection() {
+		return new PathProtectionDescriptor("/wastebasket**",
+				"authcBasic,perms[nexus:wastebasket]");
+	}
 
-  /**
-   * Get details about the contents of the wastebasket.
-   */
-  @Override
-  @GET
-  @ResourceMethodSignature(output = WastebasketResourceResponse.class)
-  public Object get(Context context, Request request, Response response, Variant variant)
-      throws ResourceException
-  {
-    WastebasketResourceResponse result = new WastebasketResourceResponse();
+	/**
+	 * Get details about the contents of the wastebasket.
+	 */
+	@Override
+	@GET
+	public Object get(Context context, Request request, Response response,
+			Variant variant) throws ResourceException {
+		WastebasketResourceResponse result = new WastebasketResourceResponse();
 
-    WastebasketResource resource = new WastebasketResource();
+		WastebasketResource resource = new WastebasketResource();
 
-    resource.setItemCount(-1);
+		resource.setItemCount(-1);
 
-    Long totalSize = wastebasket.getTotalSize();
+		Long totalSize = wastebasket.getTotalSize();
 
-    if (totalSize != null) {
-      resource.setSize(totalSize);
-    }
-    else {
-      resource.setSize(-1);
-    }
+		if (totalSize != null) {
+			resource.setSize(totalSize);
+		} else {
+			resource.setSize(-1);
+		}
 
-    result.setData(resource);
+		result.setData(resource);
 
-    return result;
-  }
+		return result;
+	}
 
-  /**
-   * Empty the wastebasket.
-   */
-  @Override
-  @DELETE
-  @ResourceMethodSignature()
-  public void delete(Context context, Request request, Response response)
-      throws ResourceException
-  {
-    EmptyTrashTask task = nexusScheduler.createTaskInstance(EmptyTrashTask.class);
+	/**
+	 * Empty the wastebasket.
+	 */
+	@Override
+	@DELETE
+	public void delete(Context context, Request request, Response response)
+			throws ResourceException {
+		EmptyTrashTask task = nexusScheduler
+				.createTaskInstance(EmptyTrashTask.class);
 
-    nexusScheduler.submit("Internal", task);
+		nexusScheduler.submit("Internal", task);
 
-    response.setStatus(Status.SUCCESS_NO_CONTENT);
-  }
+		response.setStatus(Status.SUCCESS_NO_CONTENT);
+	}
 
-  @Override
-  public boolean isModifiable() {
-    return true;
-  }
+	@Override
+	public boolean isModifiable() {
+		return true;
+	}
 
 }

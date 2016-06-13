@@ -26,26 +26,27 @@ import com.google.inject.servlet.ServletModule;
  *
  * @author adreghiciu
  */
-class RestletServletModule
-    extends ServletModule
-{
-  @Override
-  protected void configureServlets() {
-    requestStaticInjection(NexusGuiceFilter.class);
+class RestletServletModule extends ServletModule {
+	@Override
+	protected void configureServlets() {
+		requestStaticInjection(NexusGuiceFilter.class);
 
-    serve("/service/local/*").with(RestletServlet.class, nexusRestletServletInitParams());
-    filter("/service/local/*").through(SecurityFilter.class);
-    filter("/service/local/*").through(RestletHeaderFilter.class);
-    filter("/service/local/authentication/login").through(CookieFilter.class);
-    filter("/service/local/authentication/logout").through(CookieFilter.class);
-  }
+		serve("/service/local/*").with(RestletServlet.class,
+				nexusRestletServletInitParams());
+		filter("/service/local/*").through(SecurityFilter.class);
+		filter("/service/local/*").through(RestletHeaderFilter.class);
+		filter("/service/local/authentication/login").through(
+				CookieFilter.class);
+		filter("/service/local/authentication/logout").through(
+				CookieFilter.class);
+	}
 
-  private Map<String, String> nexusRestletServletInitParams() {
-    Map<String, String> params = new HashMap<String, String>();
-    params.put("nexus.role", "org.restlet.Application");
-    params.put("nexus.roleHint", "nexus");
-    params.put("nexus.org.restlet.clients", "FILE CLAP");
-    params.put("plexus.discoverResources", "true");
-    return params;
-  }
+	private Map<String, String> nexusRestletServletInitParams() {
+		Map<String, String> params = new HashMap<String, String>();
+		params.put("nexus.role", "org.restlet.Application");
+		params.put("nexus.roleHint", "nexus");
+		params.put("nexus.org.restlet.clients", "FILE CLAP");
+		params.put("plexus.discoverResources", "true");
+		return params;
+	}
 }

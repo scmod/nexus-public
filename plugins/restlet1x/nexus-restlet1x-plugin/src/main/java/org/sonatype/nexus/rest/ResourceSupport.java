@@ -14,45 +14,42 @@ package org.sonatype.nexus.rest;
 
 import javax.ws.rs.Path;
 
+import org.slf4j.Logger;
 import org.sonatype.plexus.rest.resource.PlexusResource;
 import org.sonatype.sisu.goodies.common.Loggers;
-
-import org.slf4j.Logger;
 
 /**
  * Support for {@link PlexusResource} implementations.
  *
  * @since 2.2
  */
-public abstract class ResourceSupport
-    extends AbstractNexusPlexusResource
-{
+public abstract class ResourceSupport extends AbstractNexusPlexusResource {
 
-  protected final Logger log = Loggers.getLogger(getClass());
+	protected final Logger log = Loggers.getLogger(getClass());
 
-  private String resourceUri;
+	private String resourceUri;
 
-  protected ResourceSupport() {
-    setAvailable(true);
-    setReadable(true);
-    setModifiable(true);
-    setNegotiateContent(true);
-  }
+	protected ResourceSupport() {
+		setAvailable(true);
+		setReadable(true);
+		setModifiable(true);
+		setNegotiateContent(true);
+	}
 
-  @Override
-  public String getResourceUri() {
-    if (resourceUri == null) {
-      Path path = getClass().getAnnotation(Path.class);
-      if (path != null) {
-        resourceUri = path.value();
-      }
-    }
-    return resourceUri;
-  }
+	@Override
+	public String getResourceUri() {
+		if (resourceUri == null) {
+			Path path = getClass().getAnnotation(Path.class);
+			if (path != null) {
+				resourceUri = path.value();
+			}
+		}
+		return resourceUri;
+	}
 
-  @Override
-  public Object getPayloadInstance() {
-    return null;
-  }
+	@Override
+	public Object getPayloadInstance() {
+		return null;
+	}
 
 }

@@ -12,6 +12,8 @@
  */
 package org.sonatype.nexus.plugins.plugin.console.api;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,6 +25,12 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 
+import org.codehaus.plexus.util.StringUtils;
+import org.restlet.Context;
+import org.restlet.data.Request;
+import org.restlet.data.Response;
+import org.restlet.resource.ResourceException;
+import org.restlet.resource.Variant;
 import org.sonatype.nexus.plugins.plugin.console.PluginConsoleManager;
 import org.sonatype.nexus.plugins.plugin.console.api.dto.DocumentationLinkDTO;
 import org.sonatype.nexus.plugins.plugin.console.api.dto.PluginInfoDTO;
@@ -34,15 +42,6 @@ import org.sonatype.nexus.rest.model.AliasingListConverter;
 import org.sonatype.plexus.rest.resource.PathProtectionDescriptor;
 
 import com.thoughtworks.xstream.XStream;
-import org.codehaus.enunciate.contract.jaxrs.ResourceMethodSignature;
-import org.codehaus.plexus.util.StringUtils;
-import org.restlet.Context;
-import org.restlet.data.Request;
-import org.restlet.data.Response;
-import org.restlet.resource.ResourceException;
-import org.restlet.resource.Variant;
-
-import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Resource publishing Nexus plugin details.
@@ -95,7 +94,7 @@ public class PluginInfoListPlexusResource
    */
   @Override
   @GET
-  @ResourceMethodSignature(output = PluginInfoListResponseDTO.class)
+  
   public Object get(Context context, Request request, Response response, Variant variant)
       throws ResourceException
   {

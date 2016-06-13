@@ -19,22 +19,11 @@ import java.nio.charset.CharsetEncoder;
 public class Files {
 
 	public static File createDirectories(File dir) throws IOException {
-
 		// attempt to create the directory
 		try {
 			Objects.requireNonNull(dir);
-			if (dir.isDirectory()) {
-				if (!dir.mkdirs())
-					throw new IOException();
-				;
-			} else {
-				File parent = dir.getParentFile();
-				if (!parent.mkdirs()) {
-					throw new IOException();
-				} else if (!dir.createNewFile()) {
-					throw new FileAlreadyExistsException();
-				}
-			}
+			if(!dir.exists())
+				dir.mkdirs();
 			return dir;
 		} catch (Exception e) {
 			throw new IOException(e);

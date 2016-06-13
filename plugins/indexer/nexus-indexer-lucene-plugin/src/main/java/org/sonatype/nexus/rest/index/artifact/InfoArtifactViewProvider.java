@@ -22,6 +22,9 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
 
+import org.apache.maven.index.ArtifactInfo;
+import org.apache.maven.index.IteratorSearchResponse;
+import org.restlet.data.Request;
 import org.sonatype.nexus.index.IndexerManager;
 import org.sonatype.nexus.proxy.AccessDeniedException;
 import org.sonatype.nexus.proxy.NoSuchRepositoryException;
@@ -41,10 +44,6 @@ import org.sonatype.nexus.rest.model.ArtifactInfoResource;
 import org.sonatype.nexus.rest.model.ArtifactInfoResourceResponse;
 import org.sonatype.nexus.rest.model.RepositoryUrlResource;
 import org.sonatype.plexus.rest.ReferenceFactory;
-
-import org.apache.maven.index.ArtifactInfo;
-import org.apache.maven.index.IteratorSearchResponse;
-import org.restlet.data.Request;
 
 /**
  * Artifact info view provider.

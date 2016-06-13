@@ -20,9 +20,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.sonatype.scheduling.TaskUtil;
-import org.sonatype.sisu.goodies.common.ComponentSupport;
-
 import org.apache.commons.lang.time.DurationFormatUtils;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
@@ -39,6 +36,8 @@ import org.apache.maven.index.ArtifactScanningListener;
 import org.apache.maven.index.ScanningResult;
 import org.apache.maven.index.context.IndexingContext;
 import org.apache.maven.index.creator.MinimalArtifactInfoIndexCreator;
+import org.sonatype.scheduling.TaskUtil;
+import org.sonatype.sisu.goodies.common.ComponentSupport;
 
 /**
  * Nexus specific ArtifactScanningListener implementation. Looks like the MI's DefaultScannerListener, but has

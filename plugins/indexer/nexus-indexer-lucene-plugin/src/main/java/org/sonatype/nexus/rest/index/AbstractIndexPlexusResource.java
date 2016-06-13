@@ -21,21 +21,6 @@ import java.util.concurrent.RejectedExecutionException;
 
 import javax.inject.Inject;
 
-import org.sonatype.nexus.index.KeywordSearcher;
-import org.sonatype.nexus.index.MavenCoordinatesSearcher;
-import org.sonatype.nexus.index.Searcher;
-import org.sonatype.nexus.index.tasks.RepairIndexTask;
-import org.sonatype.nexus.index.tasks.UpdateIndexTask;
-import org.sonatype.nexus.proxy.NoSuchRepositoryException;
-import org.sonatype.nexus.proxy.repository.GroupRepository;
-import org.sonatype.nexus.proxy.repository.Repository;
-import org.sonatype.nexus.proxy.repository.ShadowRepository;
-import org.sonatype.nexus.rest.model.NexusArtifact;
-import org.sonatype.nexus.rest.model.SearchResponse;
-import org.sonatype.nexus.scheduling.AbstractNexusRepositoriesPathAwareTask;
-import org.sonatype.nexus.scheduling.NexusScheduler;
-import org.sonatype.nexus.scheduling.NexusTask;
-
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.index.ArtifactInfoFilter;
 import org.apache.maven.index.IteratorSearchResponse;
@@ -50,6 +35,20 @@ import org.restlet.data.Response;
 import org.restlet.data.Status;
 import org.restlet.resource.ResourceException;
 import org.restlet.resource.Variant;
+import org.sonatype.nexus.index.KeywordSearcher;
+import org.sonatype.nexus.index.MavenCoordinatesSearcher;
+import org.sonatype.nexus.index.Searcher;
+import org.sonatype.nexus.index.tasks.RepairIndexTask;
+import org.sonatype.nexus.index.tasks.UpdateIndexTask;
+import org.sonatype.nexus.proxy.NoSuchRepositoryException;
+import org.sonatype.nexus.proxy.repository.GroupRepository;
+import org.sonatype.nexus.proxy.repository.Repository;
+import org.sonatype.nexus.proxy.repository.ShadowRepository;
+import org.sonatype.nexus.rest.model.NexusArtifact;
+import org.sonatype.nexus.rest.model.SearchResponse;
+import org.sonatype.nexus.scheduling.AbstractNexusRepositoriesPathAwareTask;
+import org.sonatype.nexus.scheduling.NexusScheduler;
+import org.sonatype.nexus.scheduling.NexusTask;
 
 public abstract class AbstractIndexPlexusResource
     extends AbstractIndexerNexusPlexusResource

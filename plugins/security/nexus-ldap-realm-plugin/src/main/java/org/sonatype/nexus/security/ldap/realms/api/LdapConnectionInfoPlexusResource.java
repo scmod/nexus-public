@@ -74,7 +74,7 @@ public class LdapConnectionInfoPlexusResource
    */
   @Override
   @GET
-  @ResourceMethodSignature(output = LdapConnectionInfoResponse.class)
+  
   public Object get(Context context, Request request, Response response, Variant variant)
       throws ResourceException
   {
@@ -93,7 +93,7 @@ public class LdapConnectionInfoPlexusResource
    */
   @Override
   @PUT
-  @ResourceMethodSignature(input = LdapConnectionInfoResponse.class, output = LdapConnectionInfoResponse.class)
+  
   public Object put(Context context, Request request, Response response, Object payload)
       throws ResourceException
   {

@@ -12,37 +12,35 @@
  */
 package org.sonatype.nexus.rest.attributes;
 
-import org.sonatype.nexus.rest.restore.AbstractRestorePlexusResource;
-import org.sonatype.nexus.tasks.RebuildAttributesTask;
-
 import org.restlet.Context;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.resource.ResourceException;
+import org.sonatype.nexus.rest.restore.AbstractRestorePlexusResource;
+import org.sonatype.nexus.tasks.RebuildAttributesTask;
 
-public abstract class AbstractAttributesPlexusResource
-    extends AbstractRestorePlexusResource
-{
-  @Override
-  public Object getPayloadInstance() {
-    return null;
-  }
+public abstract class AbstractAttributesPlexusResource extends
+		AbstractRestorePlexusResource {
+	@Override
+	public Object getPayloadInstance() {
+		return null;
+	}
 
-  @Override
-  public void delete(Context context, Request request, Response response)
-      throws ResourceException
-  {
-    RebuildAttributesTask task = getNexusScheduler().createTaskInstance(RebuildAttributesTask.class);
+	@Override
+	public void delete(Context context, Request request, Response response)
+			throws ResourceException {
+		RebuildAttributesTask task = getNexusScheduler().createTaskInstance(
+				RebuildAttributesTask.class);
 
-    String repositoryId = getRepositoryId(request);
-    if (repositoryId == null) {
-      repositoryId = getRepositoryGroupId(request);
-    }
-    task.setRepositoryId(repositoryId);
+		String repositoryId = getRepositoryId(request);
+		if (repositoryId == null) {
+			repositoryId = getRepositoryGroupId(request);
+		}
+		task.setRepositoryId(repositoryId);
 
-    task.setResourceStorePath(getResourceStorePath(request));
+		task.setResourceStorePath(getResourceStorePath(request));
 
-    this.handleDelete(task, request);
-  }
+		this.handleDelete(task, request);
+	}
 
 }

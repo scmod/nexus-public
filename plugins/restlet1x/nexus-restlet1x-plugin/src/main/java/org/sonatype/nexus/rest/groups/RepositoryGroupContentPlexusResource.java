@@ -15,51 +15,50 @@ package org.sonatype.nexus.rest.groups;
 import javax.inject.Named;
 import javax.inject.Singleton;
 
+import org.restlet.data.Request;
+import org.restlet.resource.ResourceException;
 import org.sonatype.nexus.proxy.NoSuchRepositoryException;
 import org.sonatype.nexus.proxy.ResourceStore;
 import org.sonatype.nexus.proxy.repository.GroupRepository;
 import org.sonatype.nexus.rest.AbstractResourceStoreContentPlexusResource;
 import org.sonatype.plexus.rest.resource.PathProtectionDescriptor;
 
-import org.restlet.data.Request;
-import org.restlet.resource.ResourceException;
-
 /**
  * @author tstevens
  */
 @Named
 @Singleton
-public class RepositoryGroupContentPlexusResource
-    extends AbstractResourceStoreContentPlexusResource
-{
-  public static final String GROUP_ID_KEY = "groupId";
+public class RepositoryGroupContentPlexusResource extends
+		AbstractResourceStoreContentPlexusResource {
+	public static final String GROUP_ID_KEY = "groupId";
 
-  public RepositoryGroupContentPlexusResource() {
-    setRequireStrictChecking(false);
-  }
+	public RepositoryGroupContentPlexusResource() {
+		setRequireStrictChecking(false);
+	}
 
-  @Override
-  public Object getPayloadInstance() {
-    // group content is read only
-    return null;
-  }
+	@Override
+	public Object getPayloadInstance() {
+		// group content is read only
+		return null;
+	}
 
-  @Override
-  public String getResourceUri() {
-    return "/repo_groups/{" + GROUP_ID_KEY + "}/content";
-  }
+	@Override
+	public String getResourceUri() {
+		return "/repo_groups/{" + GROUP_ID_KEY + "}/content";
+	}
 
-  @Override
-  public PathProtectionDescriptor getResourceProtection() {
-    return new PathProtectionDescriptor("/repo_groups/*/content/**", "authcBasic,tgperms");
-  }
+	@Override
+	public PathProtectionDescriptor getResourceProtection() {
+		return new PathProtectionDescriptor("/repo_groups/*/content/**",
+				"authcBasic,tgperms");
+	}
 
-  @Override
-  protected ResourceStore getResourceStore(final Request request)
-      throws NoSuchRepositoryException, ResourceException
-  {
-    return getRepositoryRegistry().getRepositoryWithFacet(request.getAttributes().get(GROUP_ID_KEY).toString(),
-        GroupRepository.class);
-  }
+	@Override
+	protected ResourceStore getResourceStore(final Request request)
+			throws NoSuchRepositoryException, ResourceException {
+		return getRepositoryRegistry().getRepositoryWithFacet(
+				request.getAttributes().get(GROUP_ID_KEY).toString(),
+				GroupRepository.class);
+	}
 
 }

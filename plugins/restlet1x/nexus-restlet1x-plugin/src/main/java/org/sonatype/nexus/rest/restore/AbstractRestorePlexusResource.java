@@ -16,6 +16,10 @@ import java.util.concurrent.RejectedExecutionException;
 
 import javax.inject.Inject;
 
+import org.apache.commons.lang.StringUtils;
+import org.restlet.data.Request;
+import org.restlet.data.Status;
+import org.restlet.resource.ResourceException;
 import org.sonatype.nexus.proxy.NoSuchRepositoryException;
 import org.sonatype.nexus.proxy.repository.GroupRepository;
 import org.sonatype.nexus.proxy.repository.Repository;
@@ -24,131 +28,128 @@ import org.sonatype.nexus.rest.AbstractNexusPlexusResource;
 import org.sonatype.nexus.scheduling.NexusScheduler;
 import org.sonatype.nexus.scheduling.NexusTask;
 
-import org.apache.commons.lang.StringUtils;
-import org.restlet.data.Request;
-import org.restlet.data.Status;
-import org.restlet.resource.ResourceException;
+public abstract class AbstractRestorePlexusResource extends
+		AbstractNexusPlexusResource {
+	public static final String DOMAIN = "domain";
 
-public abstract class AbstractRestorePlexusResource
-    extends AbstractNexusPlexusResource
-{
-  public static final String DOMAIN = "domain";
+	public static final String DOMAIN_REPOSITORIES = "repositories";
 
-  public static final String DOMAIN_REPOSITORIES = "repositories";
+	public static final String DOMAIN_REPO_GROUPS = "repo_groups";
 
-  public static final String DOMAIN_REPO_GROUPS = "repo_groups";
+	public static final String TARGET_ID = "target";
 
-  public static final String TARGET_ID = "target";
+	private NexusScheduler nexusScheduler;
 
-  private NexusScheduler nexusScheduler;
+	public AbstractRestorePlexusResource() {
+		this.setModifiable(true);
+	}
 
-  public AbstractRestorePlexusResource() {
-    this.setModifiable(true);
-  }
+	@Inject
+	public void setNexusScheduler(final NexusScheduler nexusScheduler) {
+		this.nexusScheduler = nexusScheduler;
+	}
 
-  @Inject
-  public void setNexusScheduler(final NexusScheduler nexusScheduler) {
-    this.nexusScheduler = nexusScheduler;
-  }
+	protected NexusScheduler getNexusScheduler() {
+		return nexusScheduler;
+	}
 
-  protected NexusScheduler getNexusScheduler() {
-    return nexusScheduler;
-  }
+	protected String getRepositoryId(Request request) throws ResourceException {
+		String repoId = null;
 
-  protected String getRepositoryId(Request request)
-      throws ResourceException
-  {
-    String repoId = null;
+		if ((request.getAttributes().containsKey(DOMAIN) && request
+				.getAttributes().containsKey(TARGET_ID))
+				&& DOMAIN_REPOSITORIES.equals(request.getAttributes().get(
+						DOMAIN))) {
+			repoId = request.getAttributes().get(TARGET_ID).toString();
 
-    if ((request.getAttributes().containsKey(DOMAIN) && request.getAttributes().containsKey(TARGET_ID))
-        && DOMAIN_REPOSITORIES.equals(request.getAttributes().get(DOMAIN))) {
-      repoId = request.getAttributes().get(TARGET_ID).toString();
+			try {
+				// simply to throw NoSuchRepository exception
+				getRepositoryRegistry().getRepositoryWithFacet(repoId,
+						Repository.class);
+			} catch (NoSuchRepositoryException e) {
+				throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND,
+						"Repository not found!", e);
+			}
+		}
 
-      try {
-        // simply to throw NoSuchRepository exception
-        getRepositoryRegistry().getRepositoryWithFacet(repoId, Repository.class);
-      }
-      catch (NoSuchRepositoryException e) {
-        throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND, "Repository not found!", e);
-      }
-    }
+		return repoId;
+	}
 
-    return repoId;
-  }
+	protected String getRepositoryGroupId(Request request)
+			throws ResourceException {
+		String groupId = null;
 
-  protected String getRepositoryGroupId(Request request)
-      throws ResourceException
-  {
-    String groupId = null;
+		if ((request.getAttributes().containsKey(DOMAIN) && request
+				.getAttributes().containsKey(TARGET_ID))
+				&& DOMAIN_REPO_GROUPS.equals(request.getAttributes()
+						.get(DOMAIN))) {
+			groupId = request.getAttributes().get(TARGET_ID).toString();
 
-    if ((request.getAttributes().containsKey(DOMAIN) && request.getAttributes().containsKey(TARGET_ID))
-        && DOMAIN_REPO_GROUPS.equals(request.getAttributes().get(DOMAIN))) {
-      groupId = request.getAttributes().get(TARGET_ID).toString();
+			try {
+				// simply to throw NoSuchRepository exception
+				getRepositoryRegistry().getRepositoryWithFacet(groupId,
+						GroupRepository.class);
+			} catch (NoSuchRepositoryException e) {
+				throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND,
+						"Repository group not found!", e);
+			}
+		}
 
-      try {
-        // simply to throw NoSuchRepository exception
-        getRepositoryRegistry().getRepositoryWithFacet(groupId, GroupRepository.class);
-      }
-      catch (NoSuchRepositoryException e) {
-        throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND, "Repository group not found!", e);
-      }
-    }
+		return groupId;
+	}
 
-    return groupId;
-  }
+	protected String getResourceStorePath(Request request)
+			throws ResourceException {
+		String path = null;
 
-  protected String getResourceStorePath(Request request)
-      throws ResourceException
-  {
-    String path = null;
+		if (getRepositoryId(request) != null
+				|| getRepositoryGroupId(request) != null) {
+			path = request.getResourceRef().getRemainingPart();
 
-    if (getRepositoryId(request) != null || getRepositoryGroupId(request) != null) {
-      path = request.getResourceRef().getRemainingPart();
+			// get rid of query part
+			if (path.contains("?")) {
+				path = path.substring(0, path.indexOf('?'));
+			}
 
-      // get rid of query part
-      if (path.contains("?")) {
-        path = path.substring(0, path.indexOf('?'));
-      }
+			// get rid of reference part
+			if (path.contains("#")) {
+				path = path.substring(0, path.indexOf('#'));
+			}
 
-      // get rid of reference part
-      if (path.contains("#")) {
-        path = path.substring(0, path.indexOf('#'));
-      }
+			if (StringUtils.isEmpty(path)) {
+				path = "/";
+			}
+		}
+		return path;
+	}
 
-      if (StringUtils.isEmpty(path)) {
-        path = "/";
-      }
-    }
-    return path;
-  }
+	public void handleDelete(NexusTask<?> task, Request request)
+			throws ResourceException {
+		try {
+			// check reposes
+			if (getRepositoryGroupId(request) != null) {
+				getRepositoryRegistry().getRepositoryWithFacet(
+						getRepositoryGroupId(request), GroupRepository.class);
+			} else if (getRepositoryId(request) != null) {
+				try {
+					getRepositoryRegistry().getRepository(
+							getRepositoryId(request));
+				} catch (NoSuchRepositoryException e) {
+					getRepositoryRegistry().getRepositoryWithFacet(
+							getRepositoryId(request), ShadowRepository.class);
+				}
+			}
 
-  public void handleDelete(NexusTask<?> task, Request request)
-      throws ResourceException
-  {
-    try {
-      // check reposes
-      if (getRepositoryGroupId(request) != null) {
-        getRepositoryRegistry().getRepositoryWithFacet(getRepositoryGroupId(request), GroupRepository.class);
-      }
-      else if (getRepositoryId(request) != null) {
-        try {
-          getRepositoryRegistry().getRepository(getRepositoryId(request));
-        }
-        catch (NoSuchRepositoryException e) {
-          getRepositoryRegistry().getRepositoryWithFacet(getRepositoryId(request), ShadowRepository.class);
-        }
-      }
+			getNexusScheduler().submit("Internal", task);
 
-      getNexusScheduler().submit("Internal", task);
-
-      throw new ResourceException(Status.SUCCESS_NO_CONTENT);
-    }
-    catch (RejectedExecutionException e) {
-      throw new ResourceException(Status.CLIENT_ERROR_CONFLICT, e.getMessage());
-    }
-    catch (NoSuchRepositoryException e) {
-      throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND, e.getMessage());
-    }
-  }
+			throw new ResourceException(Status.SUCCESS_NO_CONTENT);
+		} catch (RejectedExecutionException e) {
+			throw new ResourceException(Status.CLIENT_ERROR_CONFLICT,
+					e.getMessage());
+		} catch (NoSuchRepositoryException e) {
+			throw new ResourceException(Status.CLIENT_ERROR_NOT_FOUND,
+					e.getMessage());
+		}
+	}
 
 }

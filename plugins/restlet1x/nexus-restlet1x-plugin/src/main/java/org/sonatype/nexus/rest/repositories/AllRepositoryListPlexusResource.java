@@ -18,15 +18,12 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 
-import org.sonatype.nexus.rest.model.RepositoryListResourceResponse;
-import org.sonatype.plexus.rest.resource.PathProtectionDescriptor;
-
-import org.codehaus.enunciate.contract.jaxrs.ResourceMethodSignature;
 import org.restlet.Context;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
 import org.restlet.resource.ResourceException;
 import org.restlet.resource.Variant;
+import org.sonatype.plexus.rest.resource.PathProtectionDescriptor;
 
 /**
  * A resource list for Repository list.
@@ -36,41 +33,40 @@ import org.restlet.resource.Variant;
 @Named
 @Singleton
 @Path(AllRepositoryListPlexusResource.RESOURCE_URI)
-@Produces({"application/xml", "application/json"})
-public class AllRepositoryListPlexusResource
-    extends AbstractRepositoryPlexusResource
-{
-  public static final String RESOURCE_URI = "/all_repositories";
+@Produces({ "application/xml", "application/json" })
+public class AllRepositoryListPlexusResource extends
+		AbstractRepositoryPlexusResource {
+	public static final String RESOURCE_URI = "/all_repositories";
 
-  public AllRepositoryListPlexusResource() {
-    this.setModifiable(false);
-  }
+	public AllRepositoryListPlexusResource() {
+		this.setModifiable(false);
+	}
 
-  @Override
-  public Object getPayloadInstance() {
-    return null;
-  }
+	@Override
+	public Object getPayloadInstance() {
+		return null;
+	}
 
-  @Override
-  public String getResourceUri() {
-    return RESOURCE_URI;
-  }
+	@Override
+	public String getResourceUri() {
+		return RESOURCE_URI;
+	}
 
-  @Override
-  public PathProtectionDescriptor getResourceProtection() {
-    return new PathProtectionDescriptor(getResourceUri(), "authcBasic,perms[nexus:repositories]");
-  }
+	@Override
+	public PathProtectionDescriptor getResourceProtection() {
+		return new PathProtectionDescriptor(getResourceUri(),
+				"authcBasic,perms[nexus:repositories]");
+	}
 
-  /**
-   * Retrieve the list of all repositories in nexus, regardless if user or nexus managed.
-   */
-  @Override
-  @GET
-  @ResourceMethodSignature(output = RepositoryListResourceResponse.class)
-  public Object get(Context context, Request request, Response response, Variant variant)
-      throws ResourceException
-  {
-    return listRepositories(request, true, true);
-  }
+	/**
+	 * Retrieve the list of all repositories in nexus, regardless if user or
+	 * nexus managed.
+	 */
+	@Override
+	@GET
+	public Object get(Context context, Request request, Response response,
+			Variant variant) throws ResourceException {
+		return listRepositories(request, true, true);
+	}
 
 }

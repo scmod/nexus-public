@@ -15,48 +15,46 @@ package org.sonatype.nexus.rest;
 import javax.inject.Named;
 import javax.inject.Singleton;
 
+import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.subject.Subject;
+import org.restlet.data.Request;
 import org.sonatype.nexus.auth.ClientInfo;
 import org.sonatype.nexus.auth.ClientInfoProvider;
 import org.sonatype.sisu.goodies.common.ComponentSupport;
 
-import org.apache.shiro.SecurityUtils;
-import org.apache.shiro.subject.Subject;
-import org.restlet.data.Request;
-
 /**
- * {@link ClientInfoProvider} implementation that uses Security and Restlet frameworks to obtain informations. Note: in
- * case of indirect authentication (tokens), what will be returned as "userId" depends on the actual Realm
- * implementation used by given indirect authentication layer. So, it might be the indirect principal (the token) or
- * the
- * userId of the indirectly authenticated user. Implementation dependent.
+ * {@link ClientInfoProvider} implementation that uses Security and Restlet
+ * frameworks to obtain informations. Note: in case of indirect authentication
+ * (tokens), what will be returned as "userId" depends on the actual Realm
+ * implementation used by given indirect authentication layer. So, it might be
+ * the indirect principal (the token) or the userId of the indirectly
+ * authenticated user. Implementation dependent.
  *
  * @author cstamas
  * @since 2.1
  */
 @Named
 @Singleton
-public class RestletClientInfoProvider
-    extends ComponentSupport
-    implements ClientInfoProvider
-{
-  @Override
-  public ClientInfo getCurrentThreadClientInfo() {
-    final Subject subject = SecurityUtils.getSubject();
-    if (subject != null && subject.getPrincipal() != null) {
-      final String userId = subject.getPrincipal().toString();
+public class RestletClientInfoProvider extends ComponentSupport implements
+		ClientInfoProvider {
+	@Override
+	public ClientInfo getCurrentThreadClientInfo() {
+		final Subject subject = SecurityUtils.getSubject();
+		if (subject != null && subject.getPrincipal() != null) {
+			final String userId = subject.getPrincipal().toString();
 
-      final Request current = Request.getCurrent();
-      if (current != null) {
-        final String currentIp = RemoteIPFinder.findIP(current);
-        final String currentUa = current.getClientInfo().getAgent();
-        return new ClientInfo(userId, currentIp, currentUa);
-      }
-      else {
-        // this is not HTTP processing thread at all
-        return null;
-      }
-    }
-    // we have no Shiro subject or "anonymous" user (from Shiro perspective, null principals
-    return null;
-  }
+			final Request current = Request.getCurrent();
+			if (current != null) {
+				final String currentIp = RemoteIPFinder.findIP(current);
+				final String currentUa = current.getClientInfo().getAgent();
+				return new ClientInfo(userId, currentIp, currentUa);
+			} else {
+				// this is not HTTP processing thread at all
+				return null;
+			}
+		}
+		// we have no Shiro subject or "anonymous" user (from Shiro perspective,
+		// null principals
+		return null;
+	}
 }

@@ -24,16 +24,15 @@ import org.sonatype.nexus.restlet1x.Restlet1xPlugin;
  */
 @Named
 @Singleton
-public class Restlet1xDocumentationResourceBundle
-    extends DocumentationBundleSupport
-{
-  @Inject
-  public Restlet1xDocumentationResourceBundle(final Restlet1xPlugin plugin) {
-    super(plugin);
-  }
+public class Restlet1xDocumentationResourceBundle extends
+		DocumentationBundleSupport {
+	@Inject
+	public Restlet1xDocumentationResourceBundle(final Restlet1xPlugin plugin) {
+		super(plugin);
+	}
 
-  @Override
-  public String getDescription() {
-    return "Nexus Core API (Restlet 1.x)";
-  }
+	@Override
+	public String getDescription() {
+		return "Nexus Core API (Restlet 1.x)";
+	}
 }

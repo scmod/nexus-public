@@ -20,22 +20,23 @@ import org.sonatype.security.realms.tools.AbstractStaticSecurityResource;
 import org.sonatype.security.realms.tools.StaticSecurityResource;
 
 /**
- * A StaticSecurityResource that contributes static privileges and roles to the XML Realms.
+ * A StaticSecurityResource that contributes static privileges and roles to the
+ * XML Realms.
  *
  * @author bdemers
  */
 @Singleton
 @Typed(StaticSecurityResource.class)
 @Named("SecurityRestStaticSecurityResource")
-public class SecurityRestStaticSecurityResource
-    extends AbstractStaticSecurityResource
-    implements StaticSecurityResource
-{
-  /*
-   * (non-Javadoc)
-   * @see org.sonatype.security.realms.tools.AbstractStaticSecurityResource#getResourcePath()
-   */
-  protected String getResourcePath() {
-    return "/META-INF/security/static-security-rest.xml";
-  }
+public class SecurityRestStaticSecurityResource extends
+		AbstractStaticSecurityResource implements StaticSecurityResource {
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.sonatype.security.realms.tools.AbstractStaticSecurityResource#
+	 * getResourcePath()
+	 */
+	protected String getResourcePath() {
+		return "/META-INF/security/static-security-rest.xml";
+	}
 }

@@ -12,21 +12,20 @@
  */
 package org.sonatype.nexus.index;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
+
 import java.io.File;
 import java.io.FileInputStream;
-
-import org.sonatype.nexus.proxy.ResourceStoreRequest;
-import org.sonatype.nexus.proxy.maven.MavenHostedRepository;
-import org.sonatype.nexus.proxy.maven.packaging.ArtifactPackagingMapper;
-import org.sonatype.nexus.proxy.registry.RepositoryRegistry;
 
 import org.apache.maven.index.ArtifactInfo;
 import org.apache.maven.index.IteratorSearchResponse;
 import org.apache.maven.index.SearchType;
 import org.junit.Test;
-
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.equalTo;
+import org.sonatype.nexus.proxy.ResourceStoreRequest;
+import org.sonatype.nexus.proxy.maven.MavenHostedRepository;
+import org.sonatype.nexus.proxy.maven.packaging.ArtifactPackagingMapper;
+import org.sonatype.nexus.proxy.registry.RepositoryRegistry;
 
 /**
  * Custom packaging test.
