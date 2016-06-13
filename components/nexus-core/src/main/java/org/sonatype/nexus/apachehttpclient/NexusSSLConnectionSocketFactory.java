@@ -12,6 +12,8 @@
  */
 package org.sonatype.nexus.apachehttpclient;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
@@ -22,10 +24,6 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocket;
 import javax.net.ssl.SSLSocketFactory;
 
-import com.google.common.base.Splitter;
-import com.google.common.collect.Iterables;
-import com.google.common.io.Closeables;
-
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.HttpHost;
 import org.apache.http.conn.socket.LayeredConnectionSocketFactory;
@@ -33,8 +31,9 @@ import org.apache.http.conn.ssl.X509HostnameVerifier;
 import org.apache.http.protocol.HttpContext;
 import org.codehaus.mojo.animal_sniffer.IgnoreJRERequirement;
 
-import sun.security.ssl.SSLSocketImpl;
-import static com.google.common.base.Preconditions.checkNotNull;
+import com.google.common.base.Splitter;
+import com.google.common.collect.Iterables;
+import com.google.common.io.Closeables;
 
 /**
  * Nexus specific implementation of {@link LayeredConnectionSocketFactory}, used for HTTPS connections.

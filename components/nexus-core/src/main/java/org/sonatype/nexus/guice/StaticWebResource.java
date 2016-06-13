@@ -63,7 +63,7 @@ class StaticWebResource
       final InputStream is = urlConnection.getInputStream();
       try {
         // support for legacy int and modern long content-length
-        long size = urlConnection.getContentLengthLong();
+        long size = urlConnection.getContentLength();
         if (size == -1) {
           size = urlConnection.getContentLength();
         }

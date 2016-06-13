@@ -329,6 +329,11 @@
 			<scope>test</scope>
 		</dependency>
 
+		<dependency>
+			<groupId>org.sonatype.nexus</groupId>
+			<artifactId>jdk6-bridge</artifactId>
+			<version>2.13.0-01</version>
+		</dependency>
 	</dependencies>
 
 	<build>

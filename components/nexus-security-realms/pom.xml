@@ -64,6 +64,10 @@
       <version>1.01</version>
       <scope>test</scope>
     </dependency>
+    <dependency>
+    	<groupId>org.sonatype.nexus</groupId>
+    	<artifactId>jdk6-bridge</artifactId>
+    </dependency>
   </dependencies>
 
   <build>

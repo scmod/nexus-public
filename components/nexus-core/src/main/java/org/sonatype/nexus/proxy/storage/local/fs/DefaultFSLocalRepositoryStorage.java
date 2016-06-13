@@ -12,16 +12,17 @@
  */
 package org.sonatype.nexus.proxy.storage.local.fs;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+import static org.sonatype.nexus.proxy.ItemNotFoundException.reasonFor;
+
 import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.Closeable;
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FilterInputStream;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -32,6 +33,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
 
+import org.apache.commons.io.IOUtils;
 import org.sonatype.nexus.mime.MimeSupport;
 import org.sonatype.nexus.proxy.ItemNotFoundException;
 import org.sonatype.nexus.proxy.LocalStorageException;
@@ -52,7 +54,6 @@ import org.sonatype.nexus.proxy.item.RepositoryItemUid;
 import org.sonatype.nexus.proxy.item.StorageFileItem;
 import org.sonatype.nexus.proxy.item.StorageItem;
 import org.sonatype.nexus.proxy.item.StorageLinkItem;
-import org.sonatype.nexus.proxy.item.uid.Attribute;
 import org.sonatype.nexus.proxy.item.uid.IsItemAttributeMetacontentAttribute;
 import org.sonatype.nexus.proxy.repository.Repository;
 import org.sonatype.nexus.proxy.storage.UnsupportedStorageOperationException;
@@ -66,10 +67,6 @@ import org.sonatype.nexus.util.file.DirSupport;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Strings;
 import com.google.common.base.Throwables;
-import org.apache.commons.io.IOUtils;
-
-import static com.google.common.base.Preconditions.checkNotNull;
-import static org.sonatype.nexus.proxy.ItemNotFoundException.reasonFor;
 
 /**
  * LocalRepositoryStorage that uses plain File System (relies on {@link File}) to implement it's functionality.
@@ -163,8 +160,8 @@ public class DefaultFSLocalRepositoryStorage
     // FIXME: This check would be more appropriate in FSPeer impl?
 
     // normalize file path references to remove any relative tokens
-    Path basePath = baseDir.toAbsolutePath().normalize();
-    Path filePath = file.toAbsolutePath().normalize();
+    String basePath = baseDir.getAbsolutePath();
+    String filePath = file.getAbsolutePath();
     log.trace("Resolve request path '{}' to file: '{}'", requestPath, filePath);
 
     // ensure file is a child of repository base directory

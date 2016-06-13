@@ -14,9 +14,8 @@ package org.sonatype.nexus.bootstrap;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.FileAlreadyExistsException;
-import java.nio.file.Files;
-import java.nio.file.Path;
+
+import org.codehaus.plexus.util.FileUtils;
 
 /**
  * Helper to ensure temporary directory is sane.
@@ -32,23 +31,13 @@ public class TemporaryDirectory
   public static File get() throws IOException {
     String location = System.getProperty(PROPERTY, "tmp");
     File dir = new File(location).getCanonicalFile();
-    mkdir(dir);
+    if(!dir.mkdirs())
+    	throw new IOException("TemporaryDirectory mkdirs failed");
 
     // ensure we can create temporary files in this directory
-    Path file = Files.createTempFile("nexus-tmpdir", ".tmp");
-    Files.delete(file);
+    File file = FileUtils.createTempFile("nexus-tmpdir", ".tmp", dir);
+    FileUtils.forceDelete(file);;
     return dir;
   }
 
-  private static void mkdir(final File dir) throws IOException {
-    try {
-      Files.createDirectories(dir);
-    }
-    catch (FileAlreadyExistsException e) {
-      // handle symlink case
-      if (!Files.isDirectory(dir)) {
-        throw new IOException("Unable to create java.io.tmpdir: " + dir, e);
-      }
-    }
-  }
 }

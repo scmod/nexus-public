@@ -12,21 +12,21 @@
  */
 package org.sonatype.security.configuration.source;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.file.FileAlreadyExistsException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.attribute.FileAttribute;
 
 import javax.enterprise.inject.Typed;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
 
+import org.apache.commons.io.FileUtils;
+import org.codehaus.plexus.util.StringUtils;
 import org.sonatype.configuration.ConfigurationException;
 import org.sonatype.plexus.components.cipher.PlexusCipherException;
 import org.sonatype.security.configuration.model.SecurityConfiguration;
@@ -35,10 +35,9 @@ import org.sonatype.security.configuration.upgrade.SecurityConfigurationUpgrader
 import org.sonatype.sisu.goodies.common.io.FileReplacer;
 import org.sonatype.sisu.goodies.common.io.FileReplacer.ContentWriter;
 
-import org.apache.commons.io.FileUtils;
-import org.codehaus.plexus.util.StringUtils;
-
-import static com.google.common.base.Preconditions.checkNotNull;
+import util.FileAlreadyExistsException;
+import util.Files;
+import cucumber.deps.com.thoughtworks.xstream.io.path.Path;
 
 /**
  * The default configuration source powered by Modello. It will try to load configuration, upgrade if needed and
@@ -231,7 +230,7 @@ public class FileSecurityConfigurationSource
    * {@link Files#createDirectories(Path, FileAttribute[])} method, this method does support paths having last
    * path element a symlink too. In this case, it's verified that symlink points to a directory and is readable.
    */
-  private static void mkdir(final Path dir) throws IOException {
+  private static void mkdir(final File dir) throws IOException {
     try {
       Files.createDirectories(dir);
     }

@@ -13,8 +13,10 @@
 package org.sonatype.nexus.util.io;
 
 import java.io.Closeable;
-import java.util.Collections;
 import java.util.Iterator;
+
+import lang.AutoCloseable;
+import util.Collections;
 
 /**
  * {@link AutoCloseable} {@link Iterable}.

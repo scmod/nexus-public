@@ -137,13 +137,13 @@
     Include buildsupport first, order seems chaotic otherwise
     -->
     <module>buildsupport</module>
+    <module>jdk6-bridge</module>
 
     <module>testsupport</module>
     <module>components</module>
     <module>plugins</module>
 <!--     <module>assemblies</module> -->
     <module>testsuite</module>
-    <module>jdk6-bridge</module>
   </modules>
 
   <dependencyManagement>
@@ -311,6 +311,13 @@
       <dependency>
         <groupId>org.sonatype.nexus</groupId>
         <artifactId>nexus-testsuite-support</artifactId>
+        <version>2.13.0-01</version>
+      </dependency>
+      
+      <!-- jdk6 bridge -->
+      <dependency>
+        <groupId>org.sonatype.nexus</groupId>
+        <artifactId>jdk6-bridge</artifactId>
         <version>2.13.0-01</version>
       </dependency>
 
@@ -664,10 +671,10 @@
                 </requireMavenVersion>
 
                 <!--
-                Require Java 7+
+                Require Java 6+
                 -->
                 <requireJavaVersion>
-                  <version>[1.7,)</version>
+                  <version>[1.6,)</version>
                 </requireJavaVersion>
               </rules>
             </configuration>

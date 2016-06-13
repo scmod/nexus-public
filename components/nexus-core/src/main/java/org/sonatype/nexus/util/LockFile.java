@@ -21,7 +21,10 @@ import java.nio.channels.FileLock;
 import java.nio.channels.OverlappingFileLockException;
 import java.nio.charset.Charset;
 
+import lang.AutoCloseable;
+
 import com.google.common.base.Preconditions;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -121,8 +124,18 @@ public class LockFile
    */
   public synchronized void release() {
     close(fileLock);
+    if(fileLock != null)
+    	try {
+			fileLock.release();
+		} catch (Exception e) {
+		}
     fileLock = null;
-    close(randomAccessFile);
+    if(randomAccessFile != null) {
+    	try {
+			randomAccessFile.close();
+		} catch (IOException e) {
+		}
+    }
     randomAccessFile = null;
   }
 
@@ -141,10 +154,10 @@ public class LockFile
 
   // ==
 
-  private void close(AutoCloseable closeable) {
+  private void close(FileLock closeable) {
     if (closeable != null) {
       try {
-        closeable.close();
+        closeable.release();
       }
       catch (Exception e) {
         // muted

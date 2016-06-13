@@ -14,16 +14,12 @@ package org.sonatype.nexus.proxy.wastebasket;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.FileVisitResult;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.SimpleFileVisitor;
-import java.nio.file.attribute.BasicFileAttributes;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
 
+import org.codehaus.plexus.util.FileUtils;
 import org.sonatype.nexus.configuration.application.ApplicationConfiguration;
 import org.sonatype.nexus.proxy.ItemNotFoundException;
 import org.sonatype.nexus.proxy.LocalStorageException;
@@ -155,28 +151,7 @@ public class DefaultWastebasket
     // check for existence, is this needed at all?
     if (basketFile.isDirectory()) {
       final long limitDate = System.currentTimeMillis() - age;
-      Files.walkFileTree(basketFile, new SimpleFileVisitor<Path>()
-      {
-        @Override
-        public FileVisitResult visitFile(Path file, BasicFileAttributes attrs)
-            throws IOException
-        {
-          if (age == ALL || file.toFile().lastModified() < limitDate) {
-            Files.delete(file);
-          }
-          return FileVisitResult.CONTINUE;
-        }
-
-        @Override
-        public FileVisitResult postVisitDirectory(Path dir, IOException exc)
-            throws IOException
-        {
-          if (!basketFile.equals(dir.toFile()) && dir.toFile().list().length == 0) {
-            Files.delete(dir);
-          }
-          return FileVisitResult.CONTINUE;
-        }
-      });
+      FileUtils.deleteDirectory(basketFile);
     }
   }
 
