@@ -37,7 +37,6 @@ import org.sonatype.sisu.goodies.common.io.FileReplacer.ContentWriter;
 
 import util.FileAlreadyExistsException;
 import util.Files;
-import cucumber.deps.com.thoughtworks.xstream.io.path.Path;
 
 /**
  * The default configuration source powered by Modello. It will try to load configuration, upgrade if needed and

@@ -33,7 +33,6 @@ import org.codehaus.mojo.animal_sniffer.IgnoreJRERequirement;
 
 import com.google.common.base.Splitter;
 import com.google.common.collect.Iterables;
-import com.google.common.io.Closeables;
 
 /**
  * Nexus specific implementation of {@link LayeredConnectionSocketFactory}, used for HTTPS connections.
@@ -84,7 +83,8 @@ public class NexusSSLConnectionSocketFactory
       hostnameVerifier.verify(hostname, sslsock);
     }
     catch (final IOException e) {
-      Closeables.close(sslsock, true);
+    	if(sslsock != null)
+    		sslsock.close();
       throw e;
     }
   }
@@ -111,9 +111,9 @@ public class NexusSSLConnectionSocketFactory
     // Some CDN solutions requires this for HTTPS, as they choose certificate
     // to use based on "expected" hostname that is being passed here below
     // and is used during SSL handshake. Requires Java7+
-    if (sock instanceof SSLSocketImpl) {
-      ((SSLSocketImpl) sock).setHost(host.getHostName());
-    }
+//    if (sock instanceof SSLSocketImpl) {
+//      ((SSLSocketImpl) sock).setHost(host.getHostName());
+//    }
     try {
       if (connectTimeout > 0 && sock.getSoTimeout() == 0) {
         sock.setSoTimeout(connectTimeout);
@@ -121,7 +121,8 @@ public class NexusSSLConnectionSocketFactory
       sock.connect(remoteAddress, connectTimeout);
     }
     catch (final IOException e) {
-      Closeables.close(sock, true);
+      if(sock != null)
+    	  sock.close();
       throw e;
     }
     // Setup SSL layering if necessary

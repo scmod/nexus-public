@@ -12,6 +12,8 @@
  */
 package org.sonatype.nexus.configuration;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -24,23 +26,20 @@ import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.Writer;
 import java.nio.charset.Charset;
-import java.nio.file.Files;
-import java.nio.file.NoSuchFileException;
-import java.nio.file.StandardCopyOption;
 import java.util.Map;
-import java.util.Objects;
 
+import org.slf4j.Logger;
 import org.sonatype.nexus.util.file.DirSupport;
 import org.sonatype.sisu.goodies.common.Loggers;
 import org.sonatype.sisu.goodies.common.io.FileReplacer;
 import org.sonatype.sisu.goodies.common.io.FileReplacer.ContentWriter;
 
+import util.Files;
+import util.Objects;
+
 import com.google.common.base.Charsets;
 import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
-import org.slf4j.Logger;
-
-import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Generic "model" utility to handle model IO independent of what technology is used for persisting POJOs to model
@@ -241,9 +240,16 @@ public class ModelUtils
 
     @Override
     public void write(final BufferedOutputStream output) throws IOException {
-      try (final InputStream input = new BufferedInputStream(Files.newInputStream(file.toPath()))) {
+      final InputStream input = new BufferedInputStream(Files.newInputStream(file));
+      try {
         modelUpgrader.upgrade(input, output);
-      }
+      } finally {
+    	try {
+    		if(input != null)
+    			input.close();
+		} catch (Exception e) {
+		}
+    }
     }
   }
 
@@ -284,8 +290,15 @@ public class ModelUtils
     try {
       if (reader instanceof Versioned) {
         final String originalFileVersion;
-        try (final InputStream input = new BufferedInputStream(Files.newInputStream(file.toPath()))) {
+        final InputStream input = new BufferedInputStream(Files.newInputStream(file));
+        try {
           originalFileVersion = ((Versioned) reader).readVersion(input);
+        } finally {
+        	try {
+        		if(input != null)
+        			input.close();
+    		} catch (Exception e) {
+    		}
         }
 
         if (Strings.isNullOrEmpty(originalFileVersion)) {
@@ -303,8 +316,7 @@ public class ModelUtils
           fileReplacer.setDeleteBackupFile(true);
           ModelUpgrader upgrader = upgradersMap.get(currentFileVersion);
           // backup old version
-          Files.copy(file.toPath(), new File(file.getParentFile(), file.getName() + ".old").toPath(),
-              StandardCopyOption.REPLACE_EXISTING);
+          Files.copy(file, new File(file.getParentFile(), file.getName() + ".old"));
           while (upgrader != null && !Objects.equals(currentModelVersion, currentFileVersion)) {
             try {
               fileReplacer.replace(new ModelUpgraderAdapter(file, upgrader));
@@ -336,14 +348,21 @@ public class ModelUtils
           }
         }
       }
-
-      try (final InputStream input = new BufferedInputStream(Files.newInputStream(file.toPath()))) {
+      
+	final InputStream input = new BufferedInputStream(Files.newInputStream(file));
+      try {
         E model = reader.read(input);
         // model.setVersion(currentModelVersion);
         return model;
-      }
+      } finally {
+    	try {
+    		if(input != null)
+    			input.close();
+		} catch (Exception e) {
+		}
     }
-    catch (NoSuchFileException e) {
+    }
+    catch (Exception e) {
       // TODO: "translate" to old FileNotFoundEx as we have existing code relying on this exception
       // Having the new NoSuchFileEx does not buy us much, as two classes are almost identical
       final FileNotFoundException fnf = new FileNotFoundException(e.getMessage());
@@ -367,7 +386,7 @@ public class ModelUtils
     checkNotNull(file, "File");
     checkNotNull(writer, "ModelWriter");
     log.info("Saving model {}", file.getAbsoluteFile());
-    DirSupport.mkdir(file.getParentFile().toPath());
+    DirSupport.mkdir(file.getParentFile());
     final File backupFile = new File(file.getParentFile(), file.getName() + ".bak");
     final FileReplacer fileReplacer = new FileReplacer(file);
     fileReplacer.setDeleteBackupFile(false);
@@ -379,9 +398,9 @@ public class ModelUtils
         output.flush();
       }
     });
-    if (Files.exists(fileReplacer.getBackupFile().toPath())) {
-      Files.copy(fileReplacer.getBackupFile().toPath(), backupFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
-      Files.delete(fileReplacer.getBackupFile().toPath());
+    if (Files.exists(fileReplacer.getBackupFile())) {
+      Files.copy(fileReplacer.getBackupFile(), backupFile);
+      Files.delete(fileReplacer.getBackupFile());
     }
   }
 }
