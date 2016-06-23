@@ -50,6 +50,7 @@ import org.sonatype.nexus.configuration.ConfigurationSaveEvent;
 import org.sonatype.nexus.configuration.application.runtime.ApplicationRuntimeConfigurationBuilder;
 import org.sonatype.nexus.configuration.model.CPathMappingItem;
 import org.sonatype.nexus.configuration.model.CRepository;
+import org.sonatype.nexus.configuration.model.CRepositoryGrouping;
 import org.sonatype.nexus.configuration.model.Configuration;
 import org.sonatype.nexus.configuration.source.ApplicationConfigurationSource;
 import org.sonatype.nexus.configuration.validator.ApplicationConfigurationValidator;
@@ -901,13 +902,16 @@ public class DefaultNexusConfiguration
     // ===========
     // pahMappings
     // (correction, since registry is completely unaware of this component)
-
-    List<CPathMappingItem> pathMappings = getConfigurationModel().getRepositoryGrouping().getPathMappings();
-
-    for (Iterator<CPathMappingItem> i = pathMappings.iterator(); i.hasNext(); ) {
-      CPathMappingItem item = i.next();
-
-      item.removeRepository(id);
+    
+    CRepositoryGrouping crg = getConfigurationModel().getRepositoryGrouping();
+    if(crg != null) {
+	    List<CPathMappingItem> pathMappings = crg.getPathMappings();
+	
+	    for (Iterator<CPathMappingItem> i = pathMappings.iterator(); i.hasNext(); ) {
+	      CPathMappingItem item = i.next();
+	
+	      item.removeRepository(id);
+	    }
     }
 
     // ===========
