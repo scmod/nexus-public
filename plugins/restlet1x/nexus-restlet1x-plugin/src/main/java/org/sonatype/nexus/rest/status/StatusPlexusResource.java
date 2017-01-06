@@ -35,10 +35,9 @@ import org.sonatype.nexus.rest.model.NexusAuthenticationClientPermissions;
 import org.sonatype.nexus.rest.model.StatusResource;
 import org.sonatype.nexus.rest.model.StatusResourceResponse;
 import org.sonatype.nexus.web.BaseUrlHolder;
+import org.sonatype.plexus.rest.resource.AbstractPlexusResource;
 import org.sonatype.plexus.rest.resource.ManagedPlexusResource;
 import org.sonatype.plexus.rest.resource.PathProtectionDescriptor;
-import org.sonatype.security.rest.authentication.AbstractUIPermissionCalculatingPlexusResource;
-import org.sonatype.security.rest.model.AuthenticationClientPermissions;
 
 @Named("StatusPlexusResource")
 @Singleton
@@ -46,7 +45,7 @@ import org.sonatype.security.rest.model.AuthenticationClientPermissions;
 @Path(StatusPlexusResource.RESOURCE_URI)
 @Produces({ "application/xml", "application/json" })
 public class StatusPlexusResource extends
-		AbstractUIPermissionCalculatingPlexusResource implements
+		AbstractPlexusResource implements
 		ManagedPlexusResource {
 	public static final String RESOURCE_URI = "/status";
 
@@ -171,26 +170,7 @@ public class StatusPlexusResource extends
 
 	private NexusAuthenticationClientPermissions getClientPermissions(
 			Request request) throws ResourceException {
-		AuthenticationClientPermissions originalClientPermissions = getClientPermissionsForCurrentUser(request);
-
-		// TODO: this is a modello work around,
-		// the SystemStatus could not include a field of type
-		// AuthenticationClientPermissions
-		// because it is in a different model, but I can extend that class...
-		// and include it.
-
-		NexusAuthenticationClientPermissions clientPermissions = new NexusAuthenticationClientPermissions();
-		clientPermissions.setLoggedIn(originalClientPermissions.isLoggedIn());
-		clientPermissions.setLoggedInUsername(originalClientPermissions
-				.getLoggedInUsername());
-		clientPermissions.setLoggedInUserSource(originalClientPermissions
-				.getLoggedInUserSource());
-		clientPermissions.setLoggedInUserSource(originalClientPermissions
-				.getLoggedInUserSource());
-		clientPermissions.setPermissions(originalClientPermissions
-				.getPermissions());
-
-		return clientPermissions;
+		return null;
 	}
 
 	private String spit(Throwable t) {

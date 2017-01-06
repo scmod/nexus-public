@@ -12,6 +12,8 @@
  */
 package org.sonatype.nexus.proxy.maven.routing.internal;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -70,8 +72,6 @@ import org.sonatype.nexus.proxy.repository.ProxyMode;
 import org.sonatype.nexus.proxy.repository.Repository;
 import org.sonatype.nexus.proxy.repository.ShadowRepository;
 import org.sonatype.nexus.proxy.utils.RepositoryStringUtils;
-import org.sonatype.nexus.threads.FakeAlmightySubject;
-import org.sonatype.nexus.threads.NexusScheduledExecutorService;
 import org.sonatype.nexus.threads.NexusThreadFactory;
 import org.sonatype.sisu.goodies.common.ComponentSupport;
 import org.sonatype.sisu.goodies.common.SimpleFormat;
@@ -83,8 +83,6 @@ import com.google.common.base.Throwables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.google.common.eventbus.Subscribe;
-
-import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Default implementation.
@@ -145,7 +143,7 @@ public class ManagerImpl
    * when repository is added). But, as background threads are bounded by presence of proxy repositories, and
    * introduce hard limit of possible max executions, it protects this instance that is basically unbounded.
    */
-  private final NexusScheduledExecutorService executor;
+  private final ScheduledThreadPoolExecutor executor;
 
   /**
    * Executor used to execute update jobs. It is constrained in a way that no two update jobs will run against one
@@ -175,7 +173,8 @@ public class ManagerImpl
     final ScheduledThreadPoolExecutor target =
         new ScheduledThreadPoolExecutor(5, new NexusThreadFactory("ar", "AR-Updater"),
             new ThreadPoolExecutor.AbortPolicy());
-    this.executor = NexusScheduledExecutorService.forFixedSubject(target, FakeAlmightySubject.TASK_SUBJECT);
+    
+    this.executor = new ScheduledThreadPoolExecutor(10);
     this.constrainedExecutor = new ConstrainedExecutorImpl(executor);
     // register event dispatcher
     this.eventDispatcher = new EventDispatcher(this);

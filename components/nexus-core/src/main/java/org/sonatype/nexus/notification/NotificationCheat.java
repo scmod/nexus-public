@@ -24,5 +24,6 @@ public class NotificationCheat
 {
   public static final String AUTO_BLOCK_NOTIFICATION_GROUP_ID = "autoBlockTarget";
 
-  protected static final String CARRIER_KEY = EmailCarrier.KEY;
+  //SEC : email模块也跟security相关..
+  protected static final String CARRIER_KEY = "email";
 }

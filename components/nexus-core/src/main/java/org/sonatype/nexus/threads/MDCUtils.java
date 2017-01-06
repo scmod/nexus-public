@@ -14,10 +14,9 @@ package org.sonatype.nexus.threads;
 
 import java.util.Map;
 
-import org.sonatype.security.internal.UserIdMdcHelper;
+import org.slf4j.MDC;
 
 import com.google.common.collect.Maps;
-import org.slf4j.MDC;
 
 /**
  * Simple helper class to manipulate MDC.
@@ -46,11 +45,9 @@ public class MDCUtils
   public static void setContextMap(Map<String, String> context) {
     if (context != null) {
       MDC.setContextMap(context);
-      UserIdMdcHelper.setIfNeeded();
     }
     else {
       MDC.clear();
-      UserIdMdcHelper.set();
     }
   }
 }

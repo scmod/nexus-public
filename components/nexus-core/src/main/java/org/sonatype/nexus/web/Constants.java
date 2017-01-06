@@ -18,8 +18,6 @@ import org.sonatype.nexus.proxy.AccessDeniedException;
 import org.sonatype.nexus.proxy.RequestContext;
 import org.sonatype.nexus.proxy.router.RepositoryRouter;
 
-import org.apache.shiro.subject.Subject;
-
 /**
  * Common HTTP attribute and parameter keys, used to communicate between filters and servlets and similar.
  *

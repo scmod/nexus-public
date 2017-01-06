@@ -150,8 +150,6 @@
         <memberRepositories>
           <memberRepository>releases</memberRepository>
           <memberRepository>snapshots</memberRepository>
-          <memberRepository>thirdparty</memberRepository>
-          <memberRepository>central</memberRepository>
         </memberRepositories>
       </externalConfiguration>
     </repository>

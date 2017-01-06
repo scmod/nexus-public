@@ -19,8 +19,9 @@ import java.util.Map;
 
 import javax.servlet.ServletContext;
 
-import org.apache.shiro.guice.aop.ShiroAopModule;
-import org.apache.shiro.web.filter.mgt.FilterChainResolver;
+
+//import org.apache.shiro.guice.aop.ShiroAopModule;
+//import org.apache.shiro.web.filter.mgt.FilterChainResolver;
 import org.eclipse.sisu.inject.DefaultRankingFunction;
 import org.eclipse.sisu.inject.RankingFunction;
 import org.eclipse.sisu.wire.ParameterKeys;
@@ -31,11 +32,13 @@ import org.sonatype.nexus.web.internal.BaseUrlHolderFilter;
 import org.sonatype.nexus.web.internal.CommonHeadersFilter;
 import org.sonatype.nexus.web.internal.ErrorPageFilter;
 import org.sonatype.nexus.web.internal.ErrorPageServlet;
-import org.sonatype.security.SecuritySystem;
-import org.sonatype.security.web.guice.SecurityWebModule;
+//import org.sonatype.security.SecuritySystem;
+//import org.sonatype.security.web.guice.SecurityWebModule;
+
 
 import com.google.inject.AbstractModule;
 import com.google.inject.name.Names;
+//import com.google.inject.servlet.ServletModule;
 import com.google.inject.servlet.ServletModule;
 
 /**
@@ -53,7 +56,8 @@ public class NexusModules
   {
     @Override
     protected void configure() {
-      install(new ShiroAopModule());
+    	//SEC : install(new ShiroAopModule());
+//      install(new ShiroAopModule());
     }
   }
 
@@ -99,7 +103,8 @@ public class NexusModules
         }
       });
 
-      install(new SecurityWebModule(servletContext, true));
+      //SEC : install(new SecurityWebModule(servletContext, true));
+//      install(new SecurityWebModule(servletContext, true));
 
       // HACK: Disable CSRFGuard support for now, its too problematic
       //install(new CsrfGuardModule());
@@ -118,8 +123,9 @@ public class NexusModules
 
       // handle some edge-cases for commonly used servlet-based components which need a bit more configuration
       // so that sisu/guice can find the correct bindings inside of plugins
-      requireBinding(SecuritySystem.class);
-      requireBinding(FilterChainResolver.class);
+      //SEC : requireBinding * 2
+//      requireBinding(SecuritySystem.class);
+//      requireBinding(FilterChainResolver.class);
       requireBinding(TemplateRenderer.class);
 
       // eagerly initialize list of static web resources as soon as plugin starts (rather than on first request)

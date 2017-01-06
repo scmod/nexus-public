@@ -15,8 +15,8 @@ package org.sonatype.nexus.plugins.siesta;
 import javax.inject.Named;
 import javax.inject.Singleton;
 
-import org.sonatype.nexus.guice.FilterChainModule;
-import org.sonatype.nexus.web.internal.SecurityFilter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.sonatype.sisu.siesta.common.Resource;
 import org.sonatype.sisu.siesta.jackson.SiestaJacksonModule;
 import org.sonatype.sisu.siesta.server.internal.ComponentDiscoveryApplication;
@@ -27,8 +27,6 @@ import org.sonatype.sisu.siesta.server.internal.jersey.SiestaJerseyModule;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.servlet.ServletModule;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Siesta plugin module.
@@ -81,21 +79,8 @@ public class SiestaModule
       @Override
       protected void configureServlets() {
         serve(MOUNT_POINT + "/*").with(SiestaServlet.class);
-        filter(MOUNT_POINT + "/*").through(SecurityFilter.class);
       }
     });
 
-    install(new FilterChainModule()
-    {
-      @Override
-      protected void configure() {
-        addFilterChain(MOUNT_POINT + "/**",
-            // HACK: Disable CSRFGuard support for now, its too problematic
-            //"noSessionCreation,authcBasic,csrfToken"
-            "noSessionCreation,authcBasic"
-        );
-      }
-
-    });
   }
 }

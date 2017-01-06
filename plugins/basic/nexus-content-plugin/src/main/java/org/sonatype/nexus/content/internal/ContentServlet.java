@@ -43,8 +43,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.shiro.SecurityUtils;
-import org.apache.shiro.subject.Subject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sonatype.nexus.configuration.application.NexusConfiguration;
@@ -177,10 +175,11 @@ public class ContentServlet
     result.getRequestContext().put(STOPWATCH_KEY, new Stopwatch().start());
 
     // stuff in the user id if we have it in request
-    final Subject subject = SecurityUtils.getSubject();
-    if (subject != null && subject.getPrincipal() != null) {
-      result.getRequestContext().put(AccessManager.REQUEST_USER, subject.getPrincipal().toString());
-    }
+    //SEC:
+//    final Subject subject = SecurityUtils.getSubject();
+//    if (subject != null && subject.getPrincipal() != null) {
+//      result.getRequestContext().put(AccessManager.REQUEST_USER, subject.getPrincipal().toString());
+//    }
     result.getRequestContext().put(AccessManager.REQUEST_AGENT, request.getHeader("user-agent"));
 
     // honor the localOnly, remoteOnly and asExpired (but remoteOnly and asExpired only for non-anon users)
@@ -352,7 +351,7 @@ public class ContentServlet
   {
     response.setHeader("Accept-Ranges", "bytes");
 
-    final String method = request.getMethod();
+    final String method = request.getMethod().toUpperCase();
     //hashCode不好用...用if else好了...
     if("GET".equals(method) || "HEAD".equals(method))
     	doGet(request, response);

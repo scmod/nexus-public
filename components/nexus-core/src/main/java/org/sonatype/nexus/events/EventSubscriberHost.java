@@ -12,7 +12,11 @@
  */
 package org.sonatype.nexus.events;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.ThreadPoolExecutor.CallerRunsPolicy;
@@ -23,7 +27,6 @@ import javax.inject.Named;
 import javax.inject.Provider;
 import javax.inject.Singleton;
 
-import org.sonatype.nexus.threads.NexusExecutorService;
 import org.sonatype.nexus.threads.NexusThreadFactory;
 import org.sonatype.nexus.util.SystemPropertiesHelper;
 import org.sonatype.sisu.goodies.common.ComponentSupport;
@@ -32,8 +35,6 @@ import org.sonatype.sisu.goodies.eventbus.EventBus;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.eventbus.AllowConcurrentEvents;
 import com.google.common.eventbus.Subscribe;
-
-import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * A default host for {@link EventSubscriber}. This is an internal Nexus component and should not be used in
@@ -53,7 +54,7 @@ public class EventSubscriberHost
 
   private final List<Provider<EventSubscriber>> eventSubscriberProviders;
 
-  private final NexusExecutorService hostThreadPool;
+  private final ExecutorService hostThreadPool = Executors.newFixedThreadPool(10);
 
   private final com.google.common.eventbus.AsyncEventBus asyncBus;
 
@@ -66,7 +67,6 @@ public class EventSubscriberHost
     final ThreadPoolExecutor target =
         new ThreadPoolExecutor(0, HOST_THREAD_POOL_SIZE, 60L, TimeUnit.SECONDS, new SynchronousQueue<Runnable>(),
             new NexusThreadFactory("esh", "Event Subscriber Host"), new CallerRunsPolicy());
-    this.hostThreadPool = NexusExecutorService.forCurrentSubject(target);
     this.asyncBus = new com.google.common.eventbus.AsyncEventBus("esh-async", hostThreadPool);
 
     eventBus.register(this);
@@ -138,8 +138,7 @@ public class EventSubscriberHost
   @VisibleForTesting
   public boolean isCalmPeriod() {
     // "calm period" is when we have no queued nor active threads
-    return ((ThreadPoolExecutor) hostThreadPool.getTargetExecutorService()).getQueue().isEmpty()
-        && ((ThreadPoolExecutor) hostThreadPool.getTargetExecutorService()).getActiveCount() == 0;
+    return false;
   }
 
   @Subscribe

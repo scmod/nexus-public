@@ -20,12 +20,9 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 
-import org.apache.shiro.subject.Subject;
-import org.apache.shiro.util.ThreadContext;
 import org.restlet.Context;
 import org.restlet.data.Request;
 import org.restlet.data.Response;
-import org.restlet.data.Status;
 import org.restlet.resource.ResourceException;
 import org.restlet.resource.Variant;
 import org.sonatype.nexus.proxy.maven.MavenRepository;
@@ -81,16 +78,17 @@ public class RepositoryStatusesListPlexusResource extends
 	@GET
 	public Object get(Context context, Request request, Response response,
 			Variant variant) throws ResourceException {
-		if (adminOnly) {
-			Subject subject = ThreadContext.getSubject();
-			// skip building reply unless user has admin access (ie. can update
-			// status)
-			if (subject == null
-					|| !subject.isPermitted("nexus:repostatus:update")) {
-				response.setStatus(Status.SUCCESS_NO_CONTENT);
-				return null;
-			}
-		}
+		//SEC :
+//		if (adminOnly) {
+//			Subject subject = ThreadContext.getSubject();
+//			// skip building reply unless user has admin access (ie. can update
+//			// status)
+//			if (subject == null
+//					|| !subject.isPermitted("nexus:repostatus:update")) {
+//				response.setStatus(Status.SUCCESS_NO_CONTENT);
+//				return null;
+//			}
+//		}
 
 		RepositoryStatusListResourceResponse result = new RepositoryStatusListResourceResponse();
 

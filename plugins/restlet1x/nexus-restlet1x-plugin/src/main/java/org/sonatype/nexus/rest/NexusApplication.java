@@ -16,7 +16,6 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
 
-import org.apache.shiro.util.AntPathMatcher;
 import org.restlet.Restlet;
 import org.restlet.Router;
 import org.restlet.service.StatusService;
@@ -27,9 +26,7 @@ import org.sonatype.nexus.proxy.events.NexusStoppedEvent;
 import org.sonatype.plexus.rest.PlexusRestletApplicationBridge;
 import org.sonatype.plexus.rest.RetargetableRestlet;
 import org.sonatype.plexus.rest.resource.ManagedPlexusResource;
-import org.sonatype.plexus.rest.resource.PathProtectionDescriptor;
 import org.sonatype.plexus.rest.resource.PlexusResource;
-import org.sonatype.security.web.ProtectedPathManager;
 import org.sonatype.sisu.goodies.eventbus.EventBus;
 
 import com.google.common.annotations.VisibleForTesting;
@@ -44,8 +41,6 @@ import com.thoughtworks.xstream.XStream;
 public class NexusApplication extends PlexusRestletApplicationBridge {
 	private final EventBus eventBus;
 
-	private final ProtectedPathManager protectedPathManager;
-
 	private final ManagedPlexusResource statusPlexusResource;
 
 	private final StatusService statusService;
@@ -55,11 +50,9 @@ public class NexusApplication extends PlexusRestletApplicationBridge {
 	@Inject
 	public NexusApplication(
 			final EventBus eventBus,
-			final ProtectedPathManager protectedPathManager,
 			final @Named("StatusPlexusResource") ManagedPlexusResource statusPlexusResource,
 			final StatusService statusService) {
 		this.eventBus = eventBus;
-		this.protectedPathManager = protectedPathManager;
 		this.statusPlexusResource = statusPlexusResource;
 		this.statusService = statusService;
 		useStrictChecking = System.getProperty(
@@ -71,7 +64,7 @@ public class NexusApplication extends PlexusRestletApplicationBridge {
 	// HACK: Too many places were using new NexusApplication() ... fuck it
 	@VisibleForTesting
 	public NexusApplication() {
-		this(null, null, null, null);
+		this(null, null, null);
 	}
 
 	@Subscribe
@@ -122,57 +115,12 @@ public class NexusApplication extends PlexusRestletApplicationBridge {
 
 		attach(getApplicationRouter(), statusPlexusResource);
 
-		// protecting service resources with "wall" permission
-		this.protectedPathManager
-				.addProtectedResource("/service/local/**",
-				// HACK: Disable CSRFGuard support for now, its too problematic
-				// "noSessionCreation,authcBasic,csrfToken,perms[nexus:permToCatchAllUnprotecteds]"
-						"noSessionCreation,authcBasic,perms[nexus:permToCatchAllUnprotecteds]");
 	}
 
 	@Override
 	protected void attach(Router router, boolean strict, String uriPattern,
 			Restlet target) {
 		super.attach(router, useStrictChecking && strict, uriPattern, target);
-	}
-
-	private final AntPathMatcher shiroAntPathMatcher = new AntPathMatcher();
-
-	@Override
-	protected void handlePlexusResourceSecurity(PlexusResource resource) {
-		PathProtectionDescriptor descriptor = resource.getResourceProtection();
-		if (descriptor == null) {
-			return;
-		}
-
-		// sanity check: path protection descriptor path and resource URI must
-		// align
-		if (!shiroAntPathMatcher.match(descriptor.getPathPattern(),
-				resource.getResourceUri())) {
-			throw new IllegalStateException(
-					String.format(
-							"Plexus resource %s would attach to URI=%s but protect path=%s that does not matches URI!",
-							resource.getClass().getName(),
-							resource.getResourceUri(),
-							descriptor.getPathPattern()));
-		}
-
-		String filterExpression = descriptor.getFilterExpression();
-		if (filterExpression != null
-				&& !filterExpression.contains("authcNxBasic")) {
-			// don't create session unless the user logs in from the UI
-			filterExpression = "noSessionCreation," + filterExpression;
-		}
-
-		// HACK: Disable CSRFGuard support for now, its too problematic
-		// if (filterExpression != null
-		// && (filterExpression.contains("authcBasic") ||
-		// filterExpression.contains("authcNxBasic"))) {
-		// filterExpression += ",csrfToken";
-		// }
-
-		this.protectedPathManager.addProtectedResource("/service/local"
-				+ descriptor.getPathPattern(), filterExpression);
 	}
 
 	@Override
