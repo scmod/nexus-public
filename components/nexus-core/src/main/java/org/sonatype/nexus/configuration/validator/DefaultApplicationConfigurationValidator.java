@@ -20,6 +20,7 @@ import java.util.regex.PatternSyntaxException;
 import javax.inject.Named;
 import javax.inject.Singleton;
 
+import org.codehaus.plexus.util.StringUtils;
 import org.sonatype.configuration.validation.ValidationMessage;
 import org.sonatype.configuration.validation.ValidationRequest;
 import org.sonatype.configuration.validation.ValidationResponse;
@@ -41,8 +42,6 @@ import org.sonatype.nexus.configuration.model.CScheduledTask;
 import org.sonatype.nexus.configuration.model.CSmtpConfiguration;
 import org.sonatype.nexus.configuration.model.Configuration;
 import org.sonatype.nexus.proxy.repository.LocalStatus;
-
-import org.codehaus.plexus.util.StringUtils;
 
 /**
  * The default configuration validator provider. It checks the model for semantical validity.
@@ -168,8 +167,6 @@ public class DefaultApplicationConfigurationValidator
         response.append(validateScheduledTask(context, task));
       }
     }
-
-    response.append(validateSmtpConfiguration(context, model.getSmtpConfiguration()));
 
     return response;
   }
@@ -556,30 +553,7 @@ public class DefaultApplicationConfigurationValidator
 
   @Override
   public ValidationResponse validateSmtpConfiguration(ApplicationValidationContext ctx, CSmtpConfiguration settings) {
-    ValidationResponse response = new ApplicationValidationResponse();
-
-    if (ctx != null) {
-      response.setContext(ctx);
-    }
-
-    if (StringUtils.isEmpty(settings.getHostname())) {
-      ValidationMessage msg = new ValidationMessage("host", "SMTP Host is empty.");
-      response.addValidationError(msg);
-    }
-
-    if (settings.getPort() < 0) {
-      ValidationMessage msg = new ValidationMessage(
-          "port",
-          "SMTP Port is inavlid.  Enter a port greater than 0.");
-      response.addValidationError(msg);
-    }
-
-    if (StringUtils.isEmpty(settings.getSystemEmailAddress())) {
-      ValidationMessage msg = new ValidationMessage("systemEmailAddress", "System Email Address is empty.");
-      response.addValidationError(msg);
-    }
-
-    return response;
+    return null;
   }
 
   // --------------
