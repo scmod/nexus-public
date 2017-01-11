@@ -34,14 +34,6 @@ public interface NexusItemAuthorizer
   public boolean authorizePath(TargetSet matched, Action action);
 
   /**
-   * Returns groups for target set.
-   *
-   * @deprecated Use {@link #authorizePath(Repository, ResourceStoreRequest, Action)} method instead.
-   */
-  @Deprecated
-  public TargetSet getGroupsTargetSet(Repository repository, ResourceStoreRequest request);
-
-  /**
    * Authorizes a repository level path against an action. Use when you have a repository path, ie. filtering of
    * search results or feeds with links to repository.
    */

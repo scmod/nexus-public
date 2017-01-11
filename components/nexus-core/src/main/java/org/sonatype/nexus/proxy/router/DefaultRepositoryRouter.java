@@ -12,6 +12,8 @@
  */
 package org.sonatype.nexus.proxy.router;
 
+import static org.sonatype.nexus.proxy.ItemNotFoundException.reasonFor;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -23,6 +25,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
 
+import org.codehaus.plexus.util.StringUtils;
 import org.sonatype.configuration.ConfigurationException;
 import org.sonatype.nexus.configuration.AbstractLastingConfigurable;
 import org.sonatype.nexus.configuration.CoreConfiguration;
@@ -35,7 +38,6 @@ import org.sonatype.nexus.proxy.IllegalRequestException;
 import org.sonatype.nexus.proxy.ItemNotFoundException;
 import org.sonatype.nexus.proxy.LocalStorageException;
 import org.sonatype.nexus.proxy.NoSuchRepositoryException;
-import org.sonatype.nexus.proxy.RequestContext;
 import org.sonatype.nexus.proxy.ResourceStoreRequest;
 import org.sonatype.nexus.proxy.StorageException;
 import org.sonatype.nexus.proxy.access.Action;
@@ -56,10 +58,6 @@ import org.sonatype.nexus.proxy.targets.TargetSet;
 import org.sonatype.nexus.proxy.utils.RepositoryStringUtils;
 import org.sonatype.nexus.util.PathUtils;
 import org.sonatype.sisu.goodies.eventbus.EventBus;
-
-import org.codehaus.plexus.util.StringUtils;
-
-import static org.sonatype.nexus.proxy.ItemNotFoundException.reasonFor;
 
 /**
  * The simplest re-implementation for RepositoryRouter that does only routing.
