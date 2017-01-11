@@ -36,6 +36,7 @@ import org.restlet.resource.ResourceException;
 import org.restlet.resource.Variant;
 import org.sonatype.configuration.ConfigurationException;
 import org.sonatype.configuration.validation.InvalidConfigurationException;
+import org.sonatype.micromailer.Address;
 import org.sonatype.nexus.configuration.application.DefaultGlobalRemoteConnectionSettings;
 import org.sonatype.nexus.configuration.application.DefaultGlobalRemoteProxySettings;
 import org.sonatype.nexus.configuration.application.GlobalRemoteProxySettings;
@@ -57,6 +58,7 @@ import org.sonatype.nexus.rest.model.RestApiSettings;
 import org.sonatype.nexus.rest.model.SmtpSettings;
 import org.sonatype.plexus.rest.resource.PathProtectionDescriptor;
 import org.sonatype.plexus.rest.resource.PlexusResourceException;
+import org.sonatype.security.configuration.source.SecurityConfigurationSource;
 
 import com.thoughtworks.xstream.XStream;
 
@@ -95,13 +97,17 @@ public class GlobalConfigurationPlexusResource extends
 
 	private final NotificationManager notificationManager;
 
+	private final SecurityConfigurationSource defaultSecurityConfigurationSource;
+
 	private final ApplicationConfigurationSource configurationSource;
 
 	@Inject
 	public GlobalConfigurationPlexusResource(
 			final NotificationManager notificationManager,
+			final @Named("static") SecurityConfigurationSource defaultSecurityConfigurationSource,
 			final @Named("static") ApplicationConfigurationSource configurationSource) {
 		this.notificationManager = notificationManager;
+		this.defaultSecurityConfigurationSource = defaultSecurityConfigurationSource;
 		this.configurationSource = configurationSource;
 
 		this.setModifiable(true);
@@ -111,21 +117,24 @@ public class GlobalConfigurationPlexusResource extends
 	// Default Configuration
 	// ----------------------------------------------------------------------------
 
-	//SEC :
 	public boolean isDefaultAnonymousAccessEnabled() {
-		return true;
+		return this.defaultSecurityConfigurationSource.getConfiguration()
+				.isAnonymousAccessEnabled();
 	}
-	//SEC :
+
 	public String getDefaultAnonymousUsername() {
-		return null;
+		return this.defaultSecurityConfigurationSource.getConfiguration()
+				.getAnonymousUsername();
 	}
-	//SEC :
+
 	public String getDefaultAnonymousPassword() {
-		return null;
+		return this.defaultSecurityConfigurationSource.getConfiguration()
+				.getAnonymousPassword();
 	}
-	//SEC :
+
 	public List<String> getDefaultRealms() {
-		return null;
+		return this.defaultSecurityConfigurationSource.getConfiguration()
+				.getRealms();
 	}
 
 	public CRemoteConnectionSettings readDefaultGlobalRemoteConnectionSettings() {
@@ -226,13 +235,36 @@ public class GlobalConfigurationPlexusResource extends
 					if (resource.getSmtpSettings() != null) {
 						SmtpSettings settings = resource.getSmtpSettings();
 
+						getNexusEmailer().setSMTPHostname(settings.getHost());
+
+						// lookup old password
+						String oldPassword = getNexusEmailer()
+								.getSMTPPassword();
+
 						if (settings.getPassword() == null) {
 							settings.setPassword("");
 						}
+						getNexusEmailer().setSMTPPassword(
+								this.getActualPassword(settings.getPassword(),
+										oldPassword));
+
+						getNexusEmailer().setSMTPPort(settings.getPort());
+
+						getNexusEmailer().setSMTPSslEnabled(
+								settings.isSslEnabled());
+
+						getNexusEmailer().setSMTPTlsEnabled(
+								settings.isTlsEnabled());
 
 						if (settings.getUsername() == null) {
 							settings.setUsername("");
 						}
+						getNexusEmailer().setSMTPUsername(
+								settings.getUsername());
+
+						getNexusEmailer().setSMTPSystemEmailAddress(
+								new Address(settings.getSystemEmailAddress()
+										.trim()));
 					}
 
 					if (resource.getGlobalConnectionSettings() != null) {
@@ -518,6 +550,8 @@ public class GlobalConfigurationPlexusResource extends
 					.toString());
 		}
 		resource.setGlobalRestApiSettings(restApiSettings);
+
+		resource.setSmtpSettings(convert(getNexusEmailer()));
 
 		resource.setSystemNotificationSettings(convert(notificationManager));
 	}

@@ -12,8 +12,6 @@
  */
 package org.sonatype.nexus;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
 import java.io.File;
 import java.io.IOException;
 import java.lang.management.ManagementFactory;
@@ -25,8 +23,6 @@ import javax.inject.Named;
 import javax.inject.Provider;
 import javax.inject.Singleton;
 
-import org.joda.time.Period;
-import org.joda.time.format.PeriodFormat;
 import org.sonatype.configuration.ConfigurationException;
 import org.sonatype.nexus.configuration.ConfigurationChangeEvent;
 import org.sonatype.nexus.configuration.application.NexusConfiguration;
@@ -41,12 +37,17 @@ import org.sonatype.nexus.proxy.registry.RepositoryRegistry;
 import org.sonatype.nexus.proxy.repository.ShadowRepository;
 import org.sonatype.nexus.scheduling.NexusScheduler;
 import org.sonatype.nexus.tasks.SynchronizeShadowsTask;
+import org.sonatype.security.SecuritySystem;
 import org.sonatype.sisu.goodies.eventbus.EventBus;
 import org.sonatype.sisu.goodies.lifecycle.Lifecycle;
 import org.sonatype.sisu.goodies.lifecycle.LifecycleSupport;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Throwables;
+import org.joda.time.Period;
+import org.joda.time.format.PeriodFormat;
+
+import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * This is a component that "boots" Nexus up. See org.sonatype.nexus.web.NexusBooterListener for example.
@@ -66,6 +67,8 @@ public class NxApplication
 
   private final NexusPluginManager nexusPluginManager;
 
+  private final SecuritySystem securitySystem;
+
   private final NexusScheduler nexusScheduler;
 
   private final RepositoryRegistry repositoryRegistry;
@@ -77,7 +80,7 @@ public class NxApplication
   @Inject
   public NxApplication(final EventBus eventBus, final NexusConfiguration nexusConfiguration,
       final NexusPluginManager nexusPluginManager, final ApplicationStatusSource applicationStatusSource,
-      final NexusScheduler nexusScheduler,
+      final SecuritySystem securitySystem, final NexusScheduler nexusScheduler,
       final RepositoryRegistry repositoryRegistry, final EventSubscriberHost eventSubscriberHost,
       @Named("orient-bootstrap") final Provider<Lifecycle> orientBootstrap)
   {
@@ -85,6 +88,7 @@ public class NxApplication
     this.applicationStatusSource = checkNotNull(applicationStatusSource);
     this.nexusConfiguration = checkNotNull(nexusConfiguration);
     this.nexusPluginManager = checkNotNull(nexusPluginManager);
+    this.securitySystem = checkNotNull(securitySystem);
     this.nexusScheduler = checkNotNull(nexusScheduler);
     this.repositoryRegistry = checkNotNull(repositoryRegistry);
     this.eventSubscriberHost = checkNotNull(eventSubscriberHost);
@@ -151,6 +155,8 @@ public class NxApplication
       // applies configuration and notifies listeners
       nexusConfiguration.loadConfiguration(true);
       // essential services
+      securitySystem.start();
+      securitySystem.getAnonymousUsername();
       nexusConfiguration.createInternals();
       nexusScheduler.initializeTasks();
 
@@ -220,6 +226,7 @@ public class NxApplication
 
     eventSubscriberHost.shutdown();
     nexusConfiguration.dropInternals();
+    securitySystem.stop();
 
     // HACK: shutdown orient services
     try {

@@ -12,8 +12,6 @@
  */
 package org.sonatype.nexus.proxy.repository.threads;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -28,11 +26,14 @@ import org.sonatype.nexus.proxy.events.NexusStoppedEvent;
 import org.sonatype.nexus.proxy.repository.GroupRepository;
 import org.sonatype.nexus.proxy.repository.ProxyRepository;
 import org.sonatype.nexus.proxy.repository.Repository;
+import org.sonatype.nexus.threads.NexusExecutorService;
 import org.sonatype.nexus.threads.NexusThreadFactory;
 import org.sonatype.nexus.util.SystemPropertiesHelper;
 import org.sonatype.sisu.goodies.eventbus.EventBus;
 
 import com.google.common.eventbus.Subscribe;
+
+import static com.google.common.base.Preconditions.checkNotNull;
 
 @Singleton
 @Named
@@ -47,9 +48,9 @@ public class DefaultThreadPoolManager
   
   private final EventBus eventBus;
 
-  private final ExecutorService groupRepositoryThreadPool;
+  private final NexusExecutorService groupRepositoryThreadPool;
 
-  private final ExecutorService proxyRepositoryThreadPool;
+  private final NexusExecutorService proxyRepositoryThreadPool;
 
   @Inject
   public DefaultThreadPoolManager(final EventBus eventBus) {
@@ -66,8 +67,8 @@ public class DefaultThreadPoolManager
             new SynchronousQueue<Runnable>(), new NexusThreadFactory("proxy", "Proxy TPool"),
             new CallerRunsPolicy());
 
-    this.groupRepositoryThreadPool = gTarget;
-    this.proxyRepositoryThreadPool = pTarget;
+    this.groupRepositoryThreadPool = NexusExecutorService.forCurrentSubject(gTarget);
+    this.proxyRepositoryThreadPool = NexusExecutorService.forCurrentSubject(pTarget);
     eventBus.register(this);
   }
 

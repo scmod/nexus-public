@@ -185,7 +185,7 @@
 		</dependency>
 
 		<!-- Security -->
-<!-- 		<dependency>
+		<dependency>
 			<groupId>org.sonatype.nexus</groupId>
 			<artifactId>nexus-security</artifactId>
 		</dependency>
@@ -209,7 +209,7 @@
 			<groupId>org.apache.shiro</groupId>
 			<artifactId>shiro-web</artifactId>
 		</dependency>
- -->
+
 		<!-- SISU Container -->
 		<dependency>
 			<groupId>org.eclipse.sisu</groupId>
@@ -332,12 +332,7 @@
 		<dependency>
 			<groupId>org.sonatype.nexus</groupId>
 			<artifactId>jdk6-bridge</artifactId>
-		</dependency>
-
-		<!-- 去掉security模块后需要添加的依赖 -->
-		<dependency>
-			<groupId>org.sonatype.sisu.inject</groupId>
-			<artifactId>guice-servlet</artifactId>
+			<version>2.13.0-01</version>
 		</dependency>
 	</dependencies>
 

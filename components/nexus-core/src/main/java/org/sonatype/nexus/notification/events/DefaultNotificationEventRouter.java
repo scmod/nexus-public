@@ -85,7 +85,7 @@ public class DefaultNotificationEventRouter
       // stuff below this line is "generic" - hardwired stuff is above only
 
       if (!targets.isEmpty()) {
-        RepositoryEventProxyModeMessage message = new RepositoryEventProxyModeMessage(rpmevt);
+        RepositoryEventProxyModeMessage message = new RepositoryEventProxyModeMessage(rpmevt, null);
 
         return new NotificationRequest(message, targets);
       }
@@ -123,7 +123,7 @@ public class DefaultNotificationEventRouter
       // stuff below this line is "generic" - hardwired stuff is above only
 
       if (!targets.isEmpty()) {
-        RepositoryEventProxyModeMessage message = new RepositoryEventProxyModeMessage(rpmevt);
+        RepositoryEventProxyModeMessage message = new RepositoryEventProxyModeMessage(rpmevt, null);
 
         return new NotificationRequest(message, targets);
       }

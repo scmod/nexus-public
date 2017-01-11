@@ -14,6 +14,8 @@ package org.sonatype.nexus.content;
 
 import javax.servlet.ServletRequest;
 
+import org.sonatype.nexus.content.internal.ContentAuthenticationFilter;
+
 /**
  * Allows components to configure {code}/content{code} restriction to be enabled or not.
  *

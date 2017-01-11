@@ -42,7 +42,7 @@ import org.sonatype.nexus.configuration.model.io.xpp3.NexusConfigurationXpp3Writ
 import org.sonatype.nexus.configuration.validator.ApplicationConfigurationValidator;
 import org.sonatype.nexus.configuration.validator.ConfigurationValidator;
 import org.sonatype.nexus.util.ApplicationInterpolatorProvider;
-//import org.sonatype.security.events.SecurityConfigurationChanged;
+import org.sonatype.security.events.SecurityConfigurationChanged;
 import org.sonatype.sisu.goodies.eventbus.EventBus;
 
 /**
@@ -177,8 +177,7 @@ public class FileConfigurationSource extends
 			// and we cannot use the 'correct' way of updating the info, because
 			// that would cause an infinit loop
 			// loading the nexus.xml
-			//SEC : 不在包含security的xml配置
-//			this.eventBus.post(new SecurityConfigurationChanged());
+			this.eventBus.post(new SecurityConfigurationChanged());
 		}
 
 		upgradeNexusVersion();

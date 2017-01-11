@@ -27,10 +27,10 @@ import org.sonatype.nexus.proxy.repository.GroupRepository;
 import org.sonatype.nexus.proxy.repository.Repository;
 import org.sonatype.nexus.proxy.targets.TargetMatch;
 import org.sonatype.nexus.proxy.targets.TargetSet;
-//import org.sonatype.security.SecuritySystem;
+import org.sonatype.security.SecuritySystem;
 import org.sonatype.sisu.goodies.common.ComponentSupport;
 
-//import org.apache.shiro.subject.Subject;
+import org.apache.shiro.subject.Subject;
 
 /**
  * Default implementation of Nexus Authorizer, that relies onto JSecurity.
@@ -41,12 +41,15 @@ public class DefaultNexusItemAuthorizer
     extends ComponentSupport
     implements NexusItemAuthorizer
 {
+  private final SecuritySystem securitySystem;
 
   private final RepositoryRegistry repoRegistry;
 
   @Inject
-  public DefaultNexusItemAuthorizer(final RepositoryRegistry repoRegistry)
+  public DefaultNexusItemAuthorizer(final SecuritySystem securitySystem,
+                                    final RepositoryRegistry repoRegistry)
   {
+    this.securitySystem = securitySystem;
     this.repoRegistry = repoRegistry;
   }
 
@@ -135,40 +138,39 @@ public class DefaultNexusItemAuthorizer
     return perms;
   }
 
-  //SEC : 
   protected boolean isPermitted(final List<String> perms) {
-    return true;
+    boolean trace = log.isTraceEnabled();
 
-//    Subject subject = securitySystem.getSubject();
-//
-//    if (trace) {
-//      log.trace("Subject: {}", subject);
-//    }
-//
-//    if (subject == null) {
-//      if (trace) {
-//        log.trace("Subject is not authenticated; rejecting");
-//      }
-//      return false;
-//    }
-//
-//    if (trace) {
-//      log.trace("Checking if subject '{}' has one of these permissions: {}", subject.getPrincipal(), perms);
-//    }
-//    for (String perm : perms) {
-//      if (subject.isPermitted(perm)) {
-//        // TODO: we should remember/cache these decisions per-thread and not re-evaluate it always from Security
-//        if (trace) {
-//          log.trace("Subject '{}' has permission: {}; allowing", subject.getPrincipal(), perm);
-//        }
-//        return true;
-//      }
-//    }
-//
-//    if (trace) {
-//      log.trace("Subject '{}' is missing required permissions; rejecting", subject.getPrincipal());
-//    }
-//
-//    return false;
+    Subject subject = securitySystem.getSubject();
+
+    if (trace) {
+      log.trace("Subject: {}", subject);
+    }
+
+    if (subject == null) {
+      if (trace) {
+        log.trace("Subject is not authenticated; rejecting");
+      }
+      return false;
+    }
+
+    if (trace) {
+      log.trace("Checking if subject '{}' has one of these permissions: {}", subject.getPrincipal(), perms);
+    }
+    for (String perm : perms) {
+      if (subject.isPermitted(perm)) {
+        // TODO: we should remember/cache these decisions per-thread and not re-evaluate it always from Security
+        if (trace) {
+          log.trace("Subject '{}' has permission: {}; allowing", subject.getPrincipal(), perm);
+        }
+        return true;
+      }
+    }
+
+    if (trace) {
+      log.trace("Subject '{}' is missing required permissions; rejecting", subject.getPrincipal());
+    }
+
+    return false;
   }
 }

@@ -81,56 +81,7 @@
         <repositoryPolicy>SNAPSHOT</repositoryPolicy>
       </externalConfiguration>
     </repository>
-    <repository>
-      <id>public</id>
-      <name>Public Repositories</name>
-      <providerRole>org.sonatype.nexus.proxy.repository.GroupRepository</providerRole>
-      <providerHint>maven2</providerHint>
-      <localStatus>IN_SERVICE</localStatus>
-      <notFoundCacheActive>false</notFoundCacheActive>
-      <notFoundCacheTTL>15</notFoundCacheTTL>
-      <userManaged>true</userManaged>
-      <exposed>true</exposed>
-      <browseable>true</browseable>
-      <writePolicy>READ_ONLY</writePolicy>
-      <indexable>true</indexable>
-      <externalConfiguration>
-        <mergeMetadata>true</mergeMetadata>
-        <memberRepositories>
-          <memberRepository>releases</memberRepository>
-          <memberRepository>snapshots</memberRepository>
-        </memberRepositories>
-      </externalConfiguration>
-    </repository>
   </repositories>
-  <repositoryGrouping>
-    <pathMappings>
-      <pathMapping>
-        <id>inhouse-stuff</id>
-        <groupId>*</groupId>
-        <routeType>inclusive</routeType>
-        <routePatterns>
-          <routePattern>^/(com|org)/somecompany/.*</routePattern>
-        </routePatterns>
-        <repositories>
-          <repository>snapshots</repository>
-          <repository>releases</repository>
-        </repositories>
-      </pathMapping>
-      <pathMapping>
-        <id>apache-stuff</id>
-        <groupId>*</groupId>
-        <routeType>exclusive</routeType>
-        <routePatterns>
-          <routePattern>^/org/some-oss/.*</routePattern>
-        </routePatterns>
-        <repositories>
-          <repository>releases</repository>
-          <repository>snapshots</repository>
-        </repositories>
-      </pathMapping>
-    </pathMappings>
-  </repositoryGrouping>
   <repositoryTargets>
     <repositoryTarget>
       <id>1</id>

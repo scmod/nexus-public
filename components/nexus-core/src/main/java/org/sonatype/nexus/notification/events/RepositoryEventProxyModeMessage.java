@@ -16,22 +16,28 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.Writer;
 
-import org.apache.commons.lang.time.DurationFormatUtils;
 import org.sonatype.nexus.notification.NotificationMessage;
 import org.sonatype.nexus.proxy.events.RepositoryEventProxyMode;
 import org.sonatype.nexus.proxy.repository.ProxyMode;
+import org.sonatype.security.usermanagement.User;
+
+import org.apache.commons.lang.time.DurationFormatUtils;
 
 public class RepositoryEventProxyModeMessage
     implements NotificationMessage
 {
   private final RepositoryEventProxyMode repositoryEventProxyMode;
 
+  private final User user;
+
   private final String title;
 
   private final String body;
 
-  public RepositoryEventProxyModeMessage(RepositoryEventProxyMode revt) {
+  public RepositoryEventProxyModeMessage(RepositoryEventProxyMode revt, User user) {
     this.repositoryEventProxyMode = revt;
+
+    this.user = user;
 
     // we will reuse this
     StringBuilder sb = null;
@@ -125,6 +131,9 @@ public class RepositoryEventProxyModeMessage
     return repositoryEventProxyMode;
   }
 
+  public User getUser() {
+    return user;
+  }
 
   public String getMessageTitle() {
     return title;

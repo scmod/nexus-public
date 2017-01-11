@@ -32,6 +32,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.lang.StringUtils;
+import org.apache.shiro.subject.Subject;
 import org.restlet.Context;
 import org.restlet.data.ChallengeRequest;
 import org.restlet.data.ChallengeScheme;
@@ -79,9 +80,11 @@ import org.sonatype.nexus.rest.model.ContentListResource;
 import org.sonatype.nexus.rest.model.ContentListResourceResponse;
 import org.sonatype.nexus.rest.model.NotFoundReasoning;
 import org.sonatype.nexus.rest.repositories.AbstractRepositoryPlexusResource;
+import org.sonatype.nexus.security.filter.authc.NexusHttpAuthenticationFilter;
 import org.sonatype.nexus.web.BaseUrlHolder;
 import org.sonatype.nexus.web.ErrorStatusRuntimeException;
 import org.sonatype.plexus.rest.representation.VelocityRepresentation;
+import org.sonatype.security.SecuritySystem;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.Maps;
@@ -103,6 +106,8 @@ public abstract class AbstractResourceStoreContentPlexusResource extends
 
 	public static final String OVERRIDE_FILENAME_KEY = "override-filename";
 
+	private SecuritySystem securitySystem;
+
 	private ApplicationStatusSource applicationStatusSource;
 
 	public Map<String, ArtifactViewProvider> viewProviders;
@@ -117,10 +122,17 @@ public abstract class AbstractResourceStoreContentPlexusResource extends
 
 	@VisibleForTesting
 	AbstractResourceStoreContentPlexusResource(
+			final SecuritySystem securitySystem,
 			final ApplicationStatusSource applicationStatusSource,
 			final Map<String, ArtifactViewProvider> viewProviders) {
+		this.securitySystem = securitySystem;
 		this.applicationStatusSource = applicationStatusSource;
 		this.viewProviders = viewProviders;
+	}
+
+	@Inject
+	public void setSecuritySystem(final SecuritySystem securitySystem) {
+		this.securitySystem = securitySystem;
 	}
 
 	@Inject
@@ -346,6 +358,11 @@ public abstract class AbstractResourceStoreContentPlexusResource extends
 				getValidRemoteIPAddress(request));
 
 		// stuff in the user id if we have it in request
+		Subject subject = securitySystem.getSubject();
+		if (subject != null && subject.getPrincipal() != null) {
+			result.getRequestContext().put(AccessManager.REQUEST_USER,
+					subject.getPrincipal().toString());
+		}
 		result.getRequestContext().put(AccessManager.REQUEST_AGENT,
 				request.getClientInfo().getAgent());
 
@@ -965,14 +982,30 @@ public abstract class AbstractResourceStoreContentPlexusResource extends
 		HttpServletRequest servletRequest = ((ServletCall) ((HttpRequest) req)
 				.getHttpCall()).getRequest();
 
+		String scheme = (String) servletRequest
+				.getAttribute(NexusHttpAuthenticationFilter.AUTH_SCHEME_KEY);
+
 		ChallengeScheme challengeScheme = null;
 
-		challengeScheme = ChallengeScheme.HTTP_BASIC;
+		if (NexusHttpAuthenticationFilter.FAKE_AUTH_SCHEME.equals(scheme)) {
+			challengeScheme = new ChallengeScheme("HTTP_NXBASIC", "NxBasic",
+					"Fake basic HTTP authentication");
+		} else {
+			challengeScheme = ChallengeScheme.HTTP_BASIC;
+		}
 
-		res.setStatus(Status.CLIENT_ERROR_FORBIDDEN);
+		String realm = (String) servletRequest
+				.getAttribute(NexusHttpAuthenticationFilter.AUTH_REALM_KEY);
+
+		if (servletRequest
+				.getAttribute(NexusHttpAuthenticationFilter.ANONYMOUS_LOGIN) != null) {
+			res.setStatus(Status.CLIENT_ERROR_UNAUTHORIZED);
+		} else {
+			res.setStatus(Status.CLIENT_ERROR_FORBIDDEN);
+		}
 
 		res.getChallengeRequests().add(
-				new ChallengeRequest(challengeScheme, null));
+				new ChallengeRequest(challengeScheme, realm));
 
 		// TODO: this below would be _slightly_ better.
 		// HttpServletRequest servletRequest = ( (ServletCall) ( (HttpRequest)
