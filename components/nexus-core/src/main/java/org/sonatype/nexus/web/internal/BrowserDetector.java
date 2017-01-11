@@ -12,6 +12,8 @@
  */
 package org.sonatype.nexus.web.internal;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
@@ -21,6 +23,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
 import javax.servlet.ServletRequest;
+import javax.servlet.http.HttpServletRequest;
 
 import org.sonatype.sisu.goodies.common.ComponentSupport;
 
@@ -29,10 +32,8 @@ import com.google.common.base.Splitter;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.collect.Sets;
-import eu.bitwalker.useragentutils.UserAgent;
-import org.apache.shiro.web.util.WebUtils;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+import eu.bitwalker.useragentutils.UserAgent;
 
 /**
  * Helper to detect if a servlet-request is initiated from a web-browser.
@@ -85,7 +86,10 @@ public class BrowserDetector
       return false;
     }
 
-    String userAgentString = WebUtils.toHttp(request).getHeader(USER_AGENT);
+    if(!(request instanceof HttpServletRequest)){
+    	return false;
+    }
+    String userAgentString = ((HttpServletRequest) request).getHeader(USER_AGENT);
 
     // skip if excluded
     if (excludedUserAgents.contains(userAgentString)) {

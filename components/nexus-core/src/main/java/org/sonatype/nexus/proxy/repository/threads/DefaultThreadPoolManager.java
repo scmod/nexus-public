@@ -12,6 +12,8 @@
  */
 package org.sonatype.nexus.proxy.repository.threads;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -32,8 +34,6 @@ import org.sonatype.nexus.util.SystemPropertiesHelper;
 import org.sonatype.sisu.goodies.eventbus.EventBus;
 
 import com.google.common.eventbus.Subscribe;
-
-import static com.google.common.base.Preconditions.checkNotNull;
 
 @Singleton
 @Named
@@ -67,8 +67,8 @@ public class DefaultThreadPoolManager
             new SynchronousQueue<Runnable>(), new NexusThreadFactory("proxy", "Proxy TPool"),
             new CallerRunsPolicy());
 
-    this.groupRepositoryThreadPool = NexusExecutorService.forCurrentSubject(gTarget);
-    this.proxyRepositoryThreadPool = NexusExecutorService.forCurrentSubject(pTarget);
+    this.groupRepositoryThreadPool = NexusExecutorService.newService(gTarget);
+    this.proxyRepositoryThreadPool = NexusExecutorService.newService(pTarget);
     eventBus.register(this);
   }
 

@@ -18,14 +18,11 @@ import java.io.InputStreamReader;
 import java.util.List;
 import java.util.regex.Pattern;
 
-import javax.inject.Inject;
-
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.maven.model.Model;
 import org.apache.maven.model.io.xpp3.MavenXpp3Reader;
-import org.apache.shiro.subject.Subject;
 import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
 import org.restlet.Context;
 import org.restlet.data.Form;
@@ -58,19 +55,12 @@ import org.sonatype.nexus.rest.AbstractNexusPlexusResource;
 import org.sonatype.nexus.rest.AbstractResourceStoreContentPlexusResource;
 import org.sonatype.nexus.rest.StorageFileItemRepresentation;
 import org.sonatype.nexus.rest.model.ArtifactCoordinate;
-import org.sonatype.security.SecuritySystem;
 
 public abstract class AbstractArtifactPlexusResource extends
 		AbstractNexusPlexusResource {
-	private SecuritySystem securitySystem;
 
 	private Pattern validInputPattern = Pattern
 			.compile("^[a-zA-Z0-9_\\-\\.]*$");
-
-	@Inject
-	public void setSecuritySystem(final SecuritySystem securitySystem) {
-		this.securitySystem = securitySystem;
-	}
 
 	/**
 	 * Centralized way to create ResourceStoreRequests, since we have to fill in
@@ -117,11 +107,6 @@ public abstract class AbstractArtifactPlexusResource extends
 				getValidRemoteIPAddress(request));
 
 		// stuff in the user id if we have it in request
-		Subject subject = securitySystem.getSubject();
-		if (subject != null && subject.getPrincipal() != null) {
-			result.getRequestContext().put(AccessManager.REQUEST_USER,
-					subject.getPrincipal().toString());
-		}
 		result.getRequestContext().put(AccessManager.REQUEST_AGENT,
 				request.getClientInfo().getAgent());
 

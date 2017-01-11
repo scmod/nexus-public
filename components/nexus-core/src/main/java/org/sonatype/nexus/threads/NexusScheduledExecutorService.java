@@ -12,13 +12,13 @@
  */
 package org.sonatype.nexus.threads;
 
-import java.util.concurrent.Callable;
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import java.util.concurrent.ScheduledExecutorService;
 
-import org.apache.shiro.concurrent.SubjectAwareScheduledExecutorService;
-import org.apache.shiro.subject.Subject;
+import javax.security.auth.Subject;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+import concurrent.SubjectAwareScheduledExecutorService;
 
 /**
  * A modification of Shiro's {@link SubjectAwareScheduledExecutorService} that in turn returns always the same,
@@ -31,42 +31,12 @@ import static com.google.common.base.Preconditions.checkNotNull;
 public class NexusScheduledExecutorService
     extends SubjectAwareScheduledExecutorService
 {
-  public static NexusScheduledExecutorService forFixedSubject(final ScheduledExecutorService target,
-                                                              final Subject subject)
-  {
-    return new NexusScheduledExecutorService(target, new FixedSubjectProvider(subject));
+
+  public static NexusScheduledExecutorService newService(final ScheduledExecutorService target) {
+    return new NexusScheduledExecutorService(target);
   }
 
-  public static NexusScheduledExecutorService forCurrentSubject(final ScheduledExecutorService target) {
-    return new NexusScheduledExecutorService(target, new CurrentSubjectProvider());
-  }
-
-  // ==
-
-  private final SubjectProvider subjectProvider;
-
-  public NexusScheduledExecutorService(final ScheduledExecutorService target, final SubjectProvider subjectProvider) {
+  public NexusScheduledExecutorService(final ScheduledExecutorService target) {
     super(checkNotNull(target));
-    this.subjectProvider = checkNotNull(subjectProvider);
-  }
-
-  /**
-   * Override, use our SubjectProvider to get subject from.
-   */
-  @Override
-  protected Subject getSubject() {
-    return subjectProvider.getSubject();
-  }
-
-  @Override
-  protected Runnable associateWithSubject(Runnable r) {
-    Subject subject = getSubject();
-    return subject.associateWith(new MDCAwareRunnable(r));
-  }
-
-  @Override
-  protected <T> Callable<T> associateWithSubject(Callable<T> task) {
-    Subject subject = getSubject();
-    return subject.associateWith(new MDCAwareCallable(task));
   }
 }

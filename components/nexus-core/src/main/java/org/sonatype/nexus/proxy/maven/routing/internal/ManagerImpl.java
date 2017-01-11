@@ -12,6 +12,8 @@
  */
 package org.sonatype.nexus.proxy.maven.routing.internal;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -70,7 +72,6 @@ import org.sonatype.nexus.proxy.repository.ProxyMode;
 import org.sonatype.nexus.proxy.repository.Repository;
 import org.sonatype.nexus.proxy.repository.ShadowRepository;
 import org.sonatype.nexus.proxy.utils.RepositoryStringUtils;
-import org.sonatype.nexus.threads.FakeAlmightySubject;
 import org.sonatype.nexus.threads.NexusScheduledExecutorService;
 import org.sonatype.nexus.threads.NexusThreadFactory;
 import org.sonatype.sisu.goodies.common.ComponentSupport;
@@ -83,8 +84,6 @@ import com.google.common.base.Throwables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.google.common.eventbus.Subscribe;
-
-import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Default implementation.
@@ -175,7 +174,7 @@ public class ManagerImpl
     final ScheduledThreadPoolExecutor target =
         new ScheduledThreadPoolExecutor(5, new NexusThreadFactory("ar", "AR-Updater"),
             new ThreadPoolExecutor.AbortPolicy());
-    this.executor = NexusScheduledExecutorService.forFixedSubject(target, FakeAlmightySubject.TASK_SUBJECT);
+    this.executor = NexusScheduledExecutorService.newService(target);
     this.constrainedExecutor = new ConstrainedExecutorImpl(executor);
     // register event dispatcher
     this.eventDispatcher = new EventDispatcher(this);

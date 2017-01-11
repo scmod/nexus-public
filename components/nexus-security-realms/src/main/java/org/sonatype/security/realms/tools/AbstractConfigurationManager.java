@@ -19,7 +19,6 @@ import org.sonatype.sisu.goodies.eventbus.EventBus;
 
 public abstract class AbstractConfigurationManager
     extends ComponentSupport
-    implements ConfigurationManager
 {
   private final EventBus eventBus;
 

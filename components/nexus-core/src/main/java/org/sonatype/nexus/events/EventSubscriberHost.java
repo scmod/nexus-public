@@ -66,7 +66,7 @@ public class EventSubscriberHost
     final ThreadPoolExecutor target =
         new ThreadPoolExecutor(0, HOST_THREAD_POOL_SIZE, 60L, TimeUnit.SECONDS, new SynchronousQueue<Runnable>(),
             new NexusThreadFactory("esh", "Event Subscriber Host"), new CallerRunsPolicy());
-    this.hostThreadPool = NexusExecutorService.forCurrentSubject(target);
+    this.hostThreadPool = NexusExecutorService.newService(target);
     this.asyncBus = new com.google.common.eventbus.AsyncEventBus("esh-async", hostThreadPool);
 
     eventBus.register(this);

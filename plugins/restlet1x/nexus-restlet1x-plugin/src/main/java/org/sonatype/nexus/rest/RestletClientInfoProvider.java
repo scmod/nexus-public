@@ -15,8 +15,6 @@ package org.sonatype.nexus.rest;
 import javax.inject.Named;
 import javax.inject.Singleton;
 
-import org.apache.shiro.SecurityUtils;
-import org.apache.shiro.subject.Subject;
 import org.restlet.data.Request;
 import org.sonatype.nexus.auth.ClientInfo;
 import org.sonatype.nexus.auth.ClientInfoProvider;
@@ -39,22 +37,9 @@ public class RestletClientInfoProvider extends ComponentSupport implements
 		ClientInfoProvider {
 	@Override
 	public ClientInfo getCurrentThreadClientInfo() {
-		final Subject subject = SecurityUtils.getSubject();
-		if (subject != null && subject.getPrincipal() != null) {
-			final String userId = subject.getPrincipal().toString();
-
-			final Request current = Request.getCurrent();
-			if (current != null) {
-				final String currentIp = RemoteIPFinder.findIP(current);
-				final String currentUa = current.getClientInfo().getAgent();
-				return new ClientInfo(userId, currentIp, currentUa);
-			} else {
-				// this is not HTTP processing thread at all
-				return null;
-			}
-		}
-		// we have no Shiro subject or "anonymous" user (from Shiro perspective,
-		// null principals
-		return null;
+		final Request current = Request.getCurrent();
+		final String currentIp = RemoteIPFinder.findIP(current);
+		final String currentUa = current.getClientInfo().getAgent();
+		return new ClientInfo(currentIp, currentUa);
 	}
 }

@@ -12,13 +12,11 @@
  */
 package org.sonatype.nexus.threads;
 
-import java.util.concurrent.Callable;
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import java.util.concurrent.ExecutorService;
 
-import org.apache.shiro.concurrent.SubjectAwareExecutorService;
-import org.apache.shiro.subject.Subject;
-
-import static com.google.common.base.Preconditions.checkNotNull;
+import concurrent.SubjectAwareExecutorService;
 
 /**
  * A modification of Shiro's {@link org.apache.shiro.concurrent.SubjectAwareExecutorService} that in turn returns
@@ -32,40 +30,13 @@ import static com.google.common.base.Preconditions.checkNotNull;
 public class NexusExecutorService
     extends SubjectAwareExecutorService
 {
-  public static NexusExecutorService forFixedSubject(final ExecutorService target, final Subject subject) {
-    return new NexusExecutorService(target, new FixedSubjectProvider(subject));
+
+  public static NexusExecutorService newService(final ExecutorService target) {
+    return new NexusExecutorService(target);
   }
 
-  public static NexusExecutorService forCurrentSubject(final ExecutorService target) {
-    return new NexusExecutorService(target, new CurrentSubjectProvider());
-  }
-
-  // ==
-
-  private final SubjectProvider subjectProvider;
-
-  public NexusExecutorService(final ExecutorService target, final SubjectProvider subjectProvider) {
+  public NexusExecutorService(final ExecutorService target) {
     super(checkNotNull(target));
-    this.subjectProvider = checkNotNull(subjectProvider);
   }
 
-  /**
-   * Override, use our SubjectProvider to get subject from.
-   */
-  @Override
-  protected Subject getSubject() {
-    return subjectProvider.getSubject();
-  }
-
-  @Override
-  protected Runnable associateWithSubject(Runnable r) {
-    Subject subject = getSubject();
-    return subject.associateWith(new MDCAwareRunnable(r));
-  }
-
-  @Override
-  protected <T> Callable<T> associateWithSubject(Callable<T> task) {
-    Subject subject = getSubject();
-    return subject.associateWith(new MDCAwareCallable(task));
-  }
 }

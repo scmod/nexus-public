@@ -12,6 +12,8 @@
  */
 package org.sonatype.nexus.security;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -22,6 +24,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
 
+import org.codehaus.plexus.util.StringUtils;
 import org.sonatype.nexus.proxy.events.RepositoryRegistryEventAdd;
 import org.sonatype.nexus.proxy.events.RepositoryRegistryEventRemove;
 import org.sonatype.nexus.proxy.registry.ContentClass;
@@ -34,17 +37,11 @@ import org.sonatype.security.model.CProperty;
 import org.sonatype.security.model.CRole;
 import org.sonatype.security.model.Configuration;
 import org.sonatype.security.realms.tools.AbstractDynamicSecurityResource;
-import org.sonatype.security.realms.tools.ConfigurationManager;
-import org.sonatype.security.realms.tools.ConfigurationManagerAction;
 import org.sonatype.security.realms.tools.DynamicSecurityResource;
 import org.sonatype.sisu.goodies.eventbus.EventBus;
 
-import com.google.common.base.Throwables;
 import com.google.common.eventbus.AllowConcurrentEvents;
 import com.google.common.eventbus.Subscribe;
-import org.codehaus.plexus.util.StringUtils;
-
-import static com.google.common.base.Preconditions.checkNotNull;
 
 @Singleton
 @Named("NexusViewSecurityResource")
@@ -56,15 +53,12 @@ public class NexusViewSecurityResource
 
   private final RepositoryTypeRegistry repoTypeRegistry;
 
-  private final ConfigurationManager configManager;
-
   @Inject
   public NexusViewSecurityResource(final EventBus eventBus, final RepositoryRegistry repoRegistry,
-      final RepositoryTypeRegistry repoTypeRegistry, final @Named("default") ConfigurationManager configManager)
+      final RepositoryTypeRegistry repoTypeRegistry)
   {
     this.repoRegistry = checkNotNull(repoRegistry);
     this.repoTypeRegistry = checkNotNull(repoTypeRegistry);
-    this.configManager = checkNotNull(configManager);
     eventBus.register(this);
   }
 
@@ -158,21 +152,5 @@ public class NexusViewSecurityResource
   @Subscribe
   public void onEvent(final RepositoryRegistryEventRemove event) {
     setDirty(true);
-
-    try {
-      configManager.runWrite(new ConfigurationManagerAction()
-      {
-        @Override
-        public void run()
-            throws Exception
-        {
-          configManager.cleanRemovedPrivilege(createPrivilegeId(event.getRepository().getId()));
-        }
-
-      });
-    }
-    catch (Exception e) {
-      throw Throwables.propagate(e);
-    }
   }
 }

@@ -29,10 +29,8 @@ public class ConfigurationChangeEvent
 {
   private final Collection<Configurable> changes;
 
-  private final String userId;
 
-  public ConfigurationChangeEvent(ApplicationConfiguration configuration, Collection<Configurable> changes,
-                                  String userId)
+  public ConfigurationChangeEvent(ApplicationConfiguration configuration, Collection<Configurable> changes)
   {
     super(configuration);
 
@@ -42,14 +40,10 @@ public class ConfigurationChangeEvent
 
     this.changes = Collections.unmodifiableCollection(changes);
 
-    this.userId = userId;
   }
 
   public Collection<Configurable> getChanges() {
     return changes;
   }
 
-  public String getUserId() {
-    return userId;
-  }
 }

@@ -19,7 +19,6 @@ import java.util.concurrent.ScheduledThreadPoolExecutor;
 import javax.inject.Named;
 import javax.inject.Singleton;
 
-import org.sonatype.nexus.threads.FakeAlmightySubject;
 import org.sonatype.nexus.threads.NexusScheduledExecutorService;
 import org.sonatype.scheduling.TaskExecutorProvider;
 import org.sonatype.scheduling.ThreadFactoryImpl;
@@ -47,7 +46,7 @@ public class NexusTaskExecutorServiceProvider
     target.setExecuteExistingDelayedTasksAfterShutdownPolicy(false);
     target.setContinueExistingPeriodicTasksAfterShutdownPolicy(false);
     shiroFixedSubjectScheduledExecutorService =
-        NexusScheduledExecutorService.forFixedSubject(target, FakeAlmightySubject.TASK_SUBJECT);
+        NexusScheduledExecutorService.newService(target);
   }
 
   @Override

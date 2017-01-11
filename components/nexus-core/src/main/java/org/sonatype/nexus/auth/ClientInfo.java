@@ -19,24 +19,18 @@ package org.sonatype.nexus.auth;
  */
 public class ClientInfo
 {
-  private final String userid;
 
   private final String remoteIP;
 
   private final String userAgent;
 
-  public ClientInfo(final String userid, final String remoteIP, final String userAgent) {
-    this.userid = userid;
+  public ClientInfo(final String remoteIP, final String userAgent) {
     this.remoteIP = remoteIP;
     this.userAgent = userAgent;
   }
 
   public String getRemoteIP() {
     return remoteIP;
-  }
-
-  public String getUserid() {
-    return userid;
   }
 
   public String getUserAgent() {
@@ -49,7 +43,6 @@ public class ClientInfo
     int result = 1;
     result = prime * result + ((remoteIP == null) ? 0 : remoteIP.hashCode());
     result = prime * result + ((userAgent == null) ? 0 : userAgent.hashCode());
-    result = prime * result + ((userid == null) ? 0 : userid.hashCode());
     return result;
   }
 
@@ -79,14 +72,6 @@ public class ClientInfo
       }
     }
     else if (!userAgent.equals(other.userAgent)) {
-      return false;
-    }
-    if (userid == null) {
-      if (other.userid != null) {
-        return false;
-      }
-    }
-    else if (!userid.equals(other.userid)) {
       return false;
     }
     return true;

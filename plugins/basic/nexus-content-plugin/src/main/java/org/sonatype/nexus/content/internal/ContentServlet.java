@@ -43,8 +43,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.shiro.SecurityUtils;
-import org.apache.shiro.subject.Subject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sonatype.nexus.configuration.application.NexusConfiguration;
@@ -176,11 +174,6 @@ public class ContentServlet
     final ResourceStoreRequest result = new ResourceStoreRequest(resourceStorePath);
     result.getRequestContext().put(STOPWATCH_KEY, new Stopwatch().start());
 
-    // stuff in the user id if we have it in request
-    final Subject subject = SecurityUtils.getSubject();
-    if (subject != null && subject.getPrincipal() != null) {
-      result.getRequestContext().put(AccessManager.REQUEST_USER, subject.getPrincipal().toString());
-    }
     result.getRequestContext().put(AccessManager.REQUEST_AGENT, request.getHeader("user-agent"));
 
     // honor the localOnly, remoteOnly and asExpired (but remoteOnly and asExpired only for non-anon users)

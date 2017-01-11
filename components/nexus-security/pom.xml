@@ -63,7 +63,7 @@
       <artifactId>plexus-cipher</artifactId>
     </dependency>
 
-    <dependency>
+<!--     <dependency>
       <groupId>org.apache.shiro</groupId>
       <artifactId>shiro-core</artifactId>
     </dependency>
@@ -76,7 +76,7 @@
     <dependency>
       <groupId>org.apache.shiro</groupId>
       <artifactId>shiro-guice</artifactId>
-    </dependency>
+    </dependency> -->
 
     <dependency>
       <groupId>org.sonatype.sisu.inject</groupId>
@@ -114,10 +114,10 @@
       <scope>provided</scope>
     </dependency>
 
-    <dependency>
+<!--     <dependency>
       <groupId>org.apache.shiro</groupId>
       <artifactId>shiro-web</artifactId>
-    </dependency>
+    </dependency> -->
 
     <dependency>
       <groupId>org.sonatype.sisu.inject</groupId>

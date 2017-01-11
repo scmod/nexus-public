@@ -14,10 +14,7 @@ package org.sonatype.security.rest;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
-import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
@@ -32,28 +29,14 @@ import org.sonatype.configuration.validation.InvalidConfigurationException;
 import org.sonatype.configuration.validation.ValidationMessage;
 import org.sonatype.configuration.validation.ValidationResponse;
 import org.sonatype.nexus.rest.model.AliasingListConverter;
-import org.sonatype.nexus.rest.model.HtmlUnescapeStringConverter;
 import org.sonatype.plexus.rest.ReferenceFactory;
 import org.sonatype.plexus.rest.resource.AbstractPlexusResource;
 import org.sonatype.plexus.rest.resource.PlexusResourceException;
 import org.sonatype.plexus.rest.resource.error.ErrorMessage;
 import org.sonatype.plexus.rest.resource.error.ErrorResponse;
-import org.sonatype.security.SecuritySystem;
-import org.sonatype.security.authorization.AuthorizationManager;
-import org.sonatype.security.authorization.NoSuchAuthorizationManagerException;
-import org.sonatype.security.authorization.NoSuchRoleException;
 import org.sonatype.security.authorization.Role;
 import org.sonatype.security.rest.model.PlexusRoleResource;
-import org.sonatype.security.rest.model.PlexusUserResource;
-import org.sonatype.security.rest.model.RoleAndPrivilegeListFilterResource;
-import org.sonatype.security.rest.model.RoleAndPrivilegeListResource;
-import org.sonatype.security.rest.model.RoleResource;
-import org.sonatype.security.rest.model.UserChangePasswordResource;
 import org.sonatype.security.rest.model.UserResource;
-import org.sonatype.security.usermanagement.DefaultUser;
-import org.sonatype.security.usermanagement.RoleIdentifier;
-import org.sonatype.security.usermanagement.User;
-import org.sonatype.security.usermanagement.UserStatus;
 
 import com.google.common.base.Function;
 import com.google.common.collect.Collections2;
@@ -73,17 +56,10 @@ import com.thoughtworks.xstream.io.HierarchicalStreamReader;
 public abstract class AbstractSecurityPlexusResource extends
 		AbstractPlexusResource {
 
-	@Inject
-	private SecuritySystem securitySystem;
-
 	protected static final String DEFAULT_SOURCE = "default";
 
 	@Inject
 	protected ReferenceFactory referenceFactory;
-
-	protected SecuritySystem getSecuritySystem() {
-		return securitySystem;
-	}
 
 	protected ErrorResponse getErrorResponse(String id, String msg) {
 		ErrorResponse ner = new ErrorResponse();
@@ -113,74 +89,12 @@ public abstract class AbstractSecurityPlexusResource extends
 				"Configuration error.", errorResponse);
 	}
 
-	protected UserResource securityToRestModel(User user, Request request,
+	protected UserResource securityToRestModel(Request request,
 			boolean appendResourceId) {
-		UserResource resource = new UserResource();
-		resource.setEmail(user.getEmailAddress());
-		resource.setFirstName(user.getFirstName());
-		resource.setLastName(user.getLastName());
-		resource.setStatus(user.getStatus().name());
-		resource.setUserId(user.getUserId());
 
-		String resourceId = "";
-		if (appendResourceId) {
-			resourceId = resource.getUserId();
-		}
-		resource.setResourceURI(this.createChildReference(request, resourceId)
-				.toString());
-
-		for (RoleIdentifier role : user.getRoles()) {
-			resource.addRole(role.getRoleId());
-		}
-
-		return resource;
+		return null;
 	}
 
-	protected User restToSecurityModel(User user, UserResource resource)
-			throws InvalidConfigurationException {
-		if (user == null) {
-			user = new DefaultUser();
-		}
-
-		// validate users Status, converting to an ENUM throws an exception, so
-		// we need to explicitly check it
-		this.checkUsersStatus(resource.getStatus());
-
-		user.setEmailAddress(resource.getEmail());
-		user.setFirstName(resource.getFirstName());
-		user.setLastName(resource.getLastName());
-		user.setStatus(UserStatus.valueOf(resource.getStatus()));
-		user.setUserId(resource.getUserId());
-
-		// set the users source
-		user.setSource(DEFAULT_SOURCE);
-
-		Set<RoleIdentifier> roles = new HashSet<RoleIdentifier>();
-		for (String roleId : resource.getRoles()) {
-			roles.add(new RoleIdentifier(DEFAULT_SOURCE, roleId));
-		}
-
-		user.setRoles(roles);
-
-		return user;
-	}
-
-	protected PlexusUserResource securityToRestModel(User user) {
-		PlexusUserResource resource = new PlexusUserResource();
-
-		resource.setUserId(user.getUserId());
-		resource.setSource(user.getSource());
-		resource.setFirstName(user.getFirstName());
-		resource.setLastName(user.getLastName());
-		resource.setEmail(user.getEmailAddress());
-		resource.setStatus(user.getStatus().name());
-
-		for (RoleIdentifier role : user.getRoles()) {
-			resource.addRole(this.securityToRestModel(role));
-		}
-
-		return resource;
-	}
 
 	protected PlexusRoleResource securityToRestModel(Role role) {
 		if (role == null) {
@@ -195,59 +109,6 @@ public abstract class AbstractSecurityPlexusResource extends
 		return roleResource;
 	}
 
-	protected List<PlexusUserResource> securityToRestModel(Set<User> users) {
-		List<PlexusUserResource> restUsersList = new ArrayList<PlexusUserResource>();
-
-		for (User user : users) {
-			restUsersList.add(securityToRestModel(user));
-		}
-		return restUsersList;
-	}
-
-	// TODO: come back to this, we need to change the PlexusRoleResource
-	protected PlexusRoleResource securityToRestModel(RoleIdentifier role) {
-		// TODO: We shouldn't be looking up the role name here anyway... this
-		// should get pushed up to the
-		// SecuritySystem.
-		String roleName = role.getRoleId();
-
-		SecuritySystem securitySystem = this.getSecuritySystem();
-
-		try {
-			AuthorizationManager authzManager = securitySystem
-					.getAuthorizationManager(DEFAULT_SOURCE);
-			roleName = authzManager.getRole(role.getRoleId()).getName();
-		} catch (NoSuchAuthorizationManagerException e) {
-			this.getLogger().warn(
-					"Failed to lookup the users Role: " + role.getRoleId()
-							+ " source: " + role.getSource()
-							+ " but the user has this role.", e);
-		} catch (NoSuchRoleException e) {
-			// this is a Warning if the role's source is default, if its not,
-			// then we most of the time it would not be
-			// found anyway.
-			if (DEFAULT_SOURCE.equals(role.getSource())) {
-				this.getLogger().warn(
-						"Failed to lookup the users Role: " + role.getRoleId()
-								+ " source: " + role.getSource()
-								+ " but the user has this role.", e);
-			} else {
-				this.getLogger()
-						.debug("Failed to lookup the users Role: "
-								+ role.getRoleId()
-								+ " source: "
-								+ role.getSource()
-								+ " falling back to the roleId for the role's name.");
-			}
-		}
-
-		PlexusRoleResource roleResource = new PlexusRoleResource();
-		roleResource.setRoleId(role.getRoleId());
-		roleResource.setName(roleName);
-		roleResource.setSource(role.getSource());
-
-		return roleResource;
-	}
 
 	protected Reference createChildReference(Request request, String childPath) {
 		return this.referenceFactory.createChildReference(request, childPath);
@@ -255,19 +116,6 @@ public abstract class AbstractSecurityPlexusResource extends
 
 	protected void checkUsersStatus(String status)
 			throws InvalidConfigurationException {
-		boolean found = false;
-		for (UserStatus userStatus : UserStatus.values()) {
-			if (userStatus.name().equals(status)) {
-				found = true;
-			}
-		}
-
-		if (!found) {
-			ValidationResponse response = new ValidationResponse();
-			response.addValidationError(new ValidationMessage("status",
-					"Users status is not valid."));
-			throw new InvalidConfigurationException(response);
-		}
 	}
 
 	protected String getRequestAttribute(final Request request, final String key) {
@@ -292,38 +140,6 @@ public abstract class AbstractSecurityPlexusResource extends
 	@Override
 	public void configureXStream(final XStream xstream) {
 		super.configureXStream(xstream);
-		xstream.registerLocalConverter(UserChangePasswordResource.class,
-				"oldPassword", new HtmlUnescapeStringConverter(true));
-		xstream.registerLocalConverter(UserChangePasswordResource.class,
-				"newPassword", new HtmlUnescapeStringConverter(true));
-		xstream.registerLocalConverter(RoleResource.class, "id",
-				new HtmlUnescapeStringConverter(true));
-		xstream.registerLocalConverter(UserResource.class, "userId",
-				new HtmlUnescapeStringConverter(true));
-		xstream.registerLocalConverter(UserResource.class, "password",
-				new HtmlUnescapeStringConverter(true));
-		xstream.registerLocalConverter(RoleAndPrivilegeListResource.class,
-				"id", new HtmlUnescapeStringConverter(true));
-
-		xstream.registerLocalConverter(UserResource.class, "roles",
-				new HtmlUnescapeStringCollectionConverter("role"));
-		xstream.registerLocalConverter(RoleResource.class, "roles",
-				new HtmlUnescapeStringCollectionConverter("role"));
-		xstream.registerLocalConverter(RoleResource.class, "privileges",
-				new HtmlUnescapeStringCollectionConverter("privilege"));
-		xstream.registerLocalConverter(
-				RoleAndPrivilegeListFilterResource.class, "selectedRoleIds",
-				new HtmlUnescapeStringCollectionConverter("selectedRoleId"));
-		xstream.registerLocalConverter(
-				RoleAndPrivilegeListFilterResource.class,
-				"selectedPrivilegeIds",
-				new HtmlUnescapeStringCollectionConverter("selectedPrivilegeId"));
-		xstream.registerLocalConverter(
-				RoleAndPrivilegeListFilterResource.class, "hiddenRoleIds",
-				new HtmlUnescapeStringCollectionConverter("hiddenRoleId"));
-		xstream.registerLocalConverter(
-				RoleAndPrivilegeListFilterResource.class, "hiddenPrivilegeIds",
-				new HtmlUnescapeStringCollectionConverter("hiddenPrivilegeId"));
 	}
 
 	private static class HtmlUnescapeStringCollectionConverter extends

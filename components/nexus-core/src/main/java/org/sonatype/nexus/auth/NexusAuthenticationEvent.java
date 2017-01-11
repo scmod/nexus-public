@@ -34,7 +34,6 @@ public class NexusAuthenticationEvent
   @Override
   public String toString() {
     return getClass().getSimpleName() + "{" +
-        "userId='" + getClientInfo().getUserid() + "'," +
         "remoteIp='" + getClientInfo().getRemoteIP() + "'," +
         "successful=" + successful +
         '}';
