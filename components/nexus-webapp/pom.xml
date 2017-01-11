@@ -100,14 +100,14 @@
       <scope>provided</scope>
     </dependency>
 
-    <dependency>
+    <!-- <dependency>
       <groupId>org.sonatype.nexus.plugins</groupId>
       <artifactId>nexus-webresources-plugin</artifactId>
       <version>${nexus.version}</version>
       <classifier>bundle</classifier>
       <type>zip</type>
       <scope>provided</scope>
-    </dependency>
+    </dependency> -->
 
     <dependency>
       <groupId>org.sonatype.nexus.plugins</groupId>
@@ -118,7 +118,7 @@
       <scope>provided</scope>
     </dependency>
 
-    <dependency>
+    <!-- <dependency>
       <groupId>org.sonatype.nexus.plugins</groupId>
       <artifactId>nexus-siesta-plugin</artifactId>
       <version>${nexus.version}</version>
@@ -134,7 +134,7 @@
       <classifier>bundle</classifier>
       <type>zip</type>
       <scope>provided</scope>
-    </dependency>
+    </dependency> -->
 
     <dependency>
       <groupId>org.sonatype.nexus.plugins</groupId>
@@ -145,14 +145,14 @@
       <scope>provided</scope>
     </dependency>
 
-    <dependency>
+   <!--  <dependency>
       <groupId>org.sonatype.nexus.plugins</groupId>
       <artifactId>nexus-rrb-plugin</artifactId>
       <version>${nexus.version}</version>
       <classifier>bundle</classifier>
       <type>zip</type>
       <scope>provided</scope>
-    </dependency>
+    </dependency> -->
 
     <dependency>
       <groupId>org.sonatype.nexus.plugins</groupId>
@@ -172,7 +172,7 @@
       <scope>provided</scope>
     </dependency>
 
-    <dependency>
+    <!-- <dependency>
       <groupId>org.sonatype.nexus.plugins</groupId>
       <artifactId>nexus-ui-extjs3-plugin</artifactId>
       <version>${nexus.version}</version>
@@ -197,7 +197,7 @@
       <classifier>bundle</classifier>
       <type>zip</type>
       <scope>provided</scope>
-    </dependency>
+    </dependency> -->
 
     <dependency>
       <groupId>org.sonatype.nexus</groupId>

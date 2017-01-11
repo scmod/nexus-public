@@ -36,7 +36,6 @@ import org.restlet.resource.ResourceException;
 import org.restlet.resource.Variant;
 import org.sonatype.configuration.ConfigurationException;
 import org.sonatype.configuration.validation.InvalidConfigurationException;
-import org.sonatype.micromailer.Address;
 import org.sonatype.nexus.configuration.application.DefaultGlobalRemoteConnectionSettings;
 import org.sonatype.nexus.configuration.application.DefaultGlobalRemoteProxySettings;
 import org.sonatype.nexus.configuration.application.GlobalRemoteProxySettings;
@@ -232,41 +231,6 @@ public class GlobalConfigurationPlexusResource extends
 				GlobalConfigurationResource resource = configRequest.getData();
 
 				try {
-					if (resource.getSmtpSettings() != null) {
-						SmtpSettings settings = resource.getSmtpSettings();
-
-						getNexusEmailer().setSMTPHostname(settings.getHost());
-
-						// lookup old password
-						String oldPassword = getNexusEmailer()
-								.getSMTPPassword();
-
-						if (settings.getPassword() == null) {
-							settings.setPassword("");
-						}
-						getNexusEmailer().setSMTPPassword(
-								this.getActualPassword(settings.getPassword(),
-										oldPassword));
-
-						getNexusEmailer().setSMTPPort(settings.getPort());
-
-						getNexusEmailer().setSMTPSslEnabled(
-								settings.isSslEnabled());
-
-						getNexusEmailer().setSMTPTlsEnabled(
-								settings.isTlsEnabled());
-
-						if (settings.getUsername() == null) {
-							settings.setUsername("");
-						}
-						getNexusEmailer().setSMTPUsername(
-								settings.getUsername());
-
-						getNexusEmailer().setSMTPSystemEmailAddress(
-								new Address(settings.getSystemEmailAddress()
-										.trim()));
-					}
-
 					if (resource.getGlobalConnectionSettings() != null) {
 						RemoteConnectionSettings s = resource
 								.getGlobalConnectionSettings();
@@ -550,8 +514,6 @@ public class GlobalConfigurationPlexusResource extends
 					.toString());
 		}
 		resource.setGlobalRestApiSettings(restApiSettings);
-
-		resource.setSmtpSettings(convert(getNexusEmailer()));
 
 		resource.setSystemNotificationSettings(convert(notificationManager));
 	}

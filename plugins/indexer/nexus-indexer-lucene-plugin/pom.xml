@@ -71,12 +71,12 @@
       <scope>provided</scope>
     </dependency>
 
-    <dependency>
+   <!--  <dependency>
       <groupId>org.sonatype.nexus.plugins</groupId>
       <artifactId>nexus-ui-extjs3-plugin</artifactId>
       <type>${nexus-plugin.type}</type>
       <scope>provided</scope>
-    </dependency>
+    </dependency> -->
 
     <dependency>
       <groupId>org.sonatype.nexus</groupId>

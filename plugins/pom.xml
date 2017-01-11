@@ -45,7 +45,6 @@
 		<module>indexer</module>
 <!-- 		<module>internal</module> -->
 		<module>maven</module>
-		<module>file</module>
 		<!-- <module>npm</module> -->
 		<!-- <module>osgi</module> -->
 		<!-- <module>p2</module> -->
@@ -77,7 +76,7 @@
 
 			<!-- logging -->
 
-			<dependency>
+			<!-- <dependency>
 				<groupId>org.sonatype.nexus.plugins</groupId>
 				<artifactId>nexus-logging-plugin</artifactId>
 				<type>nexus-plugin</type>
@@ -89,7 +88,7 @@
 				<artifactId>nexus-logging-plugin</artifactId>
 				<type>jar</type>
 				<version>2.13.0-01</version>
-			</dependency>
+			</dependency> -->
 
 			<!-- content -->
 
@@ -109,7 +108,7 @@
 
 			<!-- webresources -->
 
-			<dependency>
+			<!-- <dependency>
 				<groupId>org.sonatype.nexus.plugins</groupId>
 				<artifactId>nexus-webresources-plugin</artifactId>
 				<type>nexus-plugin</type>
@@ -121,7 +120,7 @@
 				<artifactId>nexus-webresources-plugin</artifactId>
 				<type>jar</type>
 				<version>2.13.0-01</version>
-			</dependency>
+			</dependency> -->
 
 			<!-- indexer -->
 
@@ -183,7 +182,7 @@
 
 			<!-- plugin-console -->
 
-			<dependency>
+			<!-- <dependency>
 				<groupId>org.sonatype.nexus.plugins</groupId>
 				<artifactId>nexus-plugin-console-plugin</artifactId>
 				<type>nexus-plugin</type>
@@ -195,7 +194,7 @@
 				<artifactId>nexus-plugin-console-plugin</artifactId>
 				<type>jar</type>
 				<version>2.13.0-01</version>
-			</dependency>
+			</dependency> -->
 
 			<!-- restlet -->
 
@@ -241,7 +240,7 @@
 
 			<!-- rrb -->
 
-			<dependency>
+			<!-- <dependency>
 				<groupId>org.sonatype.nexus.plugins</groupId>
 				<artifactId>nexus-rrb-plugin</artifactId>
 				<type>nexus-plugin</type>
@@ -253,11 +252,11 @@
 				<artifactId>nexus-rrb-plugin</artifactId>
 				<type>jar</type>
 				<version>2.13.0-01</version>
-			</dependency>
+			</dependency> -->
 
 			<!-- siesta -->
 
-			<dependency>
+			<!-- <dependency>
 				<groupId>org.sonatype.nexus.plugins</groupId>
 				<artifactId>nexus-siesta-plugin</artifactId>
 				<type>nexus-plugin</type>
@@ -269,11 +268,11 @@
 				<artifactId>nexus-siesta-plugin</artifactId>
 				<type>jar</type>
 				<version>2.13.0-01</version>
-			</dependency>
+			</dependency> -->
 
 			<!-- ui -->
 
-			<dependency>
+			<!-- <dependency>
 				<groupId>org.sonatype.nexus.plugins</groupId>
 				<artifactId>nexus-ui-extjs3-plugin</artifactId>
 				<type>nexus-plugin</type>
@@ -285,11 +284,11 @@
 				<artifactId>nexus-ui-extjs3-plugin</artifactId>
 				<type>jar</type>
 				<version>2.13.0-01</version>
-			</dependency>
+			</dependency> -->
 
 			<!-- unpack -->
 
-			<dependency>
+			<!-- <dependency>
 				<groupId>org.sonatype.nexus.plugins</groupId>
 				<artifactId>nexus-unpack-plugin</artifactId>
 				<type>nexus-plugin</type>
@@ -309,11 +308,11 @@
 				<version>${nexus.version}</version>
 				<classifier>bundle</classifier>
 				<type>zip</type>
-			</dependency>
+			</dependency> -->
 
 			<!-- file -->
 
-			<dependency>
+			<!-- <dependency>
 				<groupId>org.sonatype.nexus.plugins</groupId>
 				<artifactId>nexus-file-repository-plugin</artifactId>
 				<type>nexus-plugin</type>
@@ -339,7 +338,7 @@
 				<groupId>org.sonatype.nexus.plugins</groupId>
 				<artifactId>nexus-file-repository-client</artifactId>
 				<version>2.13.0-01</version>
-			</dependency>
+			</dependency> -->
 		</dependencies>
 	</dependencyManagement>
 

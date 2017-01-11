@@ -39,16 +39,15 @@
       <unpack>true</unpack>
       <includes>
         <include>*:nexus-content-plugin</include>
-        <include>*:nexus-webresources-plugin</include>
+        <!-- <include>*:nexus-webresources-plugin</include> -->
         <include>*:nexus-restlet1x-plugin</include>
-        <include>*:nexus-siesta-plugin</include>
+        <!-- <include>*:nexus-siesta-plugin</include>
         <include>*:nexus-logging-plugin</include>
-        <include>*:nexus-rrb-plugin</include>
+        <include>*:nexus-rrb-plugin</include> -->
         <include>*:nexus-indexer-lucene-plugin</include>
         <include>*:nexus-archetype-plugin</include>
         <include>*:nexus-maven-bridge-plugin</include>
-        <include>*:nexus-ui-extjs3-plugin</include>
-        <include>*:nexus-file-repository-plugin</include>
+        <!-- <include>*:nexus-ui-extjs3-plugin</include> -->
       </includes>
     </dependencySet>
   </dependencySets>

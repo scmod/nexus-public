@@ -17,23 +17,19 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.util.Map;
 
+import org.apache.commons.io.FileUtils;
+import org.junit.Test;
 import org.sonatype.nexus.NexusAppTestSupport;
 import org.sonatype.nexus.configuration.model.CRepository;
 import org.sonatype.nexus.configuration.model.Configuration;
-import org.sonatype.nexus.email.NexusEmailer;
 import org.sonatype.nexus.proxy.repository.DefaultRemoteHttpProxySettings;
 import org.sonatype.nexus.proxy.repository.LocalStatus;
 import org.sonatype.security.SecuritySystem;
-
-import org.apache.commons.io.FileUtils;
-import org.junit.Test;
 
 public class DefaultNexusConfigurationTest
     extends NexusAppTestSupport
 {
   protected DefaultNexusConfiguration nexusConfiguration;
-
-  protected NexusEmailer nexusEmailer;
 
   protected GlobalRemoteProxySettings globalRemoteProxySettings;
 
@@ -47,8 +43,6 @@ public class DefaultNexusConfigurationTest
     nexusConfiguration.loadConfiguration();
 
     lookup(SecuritySystem.class);
-
-    nexusEmailer = lookup(NexusEmailer.class);
 
     globalRemoteProxySettings = lookup(GlobalRemoteProxySettings.class);
   }
@@ -141,9 +135,6 @@ public class DefaultNexusConfigurationTest
     // check it for default value
     assertEquals("smtp-host", config.getSmtpConfiguration().getHostname());
 
-    // modify it
-    nexusEmailer.setSMTPHostname("NEW-HOST");
-
     // save it
     nexusConfiguration.saveConfiguration();
 
@@ -159,7 +150,6 @@ public class DefaultNexusConfigurationTest
 
     // it again contains default value, coz we overwritten it before
     assertEquals("smtp-host", config.getSmtpConfiguration().getHostname());
-    assertEquals("smtp-host", nexusEmailer.getSMTPHostname());
   }
 
   @Test

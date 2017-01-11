@@ -28,7 +28,6 @@ import org.sonatype.nexus.configuration.model.CRemoteHttpProxySettings;
 import org.sonatype.nexus.configuration.model.CRemoteProxySettings;
 import org.sonatype.nexus.configuration.model.CRestApiSettings;
 import org.sonatype.nexus.configuration.model.CSmtpConfiguration;
-import org.sonatype.nexus.email.NexusEmailer;
 import org.sonatype.nexus.notification.NotificationCheat;
 import org.sonatype.nexus.notification.NotificationManager;
 import org.sonatype.nexus.notification.NotificationTarget;
@@ -60,8 +59,6 @@ public abstract class AbstractGlobalConfigurationPlexusResource extends
 
 	public static final String SECURITY_CUSTOM = "custom";
 
-	private NexusEmailer nexusEmailer;
-
 	private GlobalRemoteProxySettings globalRemoteProxySettings;
 
 	private GlobalRemoteConnectionSettings globalRemoteConnectionSettings;
@@ -70,10 +67,6 @@ public abstract class AbstractGlobalConfigurationPlexusResource extends
 
 	private AuthenticationInfoConverter authenticationInfoConverter;
 
-	@Inject
-	public void setNexusEmailer(final NexusEmailer nexusEmailer) {
-		this.nexusEmailer = nexusEmailer;
-	}
 
 	@Inject
 	public void setGlobalRemoteProxySettings(
@@ -99,10 +92,6 @@ public abstract class AbstractGlobalConfigurationPlexusResource extends
 		this.authenticationInfoConverter = authenticationInfoConverter;
 	}
 
-	protected NexusEmailer getNexusEmailer() {
-		return nexusEmailer;
-	}
-
 	protected GlobalRemoteProxySettings getGlobalRemoteProxySettings() {
 		return globalRemoteProxySettings;
 	}
@@ -119,32 +108,6 @@ public abstract class AbstractGlobalConfigurationPlexusResource extends
 		return authenticationInfoConverter;
 	}
 
-	public static SmtpSettings convert(NexusEmailer nexusEmailer) {
-		if (nexusEmailer == null) {
-			return null;
-		}
-
-		SmtpSettings result = new SmtpSettings();
-
-		result.setHost(nexusEmailer.getSMTPHostname());
-
-		result.setPort(nexusEmailer.getSMTPPort());
-
-		result.setSslEnabled(nexusEmailer.isSMTPSslEnabled());
-
-		result.setTlsEnabled(nexusEmailer.isSMTPTlsEnabled());
-
-		result.setUsername(nexusEmailer.getSMTPUsername());
-
-		if (!StringUtils.isEmpty(nexusEmailer.getSMTPPassword())) {
-			result.setPassword(PASSWORD_PLACE_HOLDER);
-		}
-
-		result.setSystemEmailAddress(nexusEmailer.getSMTPSystemEmailAddress()
-				.getMailAddress());
-
-		return result;
-	}
 
 	public static SystemNotificationSettings convert(NotificationManager manager) {
 		if (manager == null) {
