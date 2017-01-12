@@ -100,6 +100,14 @@
     	<groupId>org.sonatype.nexus</groupId>
     	<artifactId>jdk6-bridge</artifactId>
     </dependency>
+    <dependency>
+    	<groupId>org.sonatype.sisu.inject</groupId>
+    	<artifactId>guice-servlet</artifactId>
+    </dependency>
+    <dependency>
+    	<groupId>org.sonatype.sisu.goodies</groupId>
+    	<artifactId>goodies-eventbus</artifactId>
+    </dependency>
   </dependencies>
 
 </project>

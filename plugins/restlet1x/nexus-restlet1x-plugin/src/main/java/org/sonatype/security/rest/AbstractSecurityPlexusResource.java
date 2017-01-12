@@ -34,8 +34,6 @@ import org.sonatype.plexus.rest.resource.AbstractPlexusResource;
 import org.sonatype.plexus.rest.resource.PlexusResourceException;
 import org.sonatype.plexus.rest.resource.error.ErrorMessage;
 import org.sonatype.plexus.rest.resource.error.ErrorResponse;
-import org.sonatype.security.authorization.Role;
-import org.sonatype.security.rest.model.PlexusRoleResource;
 import org.sonatype.security.rest.model.UserResource;
 
 import com.google.common.base.Function;
@@ -96,18 +94,18 @@ public abstract class AbstractSecurityPlexusResource extends
 	}
 
 
-	protected PlexusRoleResource securityToRestModel(Role role) {
-		if (role == null) {
-			return null;
-		}
-
-		PlexusRoleResource roleResource = new PlexusRoleResource();
-		roleResource.setRoleId(role.getRoleId());
-		roleResource.setName(role.getName());
-		roleResource.setSource(role.getSource());
-
-		return roleResource;
-	}
+//	protected PlexusRoleResource securityToRestModel(Role role) {
+//		if (role == null) {
+//			return null;
+//		}
+//
+//		PlexusRoleResource roleResource = new PlexusRoleResource();
+//		roleResource.setRoleId(role.getRoleId());
+//		roleResource.setName(role.getName());
+//		roleResource.setSource(role.getSource());
+//
+//		return roleResource;
+//	}
 
 
 	protected Reference createChildReference(Request request, String childPath) {

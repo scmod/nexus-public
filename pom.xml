@@ -249,7 +249,7 @@
         <version>2.13.0-01</version>
       </dependency>
 
-      <dependency>
+      <!-- <dependency>
         <groupId>org.sonatype.nexus</groupId>
         <artifactId>nexus-security</artifactId>
         <version>2.13.0-01</version>
@@ -259,7 +259,7 @@
         <groupId>org.sonatype.nexus</groupId>
         <artifactId>nexus-security-realms</artifactId>
         <version>2.13.0-01</version>
-      </dependency>
+      </dependency> -->
 
       <dependency>
         <groupId>org.sonatype.nexus</groupId>

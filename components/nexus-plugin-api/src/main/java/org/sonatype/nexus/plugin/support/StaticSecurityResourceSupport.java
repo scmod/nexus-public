@@ -12,11 +12,9 @@
  */
 package org.sonatype.nexus.plugin.support;
 
-import org.sonatype.nexus.plugin.PluginIdentity;
-import org.sonatype.security.realms.tools.AbstractStaticSecurityResource;
-import org.sonatype.security.realms.tools.StaticSecurityResource;
-
 import static com.google.common.base.Preconditions.checkNotNull;
+
+import org.sonatype.nexus.plugin.PluginIdentity;
 
 /**
  * Support for {@link StaticSecurityResource} implementations.
@@ -24,7 +22,6 @@ import static com.google.common.base.Preconditions.checkNotNull;
  * @since 2.7
  */
 public class StaticSecurityResourceSupport
-    extends AbstractStaticSecurityResource
 {
   private final PluginIdentity owner;
 

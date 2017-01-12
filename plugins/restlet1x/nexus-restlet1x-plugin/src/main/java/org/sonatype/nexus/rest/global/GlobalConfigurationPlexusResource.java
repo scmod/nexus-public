@@ -57,7 +57,6 @@ import org.sonatype.nexus.rest.model.RestApiSettings;
 import org.sonatype.nexus.rest.model.SmtpSettings;
 import org.sonatype.plexus.rest.resource.PathProtectionDescriptor;
 import org.sonatype.plexus.rest.resource.PlexusResourceException;
-import org.sonatype.security.configuration.source.SecurityConfigurationSource;
 
 import com.thoughtworks.xstream.XStream;
 
@@ -96,17 +95,13 @@ public class GlobalConfigurationPlexusResource extends
 
 	private final NotificationManager notificationManager;
 
-	private final SecurityConfigurationSource defaultSecurityConfigurationSource;
-
 	private final ApplicationConfigurationSource configurationSource;
 
 	@Inject
 	public GlobalConfigurationPlexusResource(
 			final NotificationManager notificationManager,
-			final @Named("static") SecurityConfigurationSource defaultSecurityConfigurationSource,
 			final @Named("static") ApplicationConfigurationSource configurationSource) {
 		this.notificationManager = notificationManager;
-		this.defaultSecurityConfigurationSource = defaultSecurityConfigurationSource;
 		this.configurationSource = configurationSource;
 
 		this.setModifiable(true);
@@ -116,25 +111,6 @@ public class GlobalConfigurationPlexusResource extends
 	// Default Configuration
 	// ----------------------------------------------------------------------------
 
-	public boolean isDefaultAnonymousAccessEnabled() {
-		return this.defaultSecurityConfigurationSource.getConfiguration()
-				.isAnonymousAccessEnabled();
-	}
-
-	public String getDefaultAnonymousUsername() {
-		return this.defaultSecurityConfigurationSource.getConfiguration()
-				.getAnonymousUsername();
-	}
-
-	public String getDefaultAnonymousPassword() {
-		return this.defaultSecurityConfigurationSource.getConfiguration()
-				.getAnonymousPassword();
-	}
-
-	public List<String> getDefaultRealms() {
-		return this.defaultSecurityConfigurationSource.getConfiguration()
-				.getRealms();
-	}
 
 	public CRemoteConnectionSettings readDefaultGlobalRemoteConnectionSettings() {
 		return configurationSource.getConfiguration()
@@ -463,12 +439,6 @@ public class GlobalConfigurationPlexusResource extends
 	 */
 	protected void fillDefaultConfiguration(Request request,
 			GlobalConfigurationResource resource) {
-
-		resource.setSecurityAnonymousAccessEnabled(isDefaultAnonymousAccessEnabled());
-
-		resource.setSecurityRealms(getDefaultRealms());
-
-		resource.setSecurityAnonymousUsername(getDefaultAnonymousUsername());
 
 		resource.setSecurityAnonymousPassword(PASSWORD_PLACE_HOLDER);
 
