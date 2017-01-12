@@ -42,46 +42,6 @@
 
     <!-- Reused stuff on many resources -->
     <class>
-      <name>AuthenticationSettings</name>
-      <version>1.0.0+</version>
-      <description>Remote authentication tokens used in remote authentications against HTTP Proxies and/or protected remote repositories.</description>
-      <annotations>
-        <annotation>@javax.xml.bind.annotation.XmlType( name = "authentication-settings" )</annotation>
-        <annotation>@javax.xml.bind.annotation.XmlAccessorType(javax.xml.bind.annotation.XmlAccessType.FIELD)</annotation>
-      </annotations>
-      <fields>
-        <field>
-          <name>username</name>
-          <version>1.0.0+</version>
-          <type>String</type>
-          <required>false</required>
-          <description>A username to be used in authentication.</description>
-        </field>
-        <field>
-          <name>password</name>
-          <version>1.0.0+</version>
-          <type>String</type>
-          <required>false</required>
-          <description>A password to be used in authentication.</description>
-        </field>
-        <field>
-          <name>ntlmHost</name>
-          <version>1.0.0+</version>
-          <type>String</type>
-          <required>false</required>
-          <description>The Windows NT Lan Manager to use for authentication.</description>
-        </field>
-        <field>
-          <name>ntlmDomain</name>
-          <version>1.0.0+</version>
-          <type>String</type>
-          <required>false</required>
-          <description>The Windows NT Lan Manager Domain to use for authentication.</description>
-        </field>
-      </fields>
-    </class>
-
-    <class>
       <name>RemoteConnectionSettings</name>
       <version>1.0.0+</version>
       <description>
@@ -285,15 +245,6 @@
           <type>int</type>
           <required>true</required>
           <description>The proxy port.</description>
-        </field>
-        <field>
-          <name>authentication</name>
-          <version>1.0.0+</version>
-          <association>
-            <type>AuthenticationSettings</type>
-          </association>
-          <required>false</required>
-          <description>Authentication used to connect with proxy server.</description>
         </field>
       </fields>
     </class>
@@ -962,15 +913,6 @@
           <type>String</type>
           <required>true</required>
           <description>The remote URL that this repository is proxying.</description>
-        </field>
-        <field>
-          <name>authentication</name>
-          <version>1.0.0+</version>
-          <association>
-            <type>AuthenticationSettings</type>
-          </association>
-          <required>false</required>
-          <description>The authentication details of the remote connection.</description>
         </field>
         <field>
           <name>connectionSettings</name>
@@ -2704,18 +2646,6 @@
       </fields>
     </class>
 
-    <!-- Authentication -->
-    <class>
-      <name>NexusAuthenticationClientPermissions</name>
-      <version>1.0.0+</version>
-      <superClass>org.sonatype.security.rest.model.AuthenticationClientPermissions</superClass>
-      <description>Permissions that are granted to the user.</description>
-      <annotations>
-        <annotation>@javax.xml.bind.annotation.XmlType( name = "nexus-authentication-client-permissions" )</annotation>
-        <annotation>@javax.xml.bind.annotation.XmlAccessorType(javax.xml.bind.annotation.XmlAccessType.FIELD)</annotation>
-      </annotations>
-    </class>
-
     <!-- NFCs -->
     <class>
       <name>NFCResourceResponse</name>
@@ -3008,15 +2938,6 @@
           <type>String</type>
           <required>false</required>
           <description>Errors occuring during nexus startup.</description>
-        </field>
-        <field>
-          <name>clientPermissions</name>
-          <version>1.0.0+</version>
-          <association>
-            <type>NexusAuthenticationClientPermissions</type>
-          </association>
-          <required>true</required>
-          <description>Permissions that are available to the current user.</description>
         </field>
         <field>
           <name>baseUrl</name>

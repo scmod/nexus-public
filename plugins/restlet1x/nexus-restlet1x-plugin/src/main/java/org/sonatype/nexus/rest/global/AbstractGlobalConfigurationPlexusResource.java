@@ -22,7 +22,6 @@ import org.sonatype.nexus.configuration.application.AuthenticationInfoConverter;
 import org.sonatype.nexus.configuration.application.GlobalRemoteConnectionSettings;
 import org.sonatype.nexus.configuration.application.GlobalRemoteProxySettings;
 import org.sonatype.nexus.configuration.application.GlobalRestApiSettings;
-import org.sonatype.nexus.configuration.model.CRemoteAuthentication;
 import org.sonatype.nexus.configuration.model.CRemoteConnectionSettings;
 import org.sonatype.nexus.configuration.model.CRemoteHttpProxySettings;
 import org.sonatype.nexus.configuration.model.CRemoteProxySettings;
@@ -31,14 +30,9 @@ import org.sonatype.nexus.configuration.model.CSmtpConfiguration;
 import org.sonatype.nexus.notification.NotificationCheat;
 import org.sonatype.nexus.notification.NotificationManager;
 import org.sonatype.nexus.notification.NotificationTarget;
-import org.sonatype.nexus.proxy.repository.ClientSSLRemoteAuthenticationSettings;
 import org.sonatype.nexus.proxy.repository.DefaultRemoteHttpProxySettings;
-import org.sonatype.nexus.proxy.repository.NtlmRemoteAuthenticationSettings;
-import org.sonatype.nexus.proxy.repository.RemoteAuthenticationSettings;
 import org.sonatype.nexus.proxy.repository.RemoteHttpProxySettings;
-import org.sonatype.nexus.proxy.repository.UsernamePasswordRemoteAuthenticationSettings;
 import org.sonatype.nexus.rest.AbstractNexusPlexusResource;
-import org.sonatype.nexus.rest.model.AuthenticationSettings;
 import org.sonatype.nexus.rest.model.RemoteConnectionSettings;
 import org.sonatype.nexus.rest.model.RemoteHttpProxySettingsDTO;
 import org.sonatype.nexus.rest.model.RemoteProxySettingsDTO;
@@ -200,8 +194,6 @@ public abstract class AbstractGlobalConfigurationPlexusResource extends
 
 		result.setProxyPort(settings.getPort());
 
-		result.setAuthentication(convert(settings.getProxyAuthentication()));
-
 		return result;
 	}
 
@@ -221,42 +213,6 @@ public abstract class AbstractGlobalConfigurationPlexusResource extends
 		return result;
 	}
 
-	/**
-	 * Externalized Nexus object to DTO's conversion.
-	 */
-	public static AuthenticationSettings convert(
-			RemoteAuthenticationSettings settings) {
-		if (settings == null) {
-			return null;
-		}
-
-		AuthenticationSettings auth = new AuthenticationSettings();
-
-		if (settings instanceof ClientSSLRemoteAuthenticationSettings) {
-			// huh?
-		} else if (settings instanceof NtlmRemoteAuthenticationSettings) {
-			NtlmRemoteAuthenticationSettings up = (NtlmRemoteAuthenticationSettings) settings;
-
-			auth.setUsername(up.getUsername());
-
-			auth.setPassword(PASSWORD_PLACE_HOLDER);
-
-			auth.setNtlmHost(up.getNtlmHost());
-
-			auth.setNtlmDomain(up.getNtlmDomain());
-
-		} else if (settings instanceof UsernamePasswordRemoteAuthenticationSettings) {
-			UsernamePasswordRemoteAuthenticationSettings up = (UsernamePasswordRemoteAuthenticationSettings) settings;
-
-			auth.setUsername(up.getUsername());
-
-			auth.setPassword(PASSWORD_PLACE_HOLDER);
-		}
-
-		return auth;
-	}
-
-	// ==
 
 	/**
 	 * Externalized Nexus object to DTO's conversion.
@@ -314,8 +270,6 @@ public abstract class AbstractGlobalConfigurationPlexusResource extends
 
 		result.setProxyPort(settings.getProxyPort());
 
-		result.setAuthentication(convert(settings.getAuthentication()));
-
 		return result;
 	}
 
@@ -335,55 +289,6 @@ public abstract class AbstractGlobalConfigurationPlexusResource extends
 		return result;
 	}
 
-	/**
-	 * Externalized Nexus object to DTO's conversion.
-	 */
-	public static AuthenticationSettings convert(CRemoteAuthentication settings) {
-		if (settings == null) {
-			return null;
-		}
-
-		AuthenticationSettings auth = new AuthenticationSettings();
-
-		auth.setUsername(settings.getUsername());
-
-		auth.setPassword(PASSWORD_PLACE_HOLDER);
-
-		auth.setNtlmHost(settings.getNtlmHost());
-
-		auth.setNtlmDomain(settings.getNtlmDomain());
-
-		// auth.setPrivateKey( settings.getPrivateKey() );
-
-		// auth.setPassphrase( settings.getPassphrase() );
-
-		return auth;
-	}
-
-	public static SmtpSettings convert(CSmtpConfiguration settings) {
-		if (settings == null) {
-			return null;
-		}
-
-		SmtpSettings result = new SmtpSettings();
-
-		result.setHost(settings.getHostname());
-
-		result.setPassword(PASSWORD_PLACE_HOLDER);
-
-		result.setPort(settings.getPort());
-
-		result.setSslEnabled(settings.isSslEnabled());
-
-		result.setSystemEmailAddress(settings.getSystemEmailAddress());
-
-		result.setTlsEnabled(settings.isTlsEnabled());
-
-		result.setUsername(settings.getUsername());
-
-		return result;
-	}
-
 	public RemoteHttpProxySettings convert(
 			final RemoteHttpProxySettingsDTO settings, final String oldPassword)
 			throws ConfigurationException {
@@ -396,24 +301,7 @@ public abstract class AbstractGlobalConfigurationPlexusResource extends
 
 		result.setHostname(settings.getProxyHostname());
 		result.setPort(settings.getProxyPort());
-
-		if (settings.getAuthentication() != null) {
-			CRemoteAuthentication auth = new CRemoteAuthentication();
-
-			auth.setUsername(settings.getAuthentication().getUsername());
-
-			auth.setPassword(getActualPassword(settings.getAuthentication()
-					.getPassword(), oldPassword));
-
-			auth.setNtlmDomain(settings.getAuthentication().getNtlmDomain());
-
-			auth.setNtlmHost(settings.getAuthentication().getNtlmHost());
-
-			result.setProxyAuthentication(getAuthenticationInfoConverter()
-					.convertAndValidateFromModel(auth));
-		} else {
-			result.setProxyAuthentication(null);
-		}
+		result.setProxyAuthentication(null);
 
 		return result;
 	}

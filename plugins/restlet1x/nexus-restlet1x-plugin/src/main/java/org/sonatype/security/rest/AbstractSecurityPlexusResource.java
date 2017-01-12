@@ -34,7 +34,6 @@ import org.sonatype.plexus.rest.resource.AbstractPlexusResource;
 import org.sonatype.plexus.rest.resource.PlexusResourceException;
 import org.sonatype.plexus.rest.resource.error.ErrorMessage;
 import org.sonatype.plexus.rest.resource.error.ErrorResponse;
-import org.sonatype.security.rest.model.UserResource;
 
 import com.google.common.base.Function;
 import com.google.common.collect.Collections2;
@@ -86,27 +85,6 @@ public abstract class AbstractSecurityPlexusResource extends
 		throw new PlexusResourceException(Status.CLIENT_ERROR_BAD_REQUEST,
 				"Configuration error.", errorResponse);
 	}
-
-	protected UserResource securityToRestModel(Request request,
-			boolean appendResourceId) {
-
-		return null;
-	}
-
-
-//	protected PlexusRoleResource securityToRestModel(Role role) {
-//		if (role == null) {
-//			return null;
-//		}
-//
-//		PlexusRoleResource roleResource = new PlexusRoleResource();
-//		roleResource.setRoleId(role.getRoleId());
-//		roleResource.setName(role.getName());
-//		roleResource.setSource(role.getSource());
-//
-//		return roleResource;
-//	}
-
 
 	protected Reference createChildReference(Request request, String childPath) {
 		return this.referenceFactory.createChildReference(request, childPath);

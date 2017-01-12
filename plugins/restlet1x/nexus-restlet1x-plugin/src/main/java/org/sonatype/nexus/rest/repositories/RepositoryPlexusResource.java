@@ -215,25 +215,14 @@ public class RepositoryPlexusResource extends AbstractRepositoryPlexusResource {
 										.getPassword();
 							}
 
-							RemoteAuthenticationSettings remoteAuth = getAuthenticationInfoConverter()
-									.convertAndValidateFromModel(
-											this.convertAuthentication(model
-													.getRemoteStorage()
-													.getAuthentication(),
-													oldPasswordForRemoteStorage));
 							RemoteConnectionSettings remoteConnSettings = getGlobalRemoteConnectionSettings()
 									.convertAndValidateFromModel(
 											this.convertRemoteConnectionSettings(model
 													.getRemoteStorage()
 													.getConnectionSettings()));
 
-							if (remoteAuth != null) {
-								proxyRepo
-										.setRemoteAuthenticationSettings(remoteAuth);
-							} else {
-								proxyRepo.getRemoteStorageContext()
-										.removeRemoteAuthenticationSettings();
-							}
+							proxyRepo.getRemoteStorageContext()
+									.removeRemoteAuthenticationSettings();
 
 							if (remoteConnSettings != null) {
 								proxyRepo

@@ -26,7 +26,6 @@ import org.restlet.resource.ResourceException;
 import org.sonatype.nexus.configuration.application.ApplicationConfiguration;
 import org.sonatype.nexus.configuration.application.AuthenticationInfoConverter;
 import org.sonatype.nexus.configuration.application.GlobalRemoteConnectionSettings;
-import org.sonatype.nexus.configuration.model.CRemoteAuthentication;
 import org.sonatype.nexus.configuration.model.CRemoteConnectionSettings;
 import org.sonatype.nexus.proxy.NoSuchRepositoryException;
 import org.sonatype.nexus.proxy.ResourceStoreRequest;
@@ -47,7 +46,6 @@ import org.sonatype.nexus.rest.NexusCompat;
 import org.sonatype.nexus.rest.NoSuchRepositoryAccessException;
 import org.sonatype.nexus.rest.RepositoryURLBuilder;
 import org.sonatype.nexus.rest.global.AbstractGlobalConfigurationPlexusResource;
-import org.sonatype.nexus.rest.model.AuthenticationSettings;
 import org.sonatype.nexus.rest.model.RemoteConnectionSettings;
 import org.sonatype.nexus.rest.model.RepositoryBaseResource;
 import org.sonatype.nexus.rest.model.RepositoryListResource;
@@ -370,11 +368,6 @@ public abstract class AbstractRepositoryPlexusResource extends
 		resource.getRemoteStorage().setRemoteStorageUrl(
 				repository.getRemoteUrl());
 
-		resource.getRemoteStorage().setAuthentication(
-				AbstractGlobalConfigurationPlexusResource.convert(NexusCompat
-						.getRepositoryRawConfiguration(repository)
-						.getRemoteStorage().getAuthentication()));
-
 		resource.getRemoteStorage().setConnectionSettings(
 				AbstractGlobalConfigurationPlexusResource.convert(NexusCompat
 						.getRepositoryRawConfiguration(repository)
@@ -456,22 +449,6 @@ public abstract class AbstractRepositoryPlexusResource extends
 		resource.setExposed(shadow.isExposed());
 
 		return resource;
-	}
-
-	protected CRemoteAuthentication convertAuthentication(
-			AuthenticationSettings authentication, String oldPassword) {
-		if (authentication == null) {
-			return null;
-		}
-
-		CRemoteAuthentication appModelSettings = new CRemoteAuthentication();
-		appModelSettings.setUsername(authentication.getUsername());
-		appModelSettings.setPassword(this.getActualPassword(
-				authentication.getPassword(), oldPassword));
-		appModelSettings.setNtlmDomain(authentication.getNtlmDomain());
-		appModelSettings.setNtlmHost(authentication.getNtlmHost());
-
-		return appModelSettings;
 	}
 
 	protected CRemoteConnectionSettings convertRemoteConnectionSettings(

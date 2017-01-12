@@ -453,7 +453,6 @@ public class GlobalConfigurationPlexusResource extends
 		}
 		resource.setGlobalRestApiSettings(restApiSettings);
 
-		resource.setSmtpSettings(convert(readDefaultSmtpConfiguration()));
 	}
 
 	/**

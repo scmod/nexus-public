@@ -12,10 +12,7 @@
  */
 package org.sonatype.security.rest.authentication;
 
-import org.restlet.data.Request;
-import org.restlet.resource.ResourceException;
 import org.sonatype.security.rest.AbstractSecurityPlexusResource;
-import org.sonatype.security.rest.model.AuthenticationClientPermissions;
 
 public abstract class AbstractUIPermissionCalculatingPlexusResource extends
 		AbstractSecurityPlexusResource {
@@ -29,10 +26,5 @@ public abstract class AbstractUIPermissionCalculatingPlexusResource extends
 	private static final int CREATE = 8;
 
 	private static final int ALL = READ | UPDATE | DELETE | CREATE;
-
-	protected AuthenticationClientPermissions getClientPermissionsForCurrentUser(
-			Request request) throws ResourceException {
-		return null;
-	}
 
 }

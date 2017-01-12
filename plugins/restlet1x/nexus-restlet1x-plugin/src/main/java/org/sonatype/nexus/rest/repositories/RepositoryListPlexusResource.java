@@ -306,11 +306,6 @@ public class RepositoryListPlexusResource extends
 			target.getRemoteStorage().setUrl(
 					model.getRemoteStorage().getRemoteStorageUrl());
 
-			// remote auth
-			target.getRemoteStorage().setAuthentication(
-					this.convertAuthentication(model.getRemoteStorage()
-							.getAuthentication(), null));
-
 			// connection settings
 			target.getRemoteStorage().setConnectionSettings(
 					this.convertRemoteConnectionSettings(model
